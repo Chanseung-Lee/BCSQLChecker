@@ -1,0 +1,89 @@
+# PROPOSED by the mapping agent -- review before use.
+#
+# TABLE: IMData.dbo.parts_bc, CompanyCode='01'. It is a copy of IMData.dbo.Parts plus BC sync columns (BcId, BCLastModified, LastSyncedAt), so source_of_truth = bc. Every company in Parts/parts_bc holds roughly the same part list. Company 01 in parts_bc is the only one where all 26,967 BC numbers match (company 01 in Parts matches 26,893). BcId equals BC id on 100% of paired rows, which confirms both the table and the scope. IMData.dbo.Parts is the replica without BC ids, and it matches worse.
+#
+# KEY: number = PartID. The diff pairs keys ignoring case and trim (e.g. '*Certificate' pairs with '*CERTIFICATE'). Company 01 holds two whitespace variants of existing PartIDs ('12698923', '7465 043 01') that have a NULL BcId. These made duplicate keys, so the where clause drops NULL-BcId rows only when a synced row with the same trimmed PartID exists. Result: 26,967/26,967 paired, no duplicates.
+#
+# MISSING IN BC: 102 rows in company 01 have a NULL BcId and LastSyncedAt, meaning they were never synced. They include a blank PartID and test parts like '*Test PC 123'; 101 of them are Active=1. I set this to error because they look like parts that never reached BC. If they're known exclusions, downgrade it to info.
+#
+# FIELD AGREEMENT (check_spec):
+# - id->BcId 100%
+# - displayName->DescriptionOne 99.99% (1 differs: *CORE, blank in BC)
+# - displayName2->DescriptionTwo 99.98% (6 differ: notes text on *CERTIFICATE/*PAYMENT/*CORE is blank in BC)
+# - unitPrice->List 99.96% (10 differ, mostly BC 0 where SS4 has a price, e.g. *FREIGHT 231, 90049091 705.25. For 9585 125 01 the report shows 0 vs 0.00, probably a NULL in SS4.)
+# - itemCategoryCode->ManufacturerID 99.99%. The column name is misleading, but the values match on 26,889 of 26,967 rows and are distinctive codes (LB/PC/AL/OTHER/WK/PE...). The 4 that differ are blank in BC.
+#
+# JUDGMENT CALLS:
+# - unitCost is not compared (BC average costing). Details are under ignored. If you'd rather catch cost drift on non-stocked items, unitCost->Cost could be mapped with a filter, but the diff can't scope a single field, so I left it out.
+# - lastModifiedDateTime is ignored, not mapped: the values match to the second, but the engine's precision causes false differences.
+# - inventory: only available per district in other tables, so it can't be compared row-for-row here.
+
+name: items
+description: BC items vs IMData parts_bc (company 01)
+source_of_truth: bc
+bc:
+  target: BC
+  api: standard
+  entity: items
+  key: [number]
+ss4:
+  database: IMData
+  table: dbo.parts_bc
+  key: [PartID]
+  where: "CompanyCode = '01' AND NOT (BcId IS NULL AND LTRIM(RTRIM(PartID)) IN (SELECT LTRIM(RTRIM(x.PartID)) FROM IMData.dbo.parts_bc x WHERE x.CompanyCode = '01' AND x.BcId IS NOT NULL))"
+missing:
+  in_bc: error
+  in_ss4: error
+fields:
+  - bc: id
+    ss4: BcId
+    type: guid
+  - bc: displayName
+    ss4: DescriptionOne
+    type: text
+  - bc: displayName2
+    ss4: DescriptionTwo
+    type: text
+  - bc: unitPrice
+    ss4: List
+    type: decimal
+  - bc: itemCategoryCode
+    ss4: ManufacturerID
+    type: text
+ignored:
+  - bc: unitCost
+    reason: "BC recalculates unit cost (average cost from item ledger). Matches parts_bc.Cost on 94% of items with no stock, but only about 12% of stocked items. AUC/AUCPriorPeriod/AUCYearEnd/prevcost/BaseCost don't match either."
+  - ss4: Cost
+    reason: Looks like the counterpart of unitCost but differs on purpose (BC costing). Not compared.
+  - bc: lastModifiedDateTime
+    reason: "Sync metadata. Stored as parts_bc.BCLastModified (all 26,967 rows within 1 s in SQL), but the diff engine drops BC's fractional seconds, so an exact compare fails on 99.7% of rows. Not a business field."
+  - ss4: BCLastModified
+    reason: Copy of BC lastModifiedDateTime, written by the sync. Not compared (see above).
+  - bc: inventory
+    reason: "Quantity is computed from item ledger entries. In SS4, stock is per district in separate tables (IMData.dbo.Inventory, SAPData.dbo.BCDistrictPartsQuantity), not a column on the part row."
+  - bc: type
+    reason: "99.9% 'Inventory'. No SS4 column distinguishes the 25 Non-Inventory items or the 1 Service item."
+  - bc: itemCategoryId
+    reason: GUID of a BC lookup record. itemCategoryCode is mapped instead.
+  - bc: taxGroupId
+    reason: GUID of a BC lookup record.
+  - bc: taxGroupCode
+    reason: No SS4 counterpart in parts_bc (BC setup value, nearly constant 'PM008826').
+  - bc: baseUnitOfMeasureId
+    reason: GUID of a BC lookup record.
+  - bc: baseUnitOfMeasureCode
+    reason: parts_bc has no unit-of-measure column (98% 'EA').
+  - bc: generalProductPostingGroupId
+    reason: GUID of a BC lookup record.
+  - bc: generalProductPostingGroupCode
+    reason: "No SS4 counterpart. IsAnchor was tested against ANCHORS and doesn't line up (84 anchors in SS4; only 1 overlaps BC's ANCHORS rows)."
+  - bc: inventoryPostingGroupId
+    reason: GUID of a BC lookup record.
+  - bc: inventoryPostingGroupCode
+    reason: No SS4 counterpart (BC posting setup, nearly constant).
+  - bc: blocked
+    reason: empty in BC
+  - bc: gtin
+    reason: empty in BC
+  - bc: priceIncludesTax
+    reason: empty in BC

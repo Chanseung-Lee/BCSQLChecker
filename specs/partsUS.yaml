@@ -1,0 +1,54 @@
+# BC items (US company) vs IMData.dbo.parts_bc.
+# Mapping taken from MorrowAPI's BcSyncCatalog.PartsUS.
+
+name: partsUS
+description: BC items vs the parts_bc replica, US company (CompanyCode 01)
+
+source_of_truth: bc        # bc | ss4 | both -- which side is "right" when they differ
+
+bc:
+  target: BC               # .env prefix: reads BC_ENVIRONMENT, BC_COMPANY, BC_COMPANY_ID
+  api: standard            # standard | odata | custom
+  entity: items
+  key: [number]
+
+ss4:
+  database: IMData
+  table: dbo.parts_bc
+  key: [PartID]
+  where: CompanyCode = '01'
+
+missing:
+  in_bc: info              # parts only in SS4 are expected: SQL has more parts than BC
+  in_ss4: error            # a BC item with no SS4 row means the sync missed it
+
+fields:
+  - bc: id
+    ss4: BcId
+    type: guid
+
+  - bc: displayName
+    ss4: DescriptionOne
+    type: text
+    bc_blank: ignore       # the sync never overwrites with a blank (KeepWhenBlank)
+
+  - bc: displayName2
+    ss4: DescriptionTwo
+    type: text
+    bc_blank: ignore
+
+  - bc: unitPrice
+    ss4: List
+    type: decimal
+    bc_blank: ignore       # BC sends 0 for "no price", so zero counts as blank
+
+  - bc: itemCategoryCode
+    ss4: ManufacturerID
+    type: text
+    bc_blank: ignore
+
+ignored:                   # known to differ on purpose -- never reported
+  - ss4: Cost
+    reason: BC recalculates Unit Cost under Average costing
+  - ss4: Active
+    reason: every item was loaded with Blocked = No

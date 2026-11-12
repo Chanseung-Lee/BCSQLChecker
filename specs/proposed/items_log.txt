@@ -1,0 +1,732 @@
+=== task
+Map the BC table `items` to SS4.
+
+It has 26,967 rows, all staged in #bc_raw.
+
+BC field profile ("real values" excludes blanks, zeros and false):
+field | status | real values | distinct | most common values
+id | used | 100.0% | 26,967 | 'f53f2240-c8d8-f111-a056-7c1e52c18eb5' x1, '44953c84-678b-f111-8072-7c1e52b6fd3e' x1, '92d9da96-678b-f111-8072-7c1e52b6fd3e' x1
+number | used | 100.0% | 26,967 | '*571231' x1, '*CERTIFICATE' x1, '*CONFIRM' x1
+displayName | used | 98.5% | 6,375 | 'MOTOR' x769, 'PIN' x689, 'BOLT' x685
+displayName2 | used | 96.0% | 23,634 | '***' x284, 'FLANGE JOINT' x36, '****' x14
+type | used | 100.0% | 3 | 'Inventory' x26,941, 'Non_x002D_Inventory' x25, 'Service' x1
+itemCategoryId | used | 99.7% | 16 | '2cda1dbb-0474-f111-8070-7c1e52a414ec' x15,227, 'bcb1218b-5d84-f111-8070-000d3a7da7ce' x4,454, '0a0b5cef-f001-f111-8405-000d3a4f1754' x2,099
+itemCategoryCode | used | 99.7% | 16 | 'LB' x15,227, 'PC' x4,454, 'OTHER' x2,099
+blocked | empty | 0.0% | 0 | 
+gtin | empty | 0.0% | 0 | 
+inventory | used | 60.0% | 519 | '2' x2,720, '4' x2,607, '6' x1,477
+unitPrice | used | 93.0% | 11,359 | '1.01' x151, '0.01' x64, '1' x60
+priceIncludesTax | empty | 0.0% | 0 | 
+unitCost | used | 91.3% | 17,067 | '0.00500000000000000000' x168, '0.49' x90, '1' x73
+taxGroupId | used | 99.9% | 2 | '814bf1b2-7cc6-f111-a056-6045bdaf858f' x26,943, 'e9997b10-a4ab-f111-aaa8-0022484d79b3' x10
+taxGroupCode | used | 99.9% | 2 | 'PM008826' x26,943, 'FR030000' x10
+baseUnitOfMeasureId | used | 100.0% | 6 | 'f37397ac-8a19-f111-8340-002248277fbf' x26,486, 'ad33f8e5-7079-f111-8070-7c1e52d8d45c' x157, '7e2de533-c698-f111-8072-00224852b7b6' x148
+baseUnitOfMeasureCode | used | 100.0% | 6 | 'EA' x26,486, 'R' x157, 'M' x148
+generalProductPostingGroupId | used | 100.0% | 9 | '241328d8-7279-f111-8070-7c1e52d8d45c' x26,937, 'd99d8313-31fd-f011-8405-7c1e52fd407e' x7, '557854a1-f101-f111-8405-000d3a4f1754' x6
+generalProductPostingGroupCode | used | 100.0% | 7 | 'M&R SPARE PARTS' x26,937, 'RETAIL' x11, 'ANCHORS' x6
+inventoryPostingGroupId | used | 99.9% | 2 | 'a1133e5d-d15a-f111-a820-7c1e528bf435' x26,926, 'a749afa1-f001-f111-8405-000d3a4f1754' x7
+inventoryPostingGroupCode | used | 99.9% | 2 | 'M&R SPARE PARTS' x26,926, 'ANCHORS' x7
+lastModifiedDateTime | used | 100.0% | 26,967 | '2026-11-05T22:56:57.04Z' x1, '2026-11-05T22:56:57.21Z' x1, '2026-11-05T22:56:57.257Z' x1
+
+SS4 databases to search: SAPData, EQData, EQDataCor, ARData, IMData
+
+In the spec use: name: items, and in the bc section target: BC,
+api: standard, entity: items. When you are confident, call submit_spec.
+
+
+=== run_sql
+SELECT TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, COUNT(*) cols FROM (SELECT * FROM IMData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM SAPData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQDataCor.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM ARData.INFORMATION_SCHEMA.COLUMNS) c GROUP BY TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME ORDER BY 1,3
+--- result
+TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | cols
+ARData | dbo | aging_report_work | 16
+ARData | dbo | aging_reserved | 3
+ARData | dbo | ar | 8
+ARData | dbo | ar_txn | 11
+ARData | dbo | ar_txnJIC | 11
+ARData | dbo | aragingReport | 46
+ARData | dbo | ARAlertList | 7
+ARData | dbo | ARAlertListUsers | 8
+ARData | dbo | ARBilling | 11
+ARData | dbo | ARCustGroup | 1
+ARData | dbo | ARCustSupp | 14
+ARData | dbo | ARDistribution | 15
+ARData | dbo | ARGST | 10
+ARData | dbo | ARInvoice | 74
+ARData | dbo | ARInvoice_working_notes | 5
+ARData | dbo | ARInvoiceDeleteArchive | 73
+ARData | dbo | ARInvoiceDeletion | 5
+ARData | dbo | ARInvoiceDetail | 28
+ARData | dbo | ARInvoiceDetailDeleteArchive | 25
+ARData | dbo | ARInvoiceInterfaceLog | 7
+ARData | dbo | ARInvoicePrint | 3
+ARData | dbo | ARInvoiceReclass | 5
+ARData | dbo | ARInvoiceType | 5
+ARData | dbo | ARInvoiceType2 | 3
+ARData | dbo | ARInvPrintByCust | 2
+ARData | dbo | ARInvStatusTracking | 9
+ARData | dbo | ARInvTranslation | 4
+ARData | dbo | ARReserveLog | 14
+ARData | dbo | ARRevenue | 13
+ARData | dbo | ARTaxable | 12
+ARData | dbo | ARTerms | 4
+ARData | dbo | BacklogClass | 17
+ARData | dbo | balItm | 3
+ARData | dbo | balTxn | 4
+ARData | dbo | BC_Customers | 8
+ARData | dbo | BC_WebhookLog | 9
+ARData | dbo | billing | 9
+ARData | dbo | BillingCycle | 4
+ARData | dbo | BillingCycleFuture | 4
+ARData | dbo | billingcyclefuturejic | 4
+ARData | dbo | billingcyclejic | 4
+ARData | dbo | CashReceipt | 16
+ARData | dbo | CashReceiptCheck | 5
+ARData | dbo | CashReceiptDetail | 14
+ARData | dbo | CashReceiptStatusTracking | 9
+ARData | dbo | checks | 3
+ARData | dbo | commission | 21
+ARData | dbo | CommissionBonus | 99
+ARData | dbo | commissionRegistry | 23
+ARData | dbo | cr_detail | 13
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== run_sql
+SELECT TABLE_CATALOG, TABLE_NAME, COUNT(*) cols FROM (SELECT * FROM IMData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM SAPData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQDataCor.INFORMATION_SCHEMA.COLUMNS) c WHERE TABLE_NAME LIKE '%part%' OR TABLE_NAME LIKE '%item%' OR TABLE_NAME LIKE '%inv%' OR TABLE_NAME LIKE '%mat%' OR TABLE_NAME LIKE '%prod%' GROUP BY TABLE_CATALOG, TABLE_NAME ORDER BY 1,2
+--- result
+TABLE_CATALOG | TABLE_NAME | cols
+EQData | OperatorInformation | 25
+EQData | VehicleMaintItem | 3
+IMData | Inventory | 13
+IMData | InventoryNew | 11
+IMData | MXParts | 6
+IMData | NonStockParts | 14
+IMData | OtherWarehouseParts | 10
+IMData | PartLabels | 8
+IMData | PartLabelsJIC | 9
+IMData | Parts | 57
+IMData | parts_bc | 60
+IMData | PartsMessage | 4
+IMData | PartsMonthEndStepComplete | 6
+IMData | PartsSupp | 3
+IMData | TestParts | 6
+IMData | tmpPartsCheck | 4
+IMData | tmpPartsCheck_01 | 4
+IMData | tmpPartsCheck_15 | 4
+IMData | tmpPartsCheck_70 | 4
+IMData | tmpStockInformation | 9
+IMData | UpdatedParts | 1
+IMData | v_pInventoryTripleHits | 8
+IMData | vwCompanyParts | 10
+IMData | vwInventory | 10
+IMData | vwInventoryDist | 10
+IMData | vwParts | 15
+IMData | vwParts2 | 11
+SAPData | aivPhysicalInventoryImport | 8
+SAPData | arcCustomersOver60ForFInvoices | 13
+SAPData | ariFinanceChargeInvoices | 28
+SAPData | ariFinanceChargeInvoicesDetails | 14
+SAPData | ariInterfaceInvalidAccount | 5
+SAPData | ariInvoiceEmailQueue | 8
+SAPData | ariInvoiceInterfaceCheckAccounts | 9
+SAPData | ariInvoiceRelatedForms | 9
+SAPData | aviInventoryValue | 10
+SAPData | aviPartsMonthEndReport | 6
+SAPData | BC_ItemLedgerEntries | 7
+SAPData | BC_PurchaseInvoice | 50
+SAPData | BC_PurchaseInvoiceDimension | 11
+SAPData | BC_PurchaseInvoiceLine | 30
+SAPData | BC_SalesInvoices | 11
+SAPData | BC_Stage_ItemLedgerEntry | 6
+SAPData | BC_Stage_SalesInvoice | 9
+SAPData | BCDistrictPartsQuantity | 24
+SAPData | eqComputerInventory | 19
+SAPData | gQuickLinkDepartments | 4
+SAPData | maLeaseOtherItems | 5
+SAPData | maSOVItemBillingCodes | 7
+SAPData | maSOVItemsBySOVType | 20
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== run_sql
+SELECT TABLE_NAME, STRING_AGG(COLUMN_NAME+':'+DATA_TYPE, ', ') FROM IMData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN ('Parts','parts_bc') GROUP BY TABLE_NAME
+--- result
+TABLE_NAME | 
+Parts | ID:int, PartID:nvarchar, PartIDSearch:nvarchar, CompanyCode:char, Manufacture...
+parts_bc | ID:int, PartID:nvarchar, CompanyCode:char, ManufacturerID:nvarchar, VendorID:...
+
+=== run_sql
+SELECT TABLE_NAME, ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE FROM IMData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN ('Parts') ORDER BY 2
+--- result
+TABLE_NAME | ORDINAL_POSITION | COLUMN_NAME | DATA_TYPE
+Parts | 1 | ID | int
+Parts | 2 | PartID | nvarchar
+Parts | 3 | PartIDSearch | nvarchar
+Parts | 4 | CompanyCode | char
+Parts | 5 | ManufacturerID | nvarchar
+Parts | 6 | VendorID | nvarchar
+Parts | 7 | DescriptionOne | nvarchar
+Parts | 8 | DescriptionTwo | nvarchar
+Parts | 9 | NewDescriptionTwo | nvarchar
+Parts | 10 | DescriptionThree | nvarchar
+Parts | 11 | FullDescription | nvarchar
+Parts | 12 | Weight | money
+Parts | 13 | Type3 | varchar
+Parts | 14 | Type2 | nvarchar
+Parts | 15 | kW | int
+Parts | 16 | HP | numeric
+Parts | 17 | Hz | nvarchar
+Parts | 18 | ED% | nvarchar
+Parts | 19 | RPM | nvarchar
+Parts | 20 | StatorVolt | nvarchar
+Parts | 21 | StatorAmp | nvarchar
+Parts | 22 | RotorVolt | nvarchar
+Parts | 23 | RotorAmp | nvarchar
+Parts | 24 | TariffCode | nvarchar
+Parts | 25 | Cost | money
+Parts | 26 | List | money
+Parts | 27 | USDList | money
+Parts | 28 | EURList | money
+Parts | 29 | LastPriceUpdate | date
+Parts | 30 | AUC | money
+Parts | 31 | AUCPriorPeriod | money
+Parts | 32 | AUCYearEnd | money
+Parts | 33 | Active | bit
+Parts | 34 | SerialNumberRequired | bit
+Parts | 35 | IsAnchor | bit
+Parts | 36 | NewPartID | nvarchar
+Parts | 37 | DeliveryTime | nvarchar
+Parts | 38 | BaseCost | money
+Parts | 39 | CalculatedNewList | money
+Parts | 40 | EUROPart | bit
+Parts | 41 | prevcost | money
+Parts | 42 | prevlist | money
+Parts | 43 | type | char
+Parts | 44 | AUC2013 | money
+Parts | 45 | OrderPoint | int
+Parts | 46 | QTY2013 | int
+Parts | 47 | MinLevel | int
+Parts | 48 | MaxLevel | int
+Parts | 49 | ROLevel | int
+Parts | 50 | ABCClass | char
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== run_sql
+SELECT TABLE_NAME, ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE FROM IMData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN ('parts_bc') AND COLUMN_NAME NOT IN (SELECT COLUMN_NAME FROM IMData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Parts') ORDER BY 2
+--- result
+TABLE_NAME | ORDINAL_POSITION | COLUMN_NAME | DATA_TYPE
+parts_bc | 58 | BcId | uniqueidentifier
+parts_bc | 59 | BCLastModified | datetime2
+parts_bc | 60 | LastSyncedAt | datetime2
+
+=== run_sql
+SELECT ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE FROM IMData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Parts' AND ORDINAL_POSITION>50
+--- result
+ORDINAL_POSITION | COLUMN_NAME | DATA_TYPE
+51 | Tarifs | nvarchar
+52 | Supplier | nvarchar
+53 | SupplierPartID | nvarchar
+54 | Pic0Name | nvarchar
+55 | Pic1Name | nvarchar
+56 | Pdf2Name | nvarchar
+57 | Pdf3Name | nvarchar
+
+=== run_sql
+SELECT 'Parts' t, COUNT(*) n, COUNT(DISTINCT PartID) d, COUNT(DISTINCT CompanyCode) cc, SUM(CASE WHEN PartID IN (SELECT number FROM #bc_raw) THEN 1 ELSE 0 END) m FROM IMData.dbo.Parts UNION ALL SELECT 'parts_bc', COUNT(*), COUNT(DISTINCT PartID), COUNT(DISTINCT CompanyCode), SUM(CASE WHEN PartID IN (SELECT number FROM #bc_raw) THEN 1 ELSE 0 END) FROM IMData.dbo.parts_bc
+--- result
+SQL error: ('42000', '[42000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot perform an aggregate function on an expression containing an aggregate or a subquery. (130) (SQLExecDirectW); [42000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot perform an aggregate function on an expression containing an aggregate or a subquery. (130)')
+
+=== Claude
+Two candidates found: IMData.dbo.Parts and IMData.dbo.parts_bc, which has BC sync columns. Now checking which one overlaps BC's numbers.
+
+=== run_sql
+SELECT 'Parts' t, CompanyCode, COUNT(*) n, COUNT(DISTINCT p.PartID) d, COUNT(b.number) m, SUM(CAST(Active AS int)) act FROM IMData.dbo.Parts p LEFT JOIN #bc_raw b ON b.number=p.PartID GROUP BY CompanyCode UNION ALL SELECT 'parts_bc', CompanyCode, COUNT(*), COUNT(DISTINCT p.PartID), COUNT(b.number), SUM(CAST(Active AS int)) FROM IMData.dbo.parts_bc p LEFT JOIN #bc_raw b ON b.number=p.PartID GROUP BY CompanyCode
+--- result
+t | CompanyCode | n | d | m | act
+Parts | 90 | 27006 | 27006 | 26893 | 25712
+Parts | 60 | 25960 | 25960 | 24310 | 24752
+Parts | 1  | 15 | 15 | 9 | 15
+Parts | 01 | 27006 | 27006 | 26893 | 25563
+Parts | 70 | 15118 | 15118 | 13764 | 15012
+Parts | 15 | 27022 | 27022 | 26893 | 25841
+parts_bc | 90 | 26997 | 26997 | 26893 | 25704
+parts_bc | 60 | 25960 | 25960 | 24310 | 24752
+parts_bc | 1  | 15 | 15 | 9 | 15
+parts_bc | 01 | 27071 | 27071 | 26967 | 25629
+parts_bc | 70 | 15118 | 15118 | 13764 | 15012
+parts_bc | 15 | 27013 | 27013 | 26893 | 25834
+
+=== Claude
+parts_bc with CompanyCode '01' covers all 26,967. Checking BcId, the extras, and field overlaps.
+
+=== run_sql
+SELECT COUNT(*) n, SUM(CASE WHEN CAST(p.BcId AS nvarchar(50))=b.id THEN 1 ELSE 0 END) idm, SUM(CASE WHEN p.DescriptionOne=b.displayName THEN 1 ELSE 0 END) d1, SUM(CASE WHEN p.DescriptionTwo=b.displayName2 THEN 1 ELSE 0 END) d2, SUM(CASE WHEN p.NewDescriptionTwo=b.displayName2 THEN 1 ELSE 0 END) nd2, SUM(CASE WHEN p.DescriptionThree=b.displayName2 THEN 1 ELSE 0 END) d3, SUM(CASE WHEN p.List=TRY_CAST(b.unitPrice AS money) THEN 1 ELSE 0 END) lst, SUM(CASE WHEN p.Cost=TRY_CAST(b.unitCost AS money) THEN 1 ELSE 0 END) cst, SUM(CASE WHEN p.AUC=TRY_CAST(b.unitCost AS money) THEN 1 ELSE 0 END) auc, SUM(CASE WHEN p.BaseCost=TRY_CAST(b.unitCost AS money) THEN 1 ELSE 0 END) bcst, SUM(CASE WHEN ABS(DATEDIFF(second,p.BCLastModified,TRY_CAST(b.lastModifiedDateTime AS datetimeoffset)))<=1 THEN 1 ELSE 0 END) lm FROM IMData.dbo.parts_bc p JOIN #bc_raw b ON b.number=p.PartID WHERE p.CompanyCode='01'
+--- result
+n | idm | d1 | d2 | nd2 | d3 | lst | cst | auc | bcst | lm
+26967 | 26967 | 26561 | 25894 | 19639 | 0 | 26957 | 11558 | 2295 | 550 | 26967
+
+=== run_sql
+SELECT Active, COUNT(*), SUM(CASE WHEN BcId IS NULL THEN 1 ELSE 0 END) nullid, MIN(PartID), MAX(PartID) FROM IMData.dbo.parts_bc p WHERE CompanyCode='01' AND NOT EXISTS (SELECT 1 FROM #bc_raw b WHERE b.number=p.PartID) GROUP BY Active
+--- result
+Active |  | nullid |  | 
+False | 1 | 1 |  | 
+True | 103 | 103 |  12698923 | PE0019
+
+=== Claude
+Strong match on id/displayName/displayName2/unitPrice/lastModified. Now checking unitCost, the description differences and the remaining fields.
+
+=== run_sql
+SELECT SUM(CASE WHEN TRY_CAST(b.unitCost AS decimal(19,4)) IN (0) OR b.unitCost IS NULL OR b.unitCost='' THEN 1 ELSE 0 END) bc0, SUM(CASE WHEN ROUND(p.Cost,2)=ROUND(TRY_CAST(b.unitCost AS decimal(28,10)),2) THEN 1 ELSE 0 END) cst2, SUM(CASE WHEN p.AUCPriorPeriod=TRY_CAST(b.unitCost AS money) THEN 1 ELSE 0 END) aucp, SUM(CASE WHEN p.AUCYearEnd=TRY_CAST(b.unitCost AS money) THEN 1 ELSE 0 END) aucy, SUM(CASE WHEN p.prevcost=TRY_CAST(b.unitCost AS money) THEN 1 ELSE 0 END) pc, SUM(CASE WHEN p.AUC2013=TRY_CAST(b.unitCost AS money) THEN 1 ELSE 0 END) a13, SUM(CASE WHEN ROUND(p.AUC,2)=ROUND(TRY_CAST(b.unitCost AS decimal(28,10)),2) THEN 1 ELSE 0 END) auc2, SUM(CASE WHEN RTRIM(p.DescriptionOne)=RTRIM(b.displayName) THEN 1 ELSE 0 END) d1t, SUM(CASE WHEN LEFT(p.DescriptionOne,100)=b.displayName THEN 1 ELSE 0 END) d1l, SUM(CASE WHEN ISNULL(p.DescriptionOne,'')=ISNULL(b.displayName,'') THEN 1 ELSE 0 END) d1n, SUM(CASE WHEN ISNULL(p.DescriptionTwo,'')=ISNULL(b.displayName2,'') THEN 1 ELSE 0 END) d2n FROM IMData.dbo.parts_bc p JOIN #bc_raw b ON b.number=p.PartID WHERE p.CompanyCode='01'
+--- result
+bc0 | cst2 | aucp | aucy | pc | a13 | auc2 | d1t | d1l | d1n | d2n
+2359 | 12128 | 2295 | 2295 | 7522 | 2217 | 2296 | 26561 | 26561 | 26963 | 26959
+
+=== run_sql
+SELECT TOP 12 p.PartID, p.DescriptionOne, b.displayName, p.DescriptionTwo, b.displayName2, p.Cost, p.AUC, b.unitCost FROM IMData.dbo.parts_bc p JOIN #bc_raw b ON b.number=p.PartID WHERE p.CompanyCode='01' AND (ISNULL(p.DescriptionOne,'')<>ISNULL(b.displayName,'') OR ISNULL(p.DescriptionTwo,'')<>ISNULL(b.displayName2,''))
+--- result
+PartID | DescriptionOne | displayName | DescriptionTwo | displayName2 | Cost | AUC | unitCost
+*Certificate | *CERTIFICATE | *CERTIFICATE | IS REQUIRED FOR THE ABOVE LINE ITEM | NULL | 150.0000 | 0.0000 | 150
+*core | CORE REFUND | NULL | APPLIED UPON RECIEPT OF CORE IN GOOD CONDITION | NULL | 0.0000 | 0.0000 | 0
+*PAYMENT | PAYMENT MUST BE RECEIVED BY CHECK OR WIRE TRANSFER BEFORE ITEMS WILL SHIP | PAYMENT MUST BE RECEIVED BY CHECK OR WIRE TRANSFER BEFORE ITEMS WILL SHIP | BY CHECK OR WIRE TRANSFER BEFORE ITEMS WILL SHIP | NULL | 0.0000 | 0.0000 | 0.01
+R5451774 |  BRAKE DISC | BRAKE DISC | 5175474R K4 3 MM | 5175474R K4 3 MM | 211.2000 | 0.0000 | 211.2
+001001 | ARC BOX 3TY1222 OA | ARC BOX 3TY1222 OA | 3TY1222 OA | NULL | 2.6400 | 0.0000 | 96.32
+2335.00240 | SHAFT | SHAFT |  2335.00240 | 2335.00240 | 1261.7500 | 0.0000 | 1261.75
+T0639670 | BEARING | BEARING |  61828(K4) (6828) | 61828(K4) (6828) | 416.9200 | 0.0000 | 416.92
+LB0351 | HEATER | HEATER | FOR SLIPRING 148076 LM-THERM 230V 90W | NULL | 741.0000 | 0.0000 | 570
+K0037476 |  PLUG | PLUG | 3740076K K4 | 3740076K K4 | 24.6700 | 0.0000 | 24.67
+9067 360-8010 | 9067 360-8010 | 9067 360-8010 | 90673608010 197FT/M (3750) | NULL | 7231.3800 | 0.0000 | 7231.38
+D9940603 |  BLOCK | BLOCK | 40699603D F. K4/56B RTV | 40699603D F. K4/56B RTV | 0.0000 | 0.0000 | 0
+
+=== Claude
+Descriptions agree apart from blank/NULL and leading spaces. Cost agreement is weak, so I'm investigating it.
+
+=== run_sql
+WITH x AS (SELECT p.Cost, p.AUC, p.List, TRY_CAST(b.unitCost AS decimal(28,10)) uc, TRY_CAST(b.inventory AS decimal(28,5)) inv FROM IMData.dbo.parts_bc p JOIN #bc_raw b ON b.number=p.PartID WHERE p.CompanyCode='01')
+SELECT CASE WHEN AUC>0 THEN 'auc>0' ELSE 'auc0' END a, CASE WHEN inv>0 THEN 'inv' ELSE 'noinv' END i, COUNT(*) n, SUM(CASE WHEN ROUND(Cost,2)=ROUND(uc,2) THEN 1 ELSE 0 END) costm, SUM(CASE WHEN ROUND(AUC,2)=ROUND(uc,2) THEN 1 ELSE 0 END) aucm, SUM(CASE WHEN ISNULL(uc,0)=0 THEN 1 ELSE 0 END) uc0, SUM(CASE WHEN ABS(AUC-uc)<=0.05*ABS(AUC) THEN 1 ELSE 0 END) auc5 FROM x GROUP BY CASE WHEN AUC>0 THEN 'auc>0' ELSE 'auc0' END, CASE WHEN inv>0 THEN 'inv' ELSE 'noinv' END
+--- result
+a | i | n | costm | aucm | uc0 | auc5
+auc>0 | noinv | 52 | 52 | 0 | 35 | 2
+auc0 | noinv | 10734 | 10115 | 2134 | 2147 | 2134
+auc>0 | inv | 19 | 14 | 0 | 5 | 1
+auc0 | inv | 16162 | 1947 | 162 | 172 | 161
+
+=== Claude
+For items without stock, BC unitCost matches Cost about 94% of the time. For stocked items it doesn't. Checking whether an average-cost source exists, and looking at the inventory quantity.
+
+=== run_sql
+SELECT TABLE_NAME, STRING_AGG(COLUMN_NAME+':'+DATA_TYPE, ', ') c FROM IMData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN ('Inventory','InventoryNew','vwInventory','vwCompanyParts','tmpStockInformation') GROUP BY TABLE_NAME
+--- result
+TABLE_NAME | c
+Inventory | PartID:nvarchar, DistrictNumber:tinyint, District:nvarchar, CompanyCode:char,...
+InventoryNew | PartID:nvarchar, DistrictNumber:tinyint, District:nvarchar, CompanyCode:char,...
+tmpStockInformation | ID:int, CompanyCode:nvarchar, District:nvarchar, StockNo:nvarchar, Qty:smalli...
+vwCompanyParts | PartID:nvarchar, ManufacturerID:nvarchar, VendorID:nvarchar, DescriptionOne:n...
+vwInventory | PartID:nvarchar, DistrictNumber:tinyint, District:nvarchar, Location:nvarchar...
+
+=== run_sql
+WITH x AS (SELECT p.CompanyCode, p.AUC, p.Cost, TRY_CAST(b.unitCost AS decimal(28,10)) uc FROM IMData.dbo.parts_bc p JOIN #bc_raw b ON b.number=p.PartID WHERE TRY_CAST(b.inventory AS decimal(28,5))>0) SELECT CompanyCode, COUNT(*), SUM(CASE WHEN ROUND(AUC,2)=ROUND(uc,2) THEN 1 ELSE 0 END) aucm, SUM(CASE WHEN AUC>0 THEN 1 ELSE 0 END) aucpos, SUM(CASE WHEN ROUND(Cost,2)=ROUND(uc,2) THEN 1 ELSE 0 END) costm FROM x GROUP BY CompanyCode
+--- result
+CompanyCode |  | aucm | aucpos | costm
+90 | 16174 | 173 | 504 | 177
+60 | 14492 | 148 | 1002 | 728
+1  | 1 | 0 | 0 | 0
+70 | 9110 | 71 | 0 | 84
+01 | 16181 | 162 | 19 | 1961
+15 | 16174 | 174 | 8 | 187
+
+=== run_sql
+SELECT COLUMN_NAME, DATA_TYPE FROM IMData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Inventory'
+--- result
+COLUMN_NAME | DATA_TYPE
+PartID | nvarchar
+DistrictNumber | tinyint
+District | nvarchar
+CompanyCode | char
+Location | nvarchar
+OnHand | smallint
+OnOrder | smallint
+OrderPoint | smallint
+OrderQuantity | smallint
+CalcOrder | bit
+AddedBy | nvarchar
+Region | nvarchar
+Summary | nvarchar
+
+=== run_sql
+SELECT COLUMN_NAME, DATA_TYPE FROM SAPData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='BCDistrictPartsQuantity'
+--- result
+COLUMN_NAME | DATA_TYPE
+ItemNo | nvarchar
+ACW | decimal
+AME | decimal
+DAL | decimal
+DEN | decimal
+DUP | decimal
+ELB | decimal
+FON | decimal
+HOU | decimal
+KAP | decimal
+MAIN | decimal
+MAN | decimal
+MEX | decimal
+MID | decimal
+MIL | decimal
+MUR | decimal
+POM | decimal
+ROU | decimal
+SAL | decimal
+TAC | decimal
+TAM | decimal
+TOR | decimal
+VAN | decimal
+LastBuiltAt | datetime2
+
+=== Claude
+Inventory lives in separate per-district tables, so it can't be mapped on this row. Now checking category, type, UOM and posting-group candidates.
+
+=== run_sql
+SELECT TOP 40 b.itemCategoryCode, p.type, p.Type2, p.Type3, p.ABCClass, p.IsAnchor, b.type bt, b.inventoryPostingGroupCode, COUNT(*) n FROM IMData.dbo.parts_bc p JOIN #bc_raw b ON b.number=p.PartID WHERE p.CompanyCode='01' GROUP BY b.itemCategoryCode, p.type, p.Type2, p.Type3, p.ABCClass, p.IsAnchor, b.type, b.inventoryPostingGroupCode ORDER BY n DESC
+--- result
+itemCategoryCode | type | Type2 | Type3 | ABCClass | IsAnchor | bt | inventoryPostingGroupCode | n
+LB | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 3474
+AL | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 468
+LB | E |  | Other |   | False | Inventory | M&R SPARE PARTS | 415
+OTHER | E |  | Other |   | False | Inventory | M&R SPARE PARTS | 279
+OTHER | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 226
+LB | E | NULL | Hoist |   | False | Inventory | M&R SPARE PARTS | 110
+PC | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 98
+LB | R | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 88
+PC | E |   | Other |   | False | Inventory | M&R SPARE PARTS | 88
+LB | R |  | Other |   | False | Inventory | M&R SPARE PARTS | 63
+PE | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 48
+AL | E |  | Other |   | False | Inventory | M&R SPARE PARTS | 43
+NULL | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 31
+PE | E |  | Other | N | False | Inventory | M&R SPARE PARTS | 27
+NULL | E | NULL | Other |   | False | Non_x002D_Inventory | NULL | 23
+OTHER | R |   | Other |   | False | Inventory | M&R SPARE PARTS | 20
+PE | E | NULL | Other | N | False | Inventory | M&R SPARE PARTS | 16
+OTHER | E | Flange Joint | Other |   | False | Inventory | M&R SPARE PARTS | 15
+TL | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 15
+WK | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 14
+LB | E | NULL | Other |   | True | Inventory | M&R SPARE PARTS | 12
+GG | E | NULL | Other | C | False | Inventory | M&R SPARE PARTS | 11
+WK | E |   | Other |   | False | Inventory | M&R SPARE PARTS | 11
+AS | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 10
+LB | E | NULL | RaceBearing  |   | False | Inventory | M&R SPARE PARTS | 10
+LB | E | FOR 10021039 | Other |   | False | Inventory | M&R SPARE PARTS | 9
+OTHER | E | Hose CPL | Other |   | False | Inventory | M&R SPARE PARTS | 8
+PC | R |   | Other |   | False | Inventory | M&R SPARE PARTS | 8
+NULL | E | NULL | Other |   | False | Inventory | NULL | 7
+AL | R | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 7
+GG | E | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 7
+OTHER | E | K4 | Other |   | False | Inventory | M&R SPARE PARTS | 7
+WK | R | HISW 250 M-4 103KW | Other |   | False | Inventory | M&R SPARE PARTS | 7
+AL | R | AMBX160LRA4 for 650FC-HS (6800) | Other |   | False | Inventory | M&R SPARE PARTS | 6
+LB | R | BVAF132M/4D-21L | Other |   | False | Inventory | M&R SPARE PARTS | 6
+OTHER | E | DELETE WHEN STOCK EXHAUSTED | Other |   | False | Inventory | M&R SPARE PARTS | 6
+OTHER | E | SPARES FOR JIB PIVOT SECTION LWN 917746414 | Other |   | False | Inventory | M&R SPARE PARTS | 6
+PC | R | NULL | Other |   | False | Inventory | M&R SPARE PARTS | 6
+PC | R | ZHP3.21-0335.1008 BENT ARM | Other |   | False | Inventory | M&R SPARE PARTS | 6
+NULL | E | NULL | Other |   | False | Inventory | ANCHORS | 5
+
+=== Claude
+No category column so far. Checking whether ManufacturerID/VendorID line up with the category codes.
+
+=== run_sql
+SELECT SUM(CASE WHEN p.ManufacturerID=b.itemCategoryCode THEN 1 ELSE 0 END) mf, SUM(CASE WHEN p.VendorID=b.itemCategoryCode THEN 1 ELSE 0 END) vd, SUM(CASE WHEN LEFT(p.PartID,2)=b.itemCategoryCode THEN 1 ELSE 0 END) pf, SUM(CASE WHEN p.IsAnchor=1 THEN 1 ELSE 0 END) anch, SUM(CASE WHEN b.inventoryPostingGroupCode='ANCHORS' THEN 1 ELSE 0 END) banch, SUM(CASE WHEN p.IsAnchor=1 AND b.generalProductPostingGroupCode='ANCHORS' THEN 1 ELSE 0 END) both1 FROM IMData.dbo.parts_bc p JOIN #bc_raw b ON b.number=p.PartID WHERE p.CompanyCode='01'
+--- result
+mf | vd | pf | anch | banch | both1
+26889 | 10 | 623 | 84 | 7 | 1
+
+=== run_sql
+SELECT TOP 20 b.itemCategoryCode, p.ManufacturerID, p.VendorID, COUNT(*) n FROM IMData.dbo.parts_bc p JOIN #bc_raw b ON b.number=p.PartID WHERE p.CompanyCode='01' GROUP BY b.itemCategoryCode, p.ManufacturerID, p.VendorID ORDER BY n DESC
+--- result
+itemCategoryCode | ManufacturerID | VendorID | n
+LB | LB | 2902 | 10324
+LB | LB | NULL | 2149
+PC | PC | 0000 | 1616
+AL | AL | 6655 | 1185
+LB | LB | 0000 | 659
+OTHER | OTHER | 6698 | 601
+WK | WK | 2971 | 537
+LB | LB |  | 494
+OTHER | OTHER |  | 433
+PC | PC | 3241 | 426
+OTHER | OTHER | NULL | 359
+LB | LB | 2667 | 295
+OTHER | OTHER | POT002 | 262
+PE | PE | 0000 | 254
+UP | UP |  | 218
+LB | LB | 3146 | 217
+PC | PC | MOT001 | 217
+PC | PC | 3146 | 215
+AL | AL | 0000 | 208
+PE | PE | 3241 | 181
+
+=== Claude
+ManufacturerID matches itemCategoryCode on 26,889 of 26,967 rows. Running a check on the draft spec.
+
+=== check_spec
+name: items
+description: BC items vs IMData parts_bc (company 01)
+source_of_truth: bc
+bc:
+  target: BC
+  api: standard
+  entity: items
+  key: [number]
+ss4:
+  database: IMData
+  table: dbo.parts_bc
+  key: [PartID]
+  where: CompanyCode = '01'
+missing:
+  in_bc: error
+  in_ss4: error
+fields:
+  - bc: id
+    ss4: BcId
+    type: guid
+  - bc: displayName
+    ss4: DescriptionOne
+    type: text
+  - bc: displayName2
+    ss4: DescriptionTwo
+    type: text
+  - bc: unitPrice
+    ss4: List
+    type: decimal
+  - bc: unitCost
+    ss4: Cost
+    type: decimal
+  - bc: itemCategoryCode
+    ss4: ManufacturerID
+    type: text
+  - bc: lastModifiedDateTime
+    ss4: BCLastModified
+    type: datetime
+
+--- result
+BC rows: 26,967   SS4 rows in scope: 27,071   paired by key: 26,969
+duplicate_in_ss4: 2   e.g. 12698923, 7465 043 01
+missing_in_bc: 102   e.g. , *4000420, *Test PC 123, 10178001R, 10196732
+field agreement on paired rows:
+  id -> BcId: 2 differ of 26,969 compared (99.99% agree)
+      12698923: BC='C33B0EF5-F501-F111-8405-000D3A4F1754'  SS4=None
+      7465 043 01: BC='C43B0EF5-F501-F111-8405-000D3A4F1754'  SS4=None
+  displayName -> DescriptionOne: 3 differ of 26,969 compared (99.99% agree)
+      12698923: BC='HEATING SWITCH'  SS4='SWITCH, HEATING'
+      7465 043 01: BC='BEARING  7466 938 01'  SS4='BEARING'
+      *CORE: BC=None  SS4='CORE REFUND'
+  displayName2 -> DescriptionTwo: 8 differ of 26,969 compared (99.97% agree)
+      *CERTIFICATE: BC=None  SS4='IS REQUIRED FOR THE ABOVE LINE ITEM'
+      *PAYMENT: BC=None  SS4='BY CHECK OR WIRE TRANSFER BEFORE ITEMS WILL SHIP'
+      12698923: BC='AT18F927'  SS4='D-925U AT18F791 KRAUS AND NAIMER'
+  unitPrice -> List: 11 differ of 26,969 compared (99.96% agree)
+      *CERTIFICATE: BC='0.0000000000'  SS4='210.00'
+      *PAYMENT: BC='0.0000000000'  SS4='0.01'
+      12696214: BC='0.0000000000'  SS4='1603.94'
+  unitCost -> Cost: 15,410 differ of 26,969 compared (42.86% agree)
+      001001: BC='96.3200000000'  SS4='2.64'
+      001001-7: BC='53.5000000000'  SS4='9.14'
+      002015: BC='541.6700000000'  SS4='0.00'
+  itemCategoryCode -> ManufacturerID: 4 differ of 26,969 compared (99.99% agree)
+      001001: BC=None  SS4='PC'
+      2514: BC=None  SS4='PE'
+      *PAYMENT: BC=None  SS4='LB'
+  lastModifiedDateTime -> BCLastModified: 26,887 differ of 26,969 compared (0.30% agree)
+      *CORE: BC='2026-11-05 22:56:57.000'  SS4='2026-11-05 22:56:57.3066667'
+      *CURRENT POOL: BC='2026-10-14 16:55:34.000'  SS4='2026-10-14 16:55:34.3900000'
+      *FREIGHT: BC='2026-11-05 22:56:57.000'  SS4='2026-11-05 22:56:57.3700000'
+
+=== Claude
+The key pairs case-insensitively. Two PartIDs are duplicated, and lastModified only agrees to within a second. Checking the duplicates.
+
+=== run_sql
+SELECT ID, '['+PartID+']' pid, LEN(PartID) l, DATALENGTH(PartID) dl, BcId, Active, DescriptionOne, LastSyncedAt FROM IMData.dbo.parts_bc WHERE CompanyCode='01' AND PartID IN ('12698923','7465 043 01')
+--- result
+ID | pid | l | dl | BcId | Active | DescriptionOne | LastSyncedAt
+131563 | [12698923] | 8 | 16 | C33B0EF5-F501-F111-8405-000D3A4F1754 | True | HEATING SWITCH | 2026-11-06 18:15:11.899002
+63916 | [7465 043 01] | 11 | 22 | C43B0EF5-F501-F111-8405-000D3A4F1754 | True | BEARING  7466 938 01 | 2026-11-06 18:15:48.854990
+
+=== run_sql
+SELECT COUNT(*) n, SUM(CASE WHEN BcId IS NULL THEN 1 ELSE 0 END) nul, SUM(CASE WHEN LastSyncedAt IS NULL THEN 1 ELSE 0 END) nsync, SUM(CASE WHEN PartID IS NULL OR PartID='' THEN 1 ELSE 0 END) blank FROM IMData.dbo.parts_bc p WHERE CompanyCode='01' AND NOT EXISTS (SELECT 1 FROM #bc_raw b WHERE b.number=p.PartID)
+--- result
+n | nul | nsync | blank
+104 | 104 | 104 | 1
+
+=== Claude
+The duplicates are whitespace variants of PartIDs with a NULL BcId. I'll exclude only those shadow rows, so the other unsynced parts still show up as missing.
+
+=== check_spec
+name: items
+description: BC items vs IMData parts_bc (company 01)
+source_of_truth: bc
+bc:
+  target: BC
+  api: standard
+  entity: items
+  key: [number]
+ss4:
+  database: IMData
+  table: dbo.parts_bc
+  key: [PartID]
+  where: "CompanyCode = '01' AND NOT (BcId IS NULL AND LTRIM(RTRIM(PartID)) IN (SELECT LTRIM(RTRIM(x.PartID)) FROM IMData.dbo.parts_bc x WHERE x.CompanyCode = '01' AND x.BcId IS NOT NULL))"
+missing:
+  in_bc: error
+  in_ss4: error
+fields:
+  - bc: id
+    ss4: BcId
+    type: guid
+  - bc: displayName
+    ss4: DescriptionOne
+    type: text
+  - bc: displayName2
+    ss4: DescriptionTwo
+    type: text
+  - bc: unitPrice
+    ss4: List
+    type: decimal
+  - bc: itemCategoryCode
+    ss4: ManufacturerID
+    type: text
+
+--- result
+BC rows: 26,967   SS4 rows in scope: 27,069   paired by key: 26,967
+missing_in_bc: 102   e.g. , *4000420, *Test PC 123, 10178001R, 10196732
+field agreement on paired rows:
+  id -> BcId: 0 differ of 26,967 compared (100.00% agree)
+  displayName -> DescriptionOne: 1 differ of 26,967 compared (100.00% agree)
+      *CORE: BC=None  SS4='CORE REFUND'
+  displayName2 -> DescriptionTwo: 6 differ of 26,967 compared (99.98% agree)
+      *CERTIFICATE: BC=None  SS4='IS REQUIRED FOR THE ABOVE LINE ITEM'
+      *PAYMENT: BC=None  SS4='BY CHECK OR WIRE TRANSFER BEFORE ITEMS WILL SHIP'
+      *CORE: BC=None  SS4='APPLIED UPON RECIEPT OF CORE IN GOOD CONDITION'
+  unitPrice -> List: 10 differ of 26,967 compared (99.96% agree)
+      *FREIGHT: BC='0.0000000000'  SS4='231.00'
+      90049091: BC='0.0000000000'  SS4='705.25'
+      9585 125 01: BC='0.0000000000'  SS4='0.00'
+  itemCategoryCode -> ManufacturerID: 4 differ of 26,967 compared (99.99% agree)
+      *PAYMENT: BC=None  SS4='LB'
+      9067 360-8010: BC=None  SS4='AL'
+      001001: BC=None  SS4='PC'
+
+=== submit_spec
+name: items
+description: BC items vs IMData parts_bc (company 01)
+source_of_truth: bc
+bc:
+  target: BC
+  api: standard
+  entity: items
+  key: [number]
+ss4:
+  database: IMData
+  table: dbo.parts_bc
+  key: [PartID]
+  where: "CompanyCode = '01' AND NOT (BcId IS NULL AND LTRIM(RTRIM(PartID)) IN (SELECT LTRIM(RTRIM(x.PartID)) FROM IMData.dbo.parts_bc x WHERE x.CompanyCode = '01' AND x.BcId IS NOT NULL))"
+missing:
+  in_bc: error
+  in_ss4: error
+fields:
+  - bc: id
+    ss4: BcId
+    type: guid
+  - bc: displayName
+    ss4: DescriptionOne
+    type: text
+  - bc: displayName2
+    ss4: DescriptionTwo
+    type: text
+  - bc: unitPrice
+    ss4: List
+    type: decimal
+  - bc: itemCategoryCode
+    ss4: ManufacturerID
+    type: text
+ignored:
+  - bc: unitCost
+    reason: "BC recalculates unit cost (average cost from item ledger). Matches parts_bc.Cost on 94% of items with no stock, but only about 12% of stocked items. AUC/AUCPriorPeriod/AUCYearEnd/prevcost/BaseCost don't match either."
+  - ss4: Cost
+    reason: Looks like the counterpart of unitCost but differs on purpose (BC costing). Not compared.
+  - bc: lastModifiedDateTime
+    reason: "Sync metadata. Stored as parts_bc.BCLastModified (all 26,967 rows within 1 s in SQL), but the diff engine drops BC's fractional seconds, so an exact compare fails on 99.7% of rows. Not a business field."
+  - ss4: BCLastModified
+    reason: Copy of BC lastModifiedDateTime, written by the sync. Not compared (see above).
+  - bc: inventory
+    reason: "Quantity is computed from item ledger entries. In SS4, stock is per district in separate tables (IMData.dbo.Inventory, SAPData.dbo.BCDistrictPartsQuantity), not a column on the part row."
+  - bc: type
+    reason: "99.9% 'Inventory'. No SS4 column distinguishes the 25 Non-Inventory items or the 1 Service item."
+  - bc: itemCategoryId
+    reason: GUID of a BC lookup record. itemCategoryCode is mapped instead.
+  - bc: taxGroupId
+    reason: GUID of a BC lookup record.
+  - bc: taxGroupCode
+    reason: No SS4 counterpart in parts_bc (BC setup value, nearly constant 'PM008826').
+  - bc: baseUnitOfMeasureId
+    reason: GUID of a BC lookup record.
+  - bc: baseUnitOfMeasureCode
+    reason: parts_bc has no unit-of-measure column (98% 'EA').
+  - bc: generalProductPostingGroupId
+    reason: GUID of a BC lookup record.
+  - bc: generalProductPostingGroupCode
+    reason: "No SS4 counterpart. IsAnchor was tested against ANCHORS and doesn't line up (84 anchors in SS4; only 1 overlaps BC's ANCHORS rows)."
+  - bc: inventoryPostingGroupId
+    reason: GUID of a BC lookup record.
+  - bc: inventoryPostingGroupCode
+    reason: No SS4 counterpart (BC posting setup, nearly constant).
+  - bc: blocked
+    reason: empty in BC
+  - bc: gtin
+    reason: empty in BC
+  - bc: priceIncludesTax
+    reason: empty in BC
+
+TABLE: IMData.dbo.parts_bc, CompanyCode='01'. It is a copy of IMData.dbo.Parts plus BC sync columns (BcId, BCLastModified, LastSyncedAt), so source_of_truth = bc. Every company in Parts/parts_bc holds roughly the same part list. Company 01 in parts_bc is the only one where all 26,967 BC numbers match (company 01 in Parts matches 26,893). BcId equals BC id on 100% of paired rows, which confirms both the table and the scope. IMData.dbo.Parts is the replica without BC ids, and it matches worse.
+
+KEY: number = PartID. The diff pairs keys ignoring case and trim (e.g. '*Certificate' pairs with '*CERTIFICATE'). Company 01 holds two whitespace variants of existing PartIDs ('12698923', '7465 043 01') that have a NULL BcId. These made duplicate keys, so the where clause drops NULL-BcId rows only when a synced row with the same trimmed PartID exists. Result: 26,967/26,967 paired, no duplicates.
+
+MISSING IN BC: 102 rows in company 01 have a NULL BcId and LastSyncedAt, meaning they were never synced. They include a blank PartID and test parts like '*Test PC 123'; 101 of them are Active=1. I set this to error because they look like parts that never reached BC. If they're known exclusions, downgrade it to info.
+
+FIELD AGREEMENT (check_spec):
+- id->BcId 100%
+- displayName->DescriptionOne 99.99% (1 differs: *CORE, blank in BC)
+- displayName2->DescriptionTwo 99.98% (6 differ: notes text on *CERTIFICATE/*PAYMENT/*CORE is blank in BC)
+- unitPrice->List 99.96% (10 differ, mostly BC 0 where SS4 has a price, e.g. *FREIGHT 231, 90049091 705.25. For 9585 125 01 the report shows 0 vs 0.00, probably a NULL in SS4.)
+- itemCategoryCode->ManufacturerID 99.99%. The column name is misleading, but the values match on 26,889 of 26,967 rows and are distinctive codes (LB/PC/AL/OTHER/WK/PE...). The 4 that differ are blank in BC.
+
+JUDGMENT CALLS:
+- unitCost is not compared (BC average costing). Details are under ignored. If you'd rather catch cost drift on non-stocked items, unitCost->Cost could be mapped with a filter, but the diff can't scope a single field, so I left it out.
+- lastModifiedDateTime is ignored, not mapped: the values match to the second, but the engine's precision causes false differences.
+- inventory: only available per district in other tables, so it can't be compared row-for-row here.
+--- result
+Saved to specs\proposed\items.yaml. Finish with a short summary.
+
+=== Claude
+I've submitted the `items` spec (saved to `specs\proposed\items.yaml`). BC `items` maps to `IMData.dbo.parts_bc` for company `'01'`, and all 26,967 BC rows pair by key with no duplicates.
+
+**Table and key**
+- `parts_bc` is a copy of `IMData.dbo.Parts` with BC sync columns added. Its `BcId` column equals BC's `id` on every paired row, which confirms both the table and the company filter. So BC is set as the source of truth.
+- The key is BC `number` = `PartID`. The diff ignores case and surrounding spaces when pairing (`*Certificate` pairs with `*CERTIFICATE`).
+- Two part numbers had a second copy in SS4 that differs only by whitespace and was never synced. The filter drops those two copies; every other unsynced row is kept so it still shows up.
+
+**Mapped fields** (agreement on paired rows):
+
+| BC field | SS4 column | Agreement | Rows that differ |
+|---|---|---|---|
+| `id` | `BcId` | 100% | none |
+| `displayName` | `DescriptionOne` | 99.99% | 1: `*CORE`, blank in BC |
+| `displayName2` | `DescriptionTwo` | 99.98% | 6: SS4 has text where BC is blank, e.g. `*CERTIFICATE`, `*PAYMENT`, `*CORE` |
+| `unitPrice` | `List` | 99.96% | 10: mostly a price in SS4 and 0 in BC, e.g. `*FREIGHT` 231 |
+| `itemCategoryCode` | `ManufacturerID` | 99.99% | 4: blank in BC |
+
+The `ManufacturerID` column name is misleading, but its values are the category codes (LB, PC, AL, OTHER…).
+
+**Left out on purpose**
+- **`unitCost`:** BC works out its own average cost. It matches SS4 `Cost` on 94% of items with no stock, but only about 12% of stocked items, and no other SS4 cost column fits.
+- **`lastModifiedDateTime`:** SS4 does store it (`BCLastModified`) and every row is within a second, but the diff drops BC's fractions of a second. Comparing it would flag 99.7% of rows as different.
+- **`inventory`:** SS4 keeps stock per district in separate tables, not on the part row, so it can't be compared here.
+- **Other fields:** `type`, unit of measure, tax group and posting groups have no SS4 counterpart. The fields ending in `Id` point to BC's own lookup records, and the three empty fields are listed as empty.
+
+**Decision for you:** 102 parts in company 01 (101 of them active) were never synced and aren't in BC. They include one with a blank part number and test parts like `*Test PC 123`. I set "missing in BC" to error because they look like parts that should have arrived. If they're known exclusions, change it to info.
+
+Done: success, 26 turns, $0.46

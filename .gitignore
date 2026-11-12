@@ -1,0 +1,12 @@
+# Secrets
+.env
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Generated output (BC data, diffs, staged extracts)
+output/
+*.xlsx
+*.csv

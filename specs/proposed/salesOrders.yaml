@@ -1,0 +1,88 @@
+# PROPOSED by the mapping agent -- review before use.
+#
+# TABLE: SAPData.dbo.BC_SalesOrder. It is a sync copy of BC: it stores BC GUIDs (Id, CustomerId and others) plus sync columns (CompanyId, LastSyncedAt, IsDeleted, FirstSeenAt, LastSeenAt, archive columns). So source_of_truth is bc. I found no other candidate. IMData.dbo.SO, SODetail and similar tables are the old SS4 order system, not this BC entity.
+#
+# KEY: number = Number. Number is unique in SS4 (123 distinct out of 123 rows) and none are blank. On all 100 pairs, Id also matches the BC id.
+#
+# SCOPE: where IsDeleted = 0. SS4 holds 123 rows, all with one CompanyId. All 100 rows that match BC have IsDeleted=0. The other 23 have IsDeleted=1, and their LastSeenAt dates run from 2026-09-22 to 2026-10-28. These look like orders deleted in BC or turned into something else. I infer this from the sync flags and did not check it in BC. They are outside the scope of the current BC table, so I excluded them.
+#
+# MAIN FINDING: 41 BC orders are missing from SS4 (marked error). They are S-ORD101148 to S-ORD101191, and SS4's highest number is S-ORD101147. The newest FirstSeenAt in SS4 is 2026-11-02 21:30. Existing rows are still being updated (LastSeenAt 2026-11-11 22:30, LastSyncedAt up to 2026-11-10). So the sync appears to have stopped inserting new orders after about 2026-11-02 while it still updates existing ones. That is my inference from these timestamps; I have not seen the sync job.
+#
+# FIELD AGREEMENT (100 paired rows):
+# - 100% on id, the dates, customer and bill-to ids/numbers/names, shipToName/Contact, city/state/postcode/country for all three addresses, the dimensions, currency, paymentTermsId, shipmentMethodId, salesperson, the totals, the bool flags, phone and email.
+# - Several fields are mostly blank or dominated by one value, so their evidence rests on few rows: externalDocumentNumber (6 filled rows), requestedDeliveryDate (4), shortcutDimension2Code (2), currencyId/currencyCode (5 non-default), totalTaxAmount (4 non-zero). All of these agree.
+# - *AddressLine1: 91% agree. *AddressLine2: 94% agree. Every difference is a trailing line feed (CHAR(10)) in SS4 that BC does not have. I checked that #bc_raw has no trailing CR/LF on these rows. I don't know whether BC's API trims it or the SS4 copy is stale. The fields are kept mapped and the 9+6 rows per address type show up as findings.
+# - status: 98% agree. The 2 differences are BC 'In_x0020_Review' vs SS4 'In Review'. That is the same enum value; BC's export shows the space XML-escaped as _x0020_. They will appear as differences because the spec has no transform for this. The reviewer may want a value map.
+# - lastModifiedDateTime: ignored. It matches exactly in SQL, but the diff engine drops BC's milliseconds (see the reason in the spec).
+#
+# NOT MAPPED: the GUID lookup ids (paymentTermsId, shipmentMethodId, currencyId) are mapped directly because SS4 stores the same GUIDs. BC exposes no code fields for payment terms or shipment method.
+
+name: salesOrders
+description: BC sales orders vs SAPData BC_SalesOrder (SS4 sync copy of BC salesOrders)
+source_of_truth: bc
+bc:
+  target: BC
+  api: standard
+  entity: salesOrders
+  key: [number]
+ss4:
+  database: SAPData
+  table: dbo.BC_SalesOrder
+  key: [Number]
+  where: IsDeleted = 0
+missing:
+  in_bc: error
+  in_ss4: error
+fields:
+  - {bc: id, ss4: Id, type: guid}
+  - {bc: externalDocumentNumber, ss4: ExternalDocumentNumber, type: text}
+  - {bc: orderDate, ss4: OrderDate, type: date}
+  - {bc: postingDate, ss4: PostingDate, type: date}
+  - {bc: requestedDeliveryDate, ss4: RequestedDeliveryDate, type: date}
+  - {bc: customerId, ss4: CustomerId, type: guid}
+  - {bc: customerNumber, ss4: CustomerNumber, type: text}
+  - {bc: customerName, ss4: CustomerName, type: text}
+  - {bc: billToCustomerId, ss4: BillToCustomerId, type: guid}
+  - {bc: billToCustomerNumber, ss4: BillToCustomerNumber, type: text}
+  - {bc: billToName, ss4: BillToName, type: text}
+  - {bc: shipToName, ss4: ShipToName, type: text}
+  - {bc: shipToContact, ss4: ShipToContact, type: text}
+  - {bc: sellToAddressLine1, ss4: SellToAddressLine1, type: text}
+  - {bc: sellToAddressLine2, ss4: SellToAddressLine2, type: text}
+  - {bc: sellToCity, ss4: SellToCity, type: text}
+  - {bc: sellToState, ss4: SellToState, type: text}
+  - {bc: sellToPostCode, ss4: SellToPostCode, type: text}
+  - {bc: sellToCountry, ss4: SellToCountry, type: text}
+  - {bc: billToAddressLine1, ss4: BillToAddressLine1, type: text}
+  - {bc: billToAddressLine2, ss4: BillToAddressLine2, type: text}
+  - {bc: billToCity, ss4: BillToCity, type: text}
+  - {bc: billToState, ss4: BillToState, type: text}
+  - {bc: billToPostCode, ss4: BillToPostCode, type: text}
+  - {bc: billToCountry, ss4: BillToCountry, type: text}
+  - {bc: shipToAddressLine1, ss4: ShipToAddressLine1, type: text}
+  - {bc: shipToAddressLine2, ss4: ShipToAddressLine2, type: text}
+  - {bc: shipToCity, ss4: ShipToCity, type: text}
+  - {bc: shipToState, ss4: ShipToState, type: text}
+  - {bc: shipToPostCode, ss4: ShipToPostCode, type: text}
+  - {bc: shipToCountry, ss4: ShipToCountry, type: text}
+  - {bc: shortcutDimension1Code, ss4: ShortcutDimension1Code, type: text}
+  - {bc: shortcutDimension2Code, ss4: ShortcutDimension2Code, type: text}
+  - {bc: currencyId, ss4: CurrencyId, type: guid}
+  - {bc: currencyCode, ss4: CurrencyCode, type: text}
+  - {bc: paymentTermsId, ss4: PaymentTermsId, type: guid}
+  - {bc: shipmentMethodId, ss4: ShipmentMethodId, type: guid}
+  - {bc: salesperson, ss4: Salesperson, type: text}
+  - {bc: discountAppliedBeforeTax, ss4: DiscountAppliedBeforeTax, type: bool}
+  - {bc: totalAmountExcludingTax, ss4: TotalAmountExcludingTax, type: decimal}
+  - {bc: totalTaxAmount, ss4: TotalTaxAmount, type: decimal}
+  - {bc: totalAmountIncludingTax, ss4: TotalAmountIncludingTax, type: decimal}
+  - {bc: fullyShipped, ss4: FullyShipped, type: bool}
+  - {bc: status, ss4: Status, type: text}
+  - {bc: phoneNumber, ss4: PhoneNumber, type: text}
+  - {bc: email, ss4: Email, type: text}
+ignored:
+  - {bc: pricesIncludeTax, reason: empty in BC}
+  - {bc: discountAmount, reason: empty in BC}
+  - {bc: partialShipping, reason: constant in BC}
+  - bc: lastModifiedDateTime
+    reason: "Counterpart is LastModifiedDateTime. Checked in SQL: it matches BC to the millisecond on 100/100 paired rows. It is left out because the diff engine drops BC's fractional seconds (it reads '...26.047Z' as '...26.000'), so every row would show a false difference. Map it again once the engine parses BC's milliseconds."
