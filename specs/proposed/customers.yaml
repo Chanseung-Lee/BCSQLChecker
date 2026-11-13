@@ -1,0 +1,127 @@
+# PROPOSED by the mapping agent -- review before use.
+#
+# TABLE / KEY
+# - ARData.dbo.customer.customer_number = BC number. It is unique in SS4 (15,718 rows, 15,718 distinct) and in BC. 3,179 of 3,221 BC numbers exist there.
+# - Alternatives considered: EQData.dbo.Customer (3,180 matches, but names agree worse: 2,203 vs 2,572). ARData.dbo.BC_Customers (1,222 rows, 207 match). SAPData.dbo.BC_Customer (315). SAPData.dbo.BC_Stage_Customer (670, a BC staging copy). All are partial; the last two look like copies of BC, not source data.
+#
+# SCOPE
+# - where ISNULL(CompanyAbbr,'') <> 'AUS'. Twelve BC numbers (1011-1115) collide with Australian-company customer numbers. On those 12 pairs, name and address agree 0 times, so they are coincidental number collisions, not the same customer. CAN, MEX and NULL-company matches do agree on address, so they stay in.
+# - No column cleanly separates the remaining ~11,094 unmatched SS4 rows; most are older numbers. I checked company, date_of_last_transaction, statement_sent_date, balance and ARCustomerStatusFlags. Match rate rises steadily with customer number (e.g. 100xx-128xx ≈0%, 148xx ≈55%), which suggests BC got an active subset chosen by some rule I could not find. missing_in_bc is set to info. A reviewer may want to identify the selection rule.
+# - missing_in_ss4 (54): 24 three-letter codes (ACW…TRN), 4-digit 1000-1224 (BC-created numbers, 12 of them the AUS collisions above), 012026, RENTMO-like codes, INVALID, PR00030, TESTPUSH1, TEMPLATE-CRANE. These look BC-native or test records. I left this at error so they are reviewed.
+#
+# FIELDS (paired 3,167)
+# - displayName -> customer_name: 81.2%. Of the 595 differences, 533 share the first 6 characters: legal-suffix variants such as 'CO., INC' vs 'COMPANY' and LLC vs INC. Some BC names are cut at 30 characters, others are longer than SS4 (also capped at 30). Same entity, edited names. Mapped; the differences are findings.
+# - addressLine1 -> home_office_address_line_1: 94.6%. Many differences are SS4 truncated at 30 characters where BC has the full text.
+# - addressLine2 -> home_office_address_line_2: 89.1%. Differences are BC blank where SS4 has a value, and double vs single spaces.
+# - city / postalCode: SS4 stores them only inside home_office_address_line_2 ('CITY, ST  ZIP'), so the query parses them. These are computed columns: city is the text before the first comma; zip is the text after the comma minus the 2-letter state. City 87.1%, zip 84.7%. The differences are BC blanks, rows whose line 2 is a street or suite rather than city/state/zip, and BC zips that lost their leading zero (BC '7073' vs '07073', a BC-side defect).
+# - state -> shipping_address_state (job-site state), not home office: 88.4% overall, 97% (2,790/2,867) where BC is filled. The home-office state parsed from line 2 agreed only 85% and disagreed on rows like ATLANTA, GA -> BC 'FL', where shipping state is FL. So BC state is the job-site/tax state while city and zip are the home office. This mixture is worth a reviewer's attention.
+# - country -> EQData.Customer.TaxingCountry, mapped to ISO codes in the query (USA/UNITED STATES->US, CANADA->CA, etc.): 91.1%. Differences are mostly BC blank, plus some odd BC codes (CN, CM for Canada/Cayman).
+# - phoneNumber -> home_office_address_telephone: 89.6%. Differences are mostly BC blank.
+# - salespersonCode -> UPPER(salesman_number_1): 85.6%. SS4 is mixed case ('Morrow'), BC is upper. Differences are mostly BC blank.
+# - email -> EQData.CustSupp.ProjectEmail1, with ',' replaced by ';' (BC uses ';' as separator): only 32.6% same-row agreement. I mapped it anyway because I verified the cause of most differences: 1,910 of 2,383 non-blank BC emails equal the ProjectEmail1 of the NEXT customer when CustSupp is ordered by CustomerID. For example, BC 15292 holds the email of SS4 15293. The BC emails appear shifted by one record, which looks like a load defect and is a major finding. ProjectEmail2 matches only 2.
+# - Recurring pattern: blocks of paired records where BC is blank in address, phone, salesperson and country while SS4 has values, e.g. 12084, 12909-12912, 14468-14477. These are findings; I did not investigate the cause.
+#
+# UNCERTAIN
+# - How the BC population was selected (see scope).
+# - The city/zip parse is heuristic. Rows whose line 2 is not 'CITY, ST ZIP' will show as differences even when the data is fine.
+# - source_of_truth = ss4: BC numbers and names come from the legacy system (30-character truncation), and SS4 holds no BC ids in the main table.
+
+name: customers
+description: BC customers vs ARData customer master (+ EQData CustSupp email, EQData Customer taxing country)
+source_of_truth: ss4
+bc:
+  target: BC
+  api: standard
+  entity: customers
+  key: [number]
+ss4:
+  query: >-
+    SELECT c.customer_number, c.CompanyAbbr, c.customer_name,
+           c.home_office_address_line_1, c.home_office_address_line_2,
+           CASE WHEN CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) > 0
+                THEN LTRIM(RTRIM(LEFT(LTRIM(RTRIM(c.home_office_address_line_2)), CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) - 1))) END AS ho_city,
+           CASE WHEN CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) > 0
+                THEN LTRIM(RTRIM(SUBSTRING(LTRIM(SUBSTRING(LTRIM(RTRIM(c.home_office_address_line_2)), CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) + 1, 200)), 3, 200))) END AS ho_zip,
+           c.shipping_address_state, c.home_office_address_telephone,
+           UPPER(LTRIM(RTRIM(c.salesman_number_1))) AS salesman_upper,
+           REPLACE(s.ProjectEmail1, ',', CHAR(59)) AS project_email1,
+           CASE UPPER(LTRIM(RTRIM(e.TaxingCountry)))
+                WHEN 'USA' THEN 'US' WHEN 'UNITED STATES' THEN 'US'
+                WHEN 'CANADA' THEN 'CA' WHEN 'MEXICO' THEN 'MX'
+                WHEN 'BAHAMAS' THEN 'BS' WHEN 'BRAZIL' THEN 'BR'
+                WHEN 'BELIZE' THEN 'BZ' WHEN 'CAYMEN ISLANDS' THEN 'KY'
+                ELSE e.TaxingCountry END AS taxing_country_code
+      FROM ARData.dbo.customer c
+      LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.customer_number
+      LEFT JOIN EQData.dbo.Customer e ON e.CustomerID = c.customer_number
+  key: [customer_number]
+  where: ISNULL(CompanyAbbr, '') <> 'AUS'
+missing:
+  in_bc: info
+  in_ss4: error
+fields:
+  - bc: displayName
+    ss4: customer_name
+    type: text
+  - bc: addressLine1
+    ss4: home_office_address_line_1
+    type: text
+  - bc: addressLine2
+    ss4: home_office_address_line_2
+    type: text
+  - bc: city
+    ss4: ho_city
+    type: text
+  - bc: state
+    ss4: shipping_address_state
+    type: text
+  - bc: postalCode
+    ss4: ho_zip
+    type: text
+  - bc: country
+    ss4: taxing_country_code
+    type: text
+  - bc: phoneNumber
+    ss4: home_office_address_telephone
+    type: text
+  - bc: email
+    ss4: project_email1
+    type: text
+  - bc: salespersonCode
+    ss4: salesman_upper
+    type: text
+ignored:
+  - bc: type
+    reason: constant in BC ('Company')
+  - bc: website
+    reason: empty in BC
+  - bc: creditLimit
+    reason: empty in BC
+  - bc: taxRegistrationNumber
+    reason: empty in BC
+  - bc: id
+    reason: BC record GUID; not stored in ARData.dbo.customer. Partial BC-id copies exist (ARData.dbo.BC_Customers.BCId, SAPData.dbo.BC_Stage_Customer.BcId) but cover only ~200/670 rows
+  - bc: lastModifiedDateTime
+    reason: BC system timestamp, no SS4 counterpart
+  - bc: balanceDue
+    reason: BC computes it from its own ledger. ARData customer_balance is non-zero on only 12 paired rows and never equals a non-zero BC balance (304 rows). Deliberately not compared
+  - ss4: customer_balance
+    reason: looks like balanceDue, but it is a stale/unused balance (see balanceDue)
+  - bc: taxLiable
+    reason: no SS4 counterpart found. Does not line up with tax_exempt_number or state_tax
+  - bc: taxAreaId
+    reason: GUID of a BC lookup record (single value, 'AvaTax')
+  - bc: taxAreaDisplayName
+    reason: single value 'AvaTax' on 99.6% of rows, a BC-side setting with no SS4 counterpart
+  - bc: currencyId
+    reason: GUID of a BC lookup record
+  - bc: currencyCode
+    reason: EQData.CustSupp.CurrencyType was the candidate, but on the 23 paired rows where SS4 is non-USD, BC agrees on only 2. BC is USD almost everywhere. Agreement on distinctive values is too low to map
+  - bc: paymentTermsId
+    reason: GUID of a BC lookup record. The API exposes no code to compare
+  - bc: shipmentMethodId
+    reason: GUID of a BC lookup record. The API exposes no code to compare
+  - bc: paymentMethodId
+    reason: GUID of a BC lookup record. The API exposes no code to compare
+  - bc: blocked
+    reason: "'All' appears on only 11 rows, and none of them pair with SS4. No SS4 counterpart found (EQData.ARCustomerStatusFlags.AcctStatus does not line up)"

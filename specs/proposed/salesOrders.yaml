@@ -1,24 +1,21 @@
 # PROPOSED by the mapping agent -- review before use.
 #
-# TABLE: SAPData.dbo.BC_SalesOrder. It is a sync copy of BC: it stores BC GUIDs (Id, CustomerId and others) plus sync columns (CompanyId, LastSyncedAt, IsDeleted, FirstSeenAt, LastSeenAt, archive columns). So source_of_truth is bc. I found no other candidate. IMData.dbo.SO, SODetail and similar tables are the old SS4 order system, not this BC entity.
+# TABLE: SAPData.dbo.BC_SalesOrder is a sync copy of BC sales orders. It stores the BC GUID (Id), CompanyId, LastSyncedAt/FirstSeenAt/LastSeenAt, and soft-delete and archive columns, so source_of_truth = bc. Other tables were looked at by name: IMData.dbo.SO/NewSO (legacy SO tables) and SAPData.BC_SalesOrderLine/Dimension (line and dimension tables, not headers). Their contents were not tested, because BC_SalesOrder matched on the GUID itself.
 #
-# KEY: number = Number. Number is unique in SS4 (123 distinct out of 123 rows) and none are blank. On all 100 pairs, Id also matches the BC id.
+# KEY: Number <-> number. Number is unique in SS4 (123 rows, 123 distinct). For all 100 paired rows, Id also equals the BC id.
 #
-# SCOPE: where IsDeleted = 0. SS4 holds 123 rows, all with one CompanyId. All 100 rows that match BC have IsDeleted=0. The other 23 have IsDeleted=1, and their LastSeenAt dates run from 2026-09-22 to 2026-10-28. These look like orders deleted in BC or turned into something else. I infer this from the sync flags and did not check it in BC. They are outside the scope of the current BC table, so I excluded them.
+# SCOPE: where IsDeleted = 0. SS4 has only one CompanyId (C463254A-...). Of the 123 SS4 rows, 23 have IsDeleted = 1: 21 of them also carry archive info (ArchiveVersionNo set) and 2 do not. None of those 23 numbers is in BC, so they are deleted or archived history and outside this BC table. The 100 rows with IsDeleted = 0 all pair with BC.
 #
-# MAIN FINDING: 41 BC orders are missing from SS4 (marked error). They are S-ORD101148 to S-ORD101191, and SS4's highest number is S-ORD101147. The newest FirstSeenAt in SS4 is 2026-11-02 21:30. Existing rows are still being updated (LastSeenAt 2026-11-11 22:30, LastSyncedAt up to 2026-11-10). So the sync appears to have stopped inserting new orders after about 2026-11-02 while it still updates existing ones. That is my inference from these timestamps; I have not seen the sync job.
+# FINDING, missing_in_ss4 = 47: BC orders S-ORD101148 and S-ORD101150 through S-ORD101197 have no row in SS4. Their order dates run 2026-11-02 to 2026-11-12, except S-ORD101183, dated 2026-07-15. The highest Number in SS4 is S-ORD101147. Max LastSyncedAt is 2026-11-10 22:30, while max LastSeenAt is 2026-11-12 16:00. Several missing orders were last modified in BC before 2026-11-10 22:30 (e.g. S-ORD101151, modified 2026-11-03). So "created after the last sync" does not fully explain the gap. I have not investigated the cause. The rule is set to error because these rows should have arrived.
 #
-# FIELD AGREEMENT (100 paired rows):
-# - 100% on id, the dates, customer and bill-to ids/numbers/names, shipToName/Contact, city/state/postcode/country for all three addresses, the dimensions, currency, paymentTermsId, shipmentMethodId, salesperson, the totals, the bool flags, phone and email.
-# - Several fields are mostly blank or dominated by one value, so their evidence rests on few rows: externalDocumentNumber (6 filled rows), requestedDeliveryDate (4), shortcutDimension2Code (2), currencyId/currencyCode (5 non-default), totalTaxAmount (4 non-zero). All of these agree.
-# - *AddressLine1: 91% agree. *AddressLine2: 94% agree. Every difference is a trailing line feed (CHAR(10)) in SS4 that BC does not have. I checked that #bc_raw has no trailing CR/LF on these rows. I don't know whether BC's API trims it or the SS4 copy is stale. The fields are kept mapped and the 9+6 rows per address type show up as findings.
-# - status: 98% agree. The 2 differences are BC 'In_x0020_Review' vs SS4 'In Review'. That is the same enum value; BC's export shows the space XML-escaped as _x0020_. They will appear as differences because the spec has no transform for this. The reviewer may want a value map.
-# - lastModifiedDateTime: ignored. It matches exactly in SQL, but the diff engine drops BC's milliseconds (see the reason in the spec).
+# FIELDS: all 47 mapped fields agree 100% on the 100 paired rows (check_spec). For the sparse fields, the agreement on filled rows is: externalDocumentNumber 6 of 6, requestedDeliveryDate 4 of 4, shortcutDimension2Code 2 of 2, currencyId 5 of 5, non-USD currencyCode 5 of 5, non-zero totalTaxAmount 4 of 4. Those counts are small, but the column names match directly.
 #
-# NOT MAPPED: the GUID lookup ids (paymentTermsId, shipmentMethodId, currencyId) are mapped directly because SS4 stores the same GUIDs. BC exposes no code fields for payment terms or shipment method.
+# paymentTermsId and shipmentMethodId are GUIDs of BC lookup records. BC has no code field for them, and SS4 stores the same GUIDs, so they are compared as guid. Every column is compared with no transformation. status is compared as enum (BC sends 'In_x0020_Review' for 'In Review').
+#
+# IGNORED: pricesIncludeTax and discountAmount are empty in BC. partialShipping is constant 'True' in BC.
 
 name: salesOrders
-description: BC sales orders vs SAPData BC_SalesOrder (SS4 sync copy of BC salesOrders)
+description: BC sales orders vs SAPData.dbo.BC_SalesOrder (SS4 sync copy of BC)
 source_of_truth: bc
 bc:
   target: BC
@@ -45,8 +42,6 @@ fields:
   - {bc: billToCustomerId, ss4: BillToCustomerId, type: guid}
   - {bc: billToCustomerNumber, ss4: BillToCustomerNumber, type: text}
   - {bc: billToName, ss4: BillToName, type: text}
-  - {bc: shipToName, ss4: ShipToName, type: text}
-  - {bc: shipToContact, ss4: ShipToContact, type: text}
   - {bc: sellToAddressLine1, ss4: SellToAddressLine1, type: text}
   - {bc: sellToAddressLine2, ss4: SellToAddressLine2, type: text}
   - {bc: sellToCity, ss4: SellToCity, type: text}
@@ -59,6 +54,8 @@ fields:
   - {bc: billToState, ss4: BillToState, type: text}
   - {bc: billToPostCode, ss4: BillToPostCode, type: text}
   - {bc: billToCountry, ss4: BillToCountry, type: text}
+  - {bc: shipToName, ss4: ShipToName, type: text}
+  - {bc: shipToContact, ss4: ShipToContact, type: text}
   - {bc: shipToAddressLine1, ss4: ShipToAddressLine1, type: text}
   - {bc: shipToAddressLine2, ss4: ShipToAddressLine2, type: text}
   - {bc: shipToCity, ss4: ShipToCity, type: text}
@@ -77,12 +74,11 @@ fields:
   - {bc: totalTaxAmount, ss4: TotalTaxAmount, type: decimal}
   - {bc: totalAmountIncludingTax, ss4: TotalAmountIncludingTax, type: decimal}
   - {bc: fullyShipped, ss4: FullyShipped, type: bool}
-  - {bc: status, ss4: Status, type: text}
+  - {bc: status, ss4: Status, type: enum}
+  - {bc: lastModifiedDateTime, ss4: LastModifiedDateTime, type: datetime}
   - {bc: phoneNumber, ss4: PhoneNumber, type: text}
   - {bc: email, ss4: Email, type: text}
 ignored:
   - {bc: pricesIncludeTax, reason: empty in BC}
   - {bc: discountAmount, reason: empty in BC}
   - {bc: partialShipping, reason: constant in BC}
-  - bc: lastModifiedDateTime
-    reason: "Counterpart is LastModifiedDateTime. Checked in SQL: it matches BC to the millisecond on 100/100 paired rows. It is left out because the diff engine drops BC's fractional seconds (it reads '...26.047Z' as '...26.000'), so every row would show a false difference. Map it again once the engine parses BC's milliseconds."

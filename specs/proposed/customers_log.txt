@@ -1,0 +1,1346 @@
+=== task
+Map the BC table `customers` to SS4.
+
+It has 3,221 rows, all staged in #bc_raw.
+
+BC field profile ("real values" excludes blanks, zeros and false):
+field | status | real values | distinct | most common values
+id | used | 100.0% | 3,221 | 'b8282374-18c8-f111-a056-7c1e52c18eb5' x1, '04d18396-bad1-f111-a056-6045bd7bc60d' x1, 'dd28fe15-7842-f111-a820-6045bdd30e99' x1
+number | used | 100.0% | 3,221 | '012026' x1, '1000' x1, '1001' x1
+displayName | used | 99.9% | 996 | 'BREWER CRANE, LLC' x208, 'MR. CRANE, INC.' x78, 'HI-RISE CRANE, INC.' x67
+type | constant | 100.0% | 1 | 'Company' x3,221
+addressLine1 | used | 99.9% | 1,193 | '12570 HIGHWAY 67' x202, '6495 BIRD ROAD' x85, '647 N. HARITON STREET' x60
+addressLine2 | used | 92.8% | 798 | 'LAKESIDE, CA  92040' x164, 'MIAMI, FL  33155' x103, 'SEATTLE, WA  98109' x77
+city | used | 92.7% | 442 | 'SEATTLE' x217, 'Miami' x190, 'LAKESIDE' x185
+state | used | 90.5% | 58 | 'FL' x634, 'CA' x483, 'WA' x356
+country | used | 86.9% | 12 | 'US' x2,714, 'CA' x57, 'MX' x6
+postalCode | used | 92.5% | 603 | '92040' x168, '33155' x103, '98109' x84
+phoneNumber | used | 72.2% | 780 | '(619) 390-8252' x169, '(305) 220-8200' x77, '(305) 262-7306' x61
+email | used | 74.8% | 1,106 | 'heather@brewercrane.com' x110, 'richard@lrstructural.com' x91, 'cranes@hi-risecrane.com' x61
+website | empty | 0.0% | 0 | 
+salespersonCode | used | 88.1% | 35 | 'MAIRN' x566, 'TONER' x333, 'MORROW' x284
+balanceDue | used | 9.8% | 312 | '1000' x2, '142120' x2, '19713' x2
+creditLimit | empty | 0.0% | 0 | 
+taxLiable | used | 46.6% | 1 | 'True' x1,502
+taxAreaId | used | 99.6% | 1 | '9b7d9e97-5ea5-f111-aaa8-7c1e52e4af87' x3,207
+taxAreaDisplayName | used | 99.6% | 1 | 'AvaTax' x3,207
+taxRegistrationNumber | empty | 0.0% | 0 | 
+currencyId | sparse | 0.1% | 2 | '07df7b19-31fd-f011-8405-7c1e52fd407e' x2, '0cdf7b19-31fd-f011-8405-7c1e52fd407e' x1
+currencyCode | used | 100.0% | 3 | 'USD' x3,218, 'CAD' x2, 'EUR' x1
+paymentTermsId | used | 92.7% | 4 | '12968313-31fd-f011-8405-7c1e52fd407e' x2,982, '10968313-31fd-f011-8405-7c1e52fd407e' x3, '09968313-31fd-f011-8405-7c1e52fd407e' x1
+shipmentMethodId | used | 80.0% | 3 | '9f4c9179-63cd-f111-a056-7c1e52e7b237' x1,858, '6c477892-93c3-f111-a056-7c1e524506e4' x670, '3c2a00ee-2f9b-f111-8072-7c1e52a5f2c7' x50
+paymentMethodId | used | 92.3% | 2 | 'd588f86d-78bb-f111-aaa8-7c1e52cc3fa7' x2,923, 'd5e07b19-31fd-f011-8405-7c1e52fd407e' x50
+blocked | used | 100.0% | 2 | '_x0020_' x3,210, 'All' x11
+lastModifiedDateTime | used | 100.0% | 3,221 | '2026-10-27T14:14:22.323Z' x1, '2026-10-30T17:07:00.747Z' x1, '2026-10-30T17:50:30.17Z' x1
+
+SS4 databases to search: SAPData, EQData, EQDataCor, ARData, IMData
+
+In the spec use: name: customers, and in the bc section target: BC,
+api: standard, entity: customers. When you are confident, call submit_spec.
+
+
+=== run_sql
+SELECT TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, COUNT(*) n FROM (SELECT * FROM SAPData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQDataCor.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM ARData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM IMData.INFORMATION_SCHEMA.COLUMNS) c WHERE TABLE_NAME LIKE '%Cust%' OR COLUMN_NAME LIKE '%Customer%' GROUP BY TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME
+--- result
+TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | n
+ARData | dbo | aging_report_work | 3
+ARData | dbo | aging_reserved | 1
+ARData | dbo | ar_txn | 1
+ARData | dbo | ar_txnJIC | 1
+ARData | dbo | aragingReport | 4
+ARData | dbo | ARCustGroup | 1
+ARData | dbo | ARCustSupp | 14
+ARData | dbo | ARDistribution | 1
+ARData | dbo | ARInvoice | 2
+ARData | dbo | ARInvoiceDeleteArchive | 2
+ARData | dbo | ARInvPrintByCust | 2
+ARData | dbo | ARReserveLog | 1
+ARData | dbo | ARRevenue | 1
+ARData | dbo | balItm | 1
+ARData | dbo | balTxn | 1
+ARData | dbo | BC_Customers | 8
+ARData | dbo | CashReceiptDetail | 1
+ARData | dbo | commission | 1
+ARData | dbo | commissionRegistry | 1
+ARData | dbo | cr_detail | 1
+ARData | dbo | CreditRequest | 2
+ARData | dbo | CSPrintCustomers | 2
+ARData | dbo | custnotes | 15
+ARData | dbo | customer | 71
+ARData | dbo | CustomerAgingLog | 4
+ARData | dbo | CustomerNetStatement | 37
+ARData | dbo | CustomerNetStatementTom | 37
+ARData | dbo | CustomerNetSummaries | 11
+ARData | dbo | DummyInvoice | 2
+ARData | dbo | ErectionCrewReport | 2
+ARData | dbo | item | 1
+ARData | dbo | MRInvoice | 1
+ARData | dbo | ServiceReport | 2
+ARData | dbo | tmpInvoiceRegisterFinal | 1
+ARData | dbo | v_arcCustomersOver60ForFInvoices | 13
+ARData | dbo | v_SRBIDetailCustomer | 7
+EQData | dbo | 00Test | 1
+EQData | dbo | Addresses | 1
+EQData | dbo | ARCustomerStatusFlags | 3
+EQData | dbo | BackLog | 2
+EQData | dbo | BackLogTroubleshoot | 2
+EQData | dbo | BISAlertHistory | 1
+EQData | dbo | BL | 2
+EQData | dbo | CIR | 1
+EQData | dbo | ClimbDateStatus | 1
+EQData | dbo | CommissionSheet | 1
+EQData | dbo | Committed | 1
+EQData | dbo | CommittedArchive | 1
+EQData | dbo | CommittedTag | 1
+EQData | dbo | ComponentSerialNumber | 1
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== run_sql
+SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM (SELECT * FROM ARData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQData.INFORMATION_SCHEMA.COLUMNS) c WHERE TABLE_NAME IN ('customer','BC_Customers','Customer') ORDER BY TABLE_CATALOG, TABLE_NAME, ORDINAL_POSITION
+--- result
+TABLE_CATALOG | TABLE_NAME | COLUMN_NAME | DATA_TYPE
+ARData | BC_Customers | No | nvarchar
+ARData | BC_Customers | Name | nvarchar
+ARData | BC_Customers | City | nvarchar
+ARData | BC_Customers | Phone_No | nvarchar
+ARData | BC_Customers | E_Mail | nvarchar
+ARData | BC_Customers | LastSyncedAt | datetime2
+ARData | BC_Customers | BCId | uniqueidentifier
+ARData | BC_Customers | BCLastModified | datetime2
+ARData | customer | customer_number | nvarchar
+ARData | customer | customer_company_code | nvarchar
+ARData | customer | CompanyAbbr | varchar
+ARData | customer | customer_namekey | nvarchar
+ARData | customer | customer_name | nvarchar
+ARData | customer | project_name | nvarchar
+ARData | customer | contract_number | nvarchar
+ARData | customer | home_office_address_line_1 | nvarchar
+ARData | customer | home_office_address_line_2 | nvarchar
+ARData | customer | home_office_address_line_3 | nvarchar
+ARData | customer | home_office_address_city | nvarchar
+ARData | customer | home_office_address_state | nvarchar
+ARData | customer | home_office_address_zip | nvarchar
+ARData | customer | home_office_address_contact | nvarchar
+ARData | customer | home_office_address_telephone | nvarchar
+ARData | customer | home_office_address_fax_number | nvarchar
+ARData | customer | billing_address_line_1 | nvarchar
+ARData | customer | billing_address_line_2 | nvarchar
+ARData | customer | billing_address_line_3 | nvarchar
+ARData | customer | billing_address_city | nvarchar
+ARData | customer | billing_address_state | nvarchar
+ARData | customer | billing_address_zip | nvarchar
+ARData | customer | billing_address_contact | nvarchar
+ARData | customer | billing_address_telephone | nvarchar
+ARData | customer | billing_address_fax_number | nvarchar
+ARData | customer | shipping_address_line_1 | nvarchar
+ARData | customer | shipping_address_line_2 | nvarchar
+ARData | customer | shipping_address_line_3 | nvarchar
+ARData | customer | shipping_address_city | nvarchar
+ARData | customer | shipping_address_county | nvarchar
+ARData | customer | shipping_address_state | nvarchar
+ARData | customer | shipping_address_zip | nvarchar
+ARData | customer | shipping_address_contact | nvarchar
+ARData | customer | shipping_address_telephone | nvarchar
+ARData | customer | shipping_address_fax_number | nvarchar
+ARData | customer | equipment_model | nvarchar
+ARData | customer | equipment_serial_number | nvarchar
+ARData | customer | equipment_manufacturer | nvarchar
+ARData | customer | equipment_class | nvarchar
+ARData | customer | district | nvarchar
+ARData | customer | salesman_commission | real
+ARData | customer | salesman_number_1 | nvarchar
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== run_sql
+SELECT TOP 5 number, displayName, addressLine1, addressLine2, city, state, postalCode, phoneNumber, email, salespersonCode, balanceDue, blocked, taxLiable FROM #bc_raw ORDER BY number
+--- result
+number | displayName | addressLine1 | addressLine2 | city | state | postalCode | phoneNumber | email | salespersonCode | balanceDue | blocked | taxLiable
+012026 | VETROBUS, S.A. DE C.V. | , | NULL | NULL | NULL | NULL | NULL | NULL | NULL | 1500 | _x0020_ | True
+1000 | 11210 LLC | 10608 NE 2ND ST, STE 202 | BELLEVUE, WA  98004 | BELLEVUE | WA | 98004 | (425-453-8886 | NULL | PIATEK | 0 | All | True
+1001 | AG CONTRACTORS FL LLC | 3006 AVIATION AVE STE 3B | MIAMI, FL  33133 | Miami | FL | 33133 | (305) 503-9869 | NULL | MAIRN | 2528.26 | All | True
+1002 | AG STRUCTURES | 3006 AVIATION AVE, STE 3B | MIAMI, FL  33133 | Miami | FL | 33133 | (305) 503-9869 | NULL | MAIRN | 0 | All | True
+1003 | ALBERT C. KOBAYASHI, INC. | 94-535 UKE`E STREET | HONOLULU, HI  96797 | HONOLULU | HI | 96797 | (808) 671-6460 | NULL | JONES | 0 | _x0020_ | True
+
+=== run_sql
+SELECT COLUMN_NAME, DATA_TYPE FROM ARData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='customer' AND ORDINAL_POSITION>50 ORDER BY ORDINAL_POSITION
+--- result
+COLUMN_NAME | DATA_TYPE
+tax_exempt_number | nvarchar
+date_rent_ended | datetime
+starting_date | datetime
+date_of_last_transaction | datetime
+erection_date | datetime
+rent_begins_by | datetime
+FreightIn | nvarchar
+FreightOut | nvarchar
+FreightInAmount | money
+FreightOutAmount | money
+c_agreement_code | nvarchar
+job_purchase_order | nvarchar
+customer_balance | money
+statement_note | nvarchar
+rowguid | uniqueidentifier
+statement_sent_date | datetime
+PKID | int
+ELAId | int
+FCTerms | nvarchar
+FCRate | decimal
+last_statement_id | nvarchar
+
+=== run_sql
+SELECT (SELECT COUNT(*) FROM ARData.dbo.customer) c_rows, (SELECT COUNT(DISTINCT customer_number) FROM ARData.dbo.customer) c_distinct, (SELECT COUNT(*) FROM #bc_raw b WHERE EXISTS (SELECT 1 FROM ARData.dbo.customer c WHERE c.customer_number=b.number)) bc_in_c, (SELECT COUNT(*) FROM ARData.dbo.BC_Customers) bcc_rows, (SELECT COUNT(*) FROM #bc_raw b WHERE EXISTS (SELECT 1 FROM ARData.dbo.BC_Customers c WHERE c.No=b.number)) bc_in_bcc, (SELECT COUNT(*) FROM #bc_raw b WHERE EXISTS (SELECT 1 FROM ARData.dbo.BC_Customers c WHERE c.BCId=b.id)) id_in_bcc
+--- result
+c_rows | c_distinct | bc_in_c | bcc_rows | bc_in_bcc | id_in_bcc
+15718 | 15718 | 3179 | 1222 | 207 | 200
+
+=== run_sql
+SELECT c.customer_company_code, c.CompanyAbbr, CASE WHEN b.number IS NULL THEN 0 ELSE 1 END m, COUNT(*) n FROM ARData.dbo.customer c LEFT JOIN #bc_raw b ON b.number=c.customer_number GROUP BY c.customer_company_code, c.CompanyAbbr, CASE WHEN b.number IS NULL THEN 0 ELSE 1 END ORDER BY 1,2,3
+--- result
+customer_company_code | CompanyAbbr | m | n
+NULL | NULL | 0 | 93
+NULL | NULL | 1 | 3
+01 | COR | 0 | 9621
+01 | COR | 1 | 3141
+15 | CAN | 0 | 670
+15 | CAN | 1 | 20
+60 | NEW | 0 | 250
+70 | AUS | 0 | 1445
+70 | AUS | 1 | 12
+80 | NULL | 0 | 4
+90 | MEX | 0 | 456
+90 | MEX | 1 | 3
+
+=== run_sql
+SELECT COLUMN_NAME FROM ARData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='customer' AND ORDINAL_POSITION BETWEEN 50 AND 52 UNION ALL SELECT '---' UNION ALL SELECT name FROM sys.columns WHERE 1=0
+--- result
+COLUMN_NAME
+federal_tax
+tax_exempt_number
+date_rent_ended
+---
+
+=== run_sql
+SELECT YEAR(c.date_of_last_transaction) y, SUM(CASE WHEN b.number IS NULL THEN 0 ELSE 1 END) m, SUM(CASE WHEN b.number IS NULL THEN 1 ELSE 0 END) um FROM ARData.dbo.customer c LEFT JOIN #bc_raw b ON b.number=c.customer_number WHERE c.customer_company_code='01' GROUP BY YEAR(c.date_of_last_transaction) ORDER BY 1
+--- result
+y | m | um
+NULL | 3139 | 6707
+2000 | 0 | 203
+2001 | 0 | 265
+2002 | 0 | 598
+2003 | 0 | 318
+2004 | 0 | 1075
+2005 | 2 | 455
+
+=== Claude
+Found the SS4 table (ARData.dbo.customer, 3,179 of 3,221 numbers match). Now working out which rows are in scope.
+
+=== run_sql
+SELECT STRING_AGG(COLUMN_NAME, ',') WITHIN GROUP (ORDER BY ORDINAL_POSITION) FROM ARData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='customer'
+--- result
+
+customer_number,customer_company_code,CompanyAbbr,customer_namekey,customer_n...
+
+=== run_sql
+SELECT ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE FROM ARData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='customer' AND ORDINAL_POSITION >= 49 ORDER BY ORDINAL_POSITION
+--- result
+ORDINAL_POSITION | COLUMN_NAME | DATA_TYPE
+49 | other_tax | real
+50 | federal_tax | real
+51 | tax_exempt_number | nvarchar
+52 | date_rent_ended | datetime
+53 | starting_date | datetime
+54 | date_of_last_transaction | datetime
+55 | erection_date | datetime
+56 | rent_begins_by | datetime
+57 | FreightIn | nvarchar
+58 | FreightOut | nvarchar
+59 | FreightInAmount | money
+60 | FreightOutAmount | money
+61 | c_agreement_code | nvarchar
+62 | job_purchase_order | nvarchar
+63 | customer_balance | money
+64 | statement_note | nvarchar
+65 | rowguid | uniqueidentifier
+66 | statement_sent_date | datetime
+67 | PKID | int
+68 | ELAId | int
+69 | FCTerms | nvarchar
+70 | FCRate | decimal
+71 | last_statement_id | nvarchar
+
+=== run_sql
+SELECT TABLE_CATALOG, TABLE_NAME, STRING_AGG(COLUMN_NAME, ',') cols FROM (SELECT * FROM ARData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQData.INFORMATION_SCHEMA.COLUMNS) c WHERE TABLE_NAME IN ('ARCustSupp','ARCustomerStatusFlags','ARCustGroup') OR (TABLE_NAME='customer' AND ORDINAL_POSITION BETWEEN 44 AND 48) GROUP BY TABLE_CATALOG, TABLE_NAME
+--- result
+TABLE_CATALOG | TABLE_NAME | cols
+ARData | ARCustGroup | GroupName
+EQData | ARCustomerStatusFlags | AcctStatus,CustomerID,StatusCalc
+ARData | ARCustSupp | BelongsTo,CloseoutLetter,CustomerID,District,GroupKey,HideFrom60Day,InitBelon...
+ARData | customer | city_tax,county_tax,salesman_number_2,salesman_number_2_PCT,state_tax
+EQData | Customer | Distribution,EntryDate,ErectionDate,RepairAgreement,RevisionDate
+
+=== run_sql
+SELECT COLUMN_NAME FROM ARData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='ARCustSupp'
+--- result
+COLUMN_NAME
+CustomerID
+BelongsTo
+GroupKey
+InitBelongsTo
+OrigBelongsTo
+HideFrom60Day
+District
+Salesman
+CloseoutLetter
+PayApplication
+PayType
+PayAppBillingDate
+PayAppBillingNumber
+PKID
+
+=== run_sql
+SELECT s.AcctStatus, s.StatusCalc, SUM(CASE WHEN b.number IS NULL THEN 0 ELSE 1 END) m, SUM(CASE WHEN b.number IS NULL THEN 1 ELSE 0 END) um FROM ARData.dbo.customer c LEFT JOIN #bc_raw b ON b.number=c.customer_number LEFT JOIN EQData.dbo.ARCustomerStatusFlags s ON s.CustomerID=c.customer_number WHERE c.customer_company_code='01' GROUP BY s.AcctStatus, s.StatusCalc
+--- result
+AcctStatus | StatusCalc | m | um
+LB | 1 | 0 | 1
+NULL | NULL | 18 | 5069
+LI | 3 | 0 | 2
+NULL | 0 | 2488 | 217
+I | 2 | 5 | 19
+B | 0 | 1 | 15
+L | 1 | 18 | 104
+ | 0 | 609 | 4194
+S | 4 | 2 | 0
+
+=== run_sql
+SELECT STRING_AGG(COLUMN_NAME, ',') WITHIN GROUP (ORDER BY ORDINAL_POSITION) FROM EQData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Customer'
+--- result
+
+CustomerID,SerialNumber,Model,SerialNumber2,Model2,Manufacturer,Class,Contrac...
+
+=== run_sql
+SELECT COUNT(*) n, COUNT(DISTINCT CustomerID) d, SUM(CASE WHEN EXISTS(SELECT 1 FROM #bc_raw b WHERE b.number=e.CustomerID) THEN 1 ELSE 0 END) m FROM EQData.dbo.Customer e
+--- result
+SQL error: ('42000', '[42000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot perform an aggregate function on an expression containing an aggregate or a subquery. (130) (SQLExecDirectW)')
+
+=== run_sql
+SELECT LEN(c.customer_number) l, LEFT(c.customer_number,1) f, SUM(CASE WHEN b.number IS NULL THEN 0 ELSE 1 END) m, SUM(CASE WHEN b.number IS NULL THEN 1 ELSE 0 END) um FROM ARData.dbo.customer c LEFT JOIN #bc_raw b ON b.number=c.customer_number GROUP BY LEN(c.customer_number), LEFT(c.customer_number,1) ORDER BY 1,2
+--- result
+l | f | m | um
+2 | 9 | 0 | 1
+3 | 1 | 0 | 1
+3 | M | 0 | 1
+4 | 0 | 0 | 157
+4 | 1 | 12 | 187
+4 | 2 | 1 | 940
+4 | 3 | 0 | 61
+4 | 4 | 0 | 382
+4 | 5 | 0 | 967
+4 | 6 | 0 | 1000
+4 | 7 | 0 | 997
+4 | 8 | 2 | 998
+4 | 9 | 0 | 1000
+4 | A | 0 | 5
+4 | B | 0 | 3
+4 | C | 1 | 3
+4 | D | 0 | 4
+4 | E | 0 | 1
+4 | F | 0 | 1
+4 | G | 0 | 4
+4 | H | 0 | 5
+4 | I | 0 | 23
+4 | K | 0 | 4
+4 | L | 0 | 1
+4 | M | 0 | 16
+4 | O | 0 | 1
+4 | P | 0 | 1
+4 | R | 0 | 1
+4 | S | 0 | 15
+4 | T | 0 | 19
+4 | x | 0 | 1
+5 | 0 | 0 | 1
+5 | 1 | 2905 | 5022
+5 | 2 | 0 | 2
+5 | 3 | 0 | 13
+5 | 4 | 0 | 1
+5 | 5 | 0 | 198
+5 | 8 | 258 | 382
+5 | 9 | 0 | 48
+5 | C | 0 | 1
+5 | E | 0 | 1
+5 | t | 0 | 69
+6 | 4 | 0 | 1
+
+=== Claude
+Still narrowing scope — checking number ranges and dates of matched vs unmatched SS4 rows.
+
+=== run_sql
+SELECT LEFT(c.customer_number,3) p, SUM(CASE WHEN b.number IS NULL THEN 0 ELSE 1 END) m, SUM(CASE WHEN b.number IS NULL THEN 1 ELSE 0 END) um, MAX(c.starting_date) maxstart FROM ARData.dbo.customer c LEFT JOIN #bc_raw b ON b.number=c.customer_number WHERE LEN(c.customer_number)=5 AND LEFT(c.customer_number,1) IN ('1','8') GROUP BY LEFT(c.customer_number,3) ORDER BY 1
+--- result
+p | m | um | maxstart
+100 | 0 | 100 | NULL
+101 | 0 | 100 | NULL
+102 | 0 | 100 | NULL
+103 | 0 | 100 | NULL
+104 | 0 | 100 | NULL
+105 | 0 | 100 | NULL
+106 | 0 | 100 | NULL
+107 | 0 | 100 | NULL
+108 | 0 | 100 | NULL
+109 | 0 | 100 | NULL
+110 | 0 | 100 | NULL
+111 | 0 | 100 | NULL
+112 | 1 | 99 | NULL
+113 | 0 | 100 | NULL
+114 | 0 | 100 | NULL
+115 | 0 | 100 | NULL
+116 | 1 | 99 | NULL
+117 | 0 | 100 | NULL
+118 | 0 | 100 | NULL
+119 | 1 | 99 | NULL
+120 | 1 | 100 | NULL
+121 | 0 | 100 | NULL
+122 | 0 | 100 | NULL
+123 | 1 | 99 | NULL
+124 | 0 | 100 | NULL
+125 | 0 | 100 | NULL
+126 | 0 | 100 | NULL
+127 | 3 | 97 | NULL
+128 | 0 | 100 | NULL
+129 | 8 | 92 | NULL
+130 | 1 | 99 | NULL
+131 | 2 | 98 | NULL
+132 | 1 | 99 | NULL
+133 | 2 | 98 | NULL
+134 | 3 | 97 | NULL
+135 | 6 | 94 | NULL
+136 | 7 | 93 | NULL
+137 | 2 | 98 | NULL
+138 | 3 | 97 | NULL
+139 | 3 | 97 | NULL
+140 | 7 | 93 | NULL
+141 | 11 | 89 | NULL
+142 | 18 | 82 | NULL
+143 | 12 | 88 | NULL
+144 | 21 | 79 | NULL
+145 | 24 | 76 | NULL
+146 | 28 | 72 | NULL
+147 | 41 | 59 | NULL
+148 | 55 | 45 | NULL
+149 | 41 | 59 | NULL
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== run_sql
+SELECT 'stmt' k, YEAR(c.statement_sent_date) y, SUM(CASE WHEN b.number IS NULL THEN 0 ELSE 1 END) m, SUM(CASE WHEN b.number IS NULL THEN 1 ELSE 0 END) um FROM ARData.dbo.customer c LEFT JOIN #bc_raw b ON b.number=c.customer_number GROUP BY YEAR(c.statement_sent_date) UNION ALL SELECT 'bal', CASE WHEN c.customer_balance<>0 THEN 1 ELSE 0 END, SUM(CASE WHEN b.number IS NULL THEN 0 ELSE 1 END), SUM(CASE WHEN b.number IS NULL THEN 1 ELSE 0 END) FROM ARData.dbo.customer c LEFT JOIN #bc_raw b ON b.number=c.customer_number GROUP BY CASE WHEN c.customer_balance<>0 THEN 1 ELSE 0 END ORDER BY 1,2
+--- result
+k | y | m | um
+bal | 0 | 3167 | 12493
+bal | 1 | 12 | 46
+stmt | NULL | 2180 | 12410
+stmt | 2025 | 289 | 54
+stmt | 2026 | 710 | 75
+
+=== run_sql
+SELECT TABLE_NAME, COLUMN_NAME, DATA_TYPE FROM ARData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN ('ARInvoice','ar_txn') ORDER BY TABLE_NAME, ORDINAL_POSITION
+--- result
+TABLE_NAME | COLUMN_NAME | DATA_TYPE
+ar_txn | ar_txn_number | nvarchar
+ar_txn | ar_txn_autonumber | int
+ar_txn | ar_txn_company_code | nvarchar
+ar_txn | ar_txn_customer_number | nvarchar
+ar_txn | ar_txn_type_code | nvarchar
+ar_txn | ar_txn_entry_date | datetime
+ar_txn | ar_txn_amount | money
+ar_txn | ar_txn_reference | nvarchar
+ar_txn | ar_txn_commission | money
+ar_txn | InterfaceID | int
+ar_txn | typecodesort | varchar
+ARInvoice | InvoiceID | int
+ARInvoice | INVguid | varchar
+ARInvoice | SRID | int
+ARInvoice | SOID | int
+ARInvoice | ROID | int
+ARInvoice | Company | nvarchar
+ARInvoice | District | nvarchar
+ARInvoice | InvoiceDate | datetime
+ARInvoice | Batch | nvarchar
+ARInvoice | Number | nvarchar
+ARInvoice | Type | char
+ARInvoice | Type2 | char
+ARInvoice | ServiceType | char
+ARInvoice | CustomerID | nvarchar
+ARInvoice | EquipmentModel | nvarchar
+ARInvoice | EquipmentSerial | nvarchar
+ARInvoice | Terms | nvarchar
+ARInvoice | BillAddr1 | nvarchar
+ARInvoice | BillAddr2 | nvarchar
+ARInvoice | BillAddr3 | nvarchar
+ARInvoice | BillAddr4 | nvarchar
+ARInvoice | BillAddr5 | nvarchar
+ARInvoice | BillAddress | nvarchar
+ARInvoice | ShipAddr1 | nvarchar
+ARInvoice | ShipAddr2 | nvarchar
+ARInvoice | ShipAddr3 | nvarchar
+ARInvoice | ShipAddr4 | nvarchar
+ARInvoice | ShipAddr5 | nvarchar
+ARInvoice | ShipAddress | nvarchar
+ARInvoice | TaxingCity | nvarchar
+ARInvoice | TaxingCounty | nvarchar
+ARInvoice | TaxingState | nvarchar
+ARInvoice | CityTaxRate | money
+ARInvoice | CountyTaxRate | money
+ARInvoice | StateTaxRate | money
+ARInvoice | FederalTaxRate | money
+ARInvoice | HarmonizedTaxRate | money
+ARInvoice | CityTaxAmount | money
+ARInvoice | CountyTaxAmount | money
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== Claude
+Now measuring field agreement on paired rows.
+
+=== run_sql
+SELECT COUNT(*) n,
+SUM(CASE WHEN LTRIM(RTRIM(b.displayName))=LTRIM(RTRIM(c.customer_name)) THEN 1 ELSE 0 END) name_eq,
+SUM(CASE WHEN LTRIM(RTRIM(b.addressLine1))=LTRIM(RTRIM(c.home_office_address_line_1)) THEN 1 ELSE 0 END) a1_ho,
+SUM(CASE WHEN LTRIM(RTRIM(b.addressLine1))=LTRIM(RTRIM(c.billing_address_line_1)) THEN 1 ELSE 0 END) a1_bill,
+SUM(CASE WHEN LTRIM(RTRIM(b.addressLine1))=LTRIM(RTRIM(c.shipping_address_line_1)) THEN 1 ELSE 0 END) a1_ship,
+SUM(CASE WHEN LTRIM(RTRIM(b.addressLine2))=LTRIM(RTRIM(c.home_office_address_line_2)) THEN 1 ELSE 0 END) a2_ho,
+SUM(CASE WHEN LTRIM(RTRIM(b.addressLine2))=LTRIM(RTRIM(c.billing_address_line_2)) THEN 1 ELSE 0 END) a2_bill,
+SUM(CASE WHEN LTRIM(RTRIM(b.city))=LTRIM(RTRIM(c.home_office_address_city)) THEN 1 ELSE 0 END) city_ho,
+SUM(CASE WHEN LTRIM(RTRIM(b.city))=LTRIM(RTRIM(c.billing_address_city)) THEN 1 ELSE 0 END) city_bill,
+SUM(CASE WHEN LTRIM(RTRIM(b.state))=LTRIM(RTRIM(c.home_office_address_state)) THEN 1 ELSE 0 END) st_ho,
+SUM(CASE WHEN LTRIM(RTRIM(b.state))=LTRIM(RTRIM(c.billing_address_state)) THEN 1 ELSE 0 END) st_bill,
+SUM(CASE WHEN LTRIM(RTRIM(b.postalCode))=LTRIM(RTRIM(c.home_office_address_zip)) THEN 1 ELSE 0 END) zip_ho,
+SUM(CASE WHEN LTRIM(RTRIM(b.postalCode))=LTRIM(RTRIM(c.billing_address_zip)) THEN 1 ELSE 0 END) zip_bill,
+SUM(CASE WHEN LTRIM(RTRIM(b.phoneNumber))=LTRIM(RTRIM(c.home_office_address_telephone)) THEN 1 ELSE 0 END) ph_ho,
+SUM(CASE WHEN LTRIM(RTRIM(b.phoneNumber))=LTRIM(RTRIM(c.billing_address_telephone)) THEN 1 ELSE 0 END) ph_bill,
+SUM(CASE WHEN LTRIM(RTRIM(b.salespersonCode))=LTRIM(RTRIM(c.salesman_number_1)) THEN 1 ELSE 0 END) sp1,
+SUM(CASE WHEN TRY_CAST(b.balanceDue AS decimal(18,2))=c.customer_balance THEN 1 ELSE 0 END) bal
+FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number
+--- result
+n | name_eq | a1_ho | a1_bill | a1_ship | a2_ho | a2_bill | city_ho | city_bill | st_ho | st_bill | zip_ho | zip_bill | ph_ho | ph_bill | sp1 | bal
+3179 | 2572 | 2993 | 2703 | 131 | 2821 | 2596 | 0 | 0 | 0 | 1 | 0 | 0 | 2280 | 1580 | 2710 | 1451
+
+=== run_sql
+SELECT TOP 15 b.number, b.displayName, c.customer_name, c.customer_namekey, b.city, c.home_office_address_city, c.home_office_address_line_3, b.state, c.home_office_address_state, b.postalCode, c.home_office_address_zip FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number WHERE LTRIM(RTRIM(b.displayName))<>LTRIM(RTRIM(c.customer_name))
+--- result
+number | displayName | customer_name | customer_namekey | city | home_office_address_city | home_office_address_line_3 | state | home_office_address_state | postalCode | home_office_address_zip
+1011 | BERLIN STEEL CONSTRUCTION | THIESS CONTRACTORS PTY. LTD. | THIESS C | West Chester | SYDNEY |  | PA | AU | 19380 | 
+1016 | BRINKMANN CONSTRUCTORS | MULTIPLEX CONSTRUCTIONS | MULTIPLE | CHESTERFIELD |  |  | MO |  | 63005 | 
+1021 | CAHILL/GUZMAN A JOINT VENTURE | TORRENS ALOMA PTY LTD | TORRENS | San Francisco | BONDI JUNCTION |  | CA | AU | 94104-2207 | 
+1053 | HI-RISE CRANE, INC. | GRINDLEY CONSTRUCTION PTY LTD | GRINDLEY | FT LAUDERDALE | PYMBLE |  | FL | AU | 33310 | 
+1055 | HOLLAND CONSTRUCTION, INC. | FLETCHER CONSTRUCTION | FLETCHER | SEATTLE | MILSONS POINT |  | WA | AU | 98109 | 
+1060 | IUOE | COLIN JOSS & CO. | COLIN JO | CROSBY |  |  | TX |  | 77532 | 
+15311 | BRAGG CRANE & RIGGING CO. | BRAGG CRANE & RIGGING CO., INC | BRAGG | LONG BEACH | NULL |  | CA | NULL | 90805 | NULL
+15312 | BRAGG CRANE & RIGGING CO. | BRAGG CRANE & RIGGING CO., INC | BRAGG | LONG BEACH | NULL |  | CA | NULL | 90805 | NULL
+15313 | BRAGG CRANE & RIGGING CO. | BRAGG CRANE & RIGGING CO., INC | BRAGG | LONG BEACH | NULL |  | CA | NULL | 90805 | NULL
+15328 | SELLEN CONSTRUCTION COMPANY, I | SELLEN CONSTRUCTION COMPANY | SELLEN C | SEATTLE | NULL |  | WA | NULL | 98109 | NULL
+15329 | SELLEN CONSTRUCTION COMPANY, I | SELLEN CONSTRUCTION COMPANY | SELLEN C | SEATTLE | NULL |  | WA | NULL | 98109 | NULL
+15347 | JAMES MCHUGH CONSTRUCTION COMP | JAMES MCHUGH CONSTRUCTION CO. | MCHUGH | Chicago | NULL |  | IL | NULL | 60616 | NULL
+15348 | GRAND BAHAMA SHIPYARD LIMITED | GRAND BAHAMA SHIPYARD, LTD. | GRAND BA | FREEPORT | NULL | FREEPORT, GRAND BAHAMA|BAHAMAS | GB | NULL | NULL | NULL
+15354 | LRC CONSTRUCTION, LLC | LRC CONSTRUCTION | LRC CONS | New York | NULL |  | CT | NULL | 10601 | NULL
+15933 | J. T. VAUGHN CONSTRUCTION, LLC | J.T. VAUGHN CONSTRUCTION CO.,  | J. T. VA | HOUSTON | NULL |  | TX | NULL | 77042 | NULL
+
+=== run_sql
+SELECT ORDINAL_POSITION, COLUMN_NAME FROM EQData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Customer' ORDER BY 1
+--- result
+ORDINAL_POSITION | COLUMN_NAME
+1 | CustomerID
+2 | SerialNumber
+3 | Model
+4 | SerialNumber2
+5 | Model2
+6 | Manufacturer
+7 | Class
+8 | ContractID
+9 | ContractStatus
+10 | ContractType
+11 | CustomerPO
+12 | Name
+13 | Namekey
+14 | CompanyCode
+15 | ProjectName
+16 | TaxingCity
+17 | TaxingCounty
+18 | TaxingState
+19 | TaxingCountry
+20 | DistrictID
+21 | District
+22 | SalesDistrict
+23 | MailingAddress
+24 | MailingContact
+25 | MailingTelephone
+26 | MailingFax
+27 | BillingAddress
+28 | BillingContact
+29 | BillingTelephone
+30 | BillingFax
+31 | ShippingAddress
+32 | ShippingContact
+33 | ShippingTelephone
+34 | ShippingFax
+35 | AgreementType
+36 | FoundationAnchorsType
+37 | Tie-inCollarsType
+38 | StrutsType
+39 | CageSize
+40 | ConsistingOf
+41 | Additional
+42 | FreightIn
+43 | FreightOut
+44 | Distribution
+45 | RepairAgreement
+46 | EntryDate
+47 | RevisionDate
+48 | ErectionDate
+49 | MinimumStartDate
+50 | DismantleDate
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== run_sql
+SELECT COUNT(*) n, COUNT(DISTINCT e.CustomerID) d, SUM(CASE WHEN LTRIM(RTRIM(b.displayName))=LTRIM(RTRIM(e.Name)) THEN 1 ELSE 0 END) name_eq, SUM(CASE WHEN LTRIM(RTRIM(b.displayName))=LEFT(LTRIM(RTRIM(c.customer_name)),30) THEN 1 ELSE 0 END) name30, SUM(CASE WHEN LTRIM(RTRIM(b.phoneNumber))=LTRIM(RTRIM(e.MailingTelephone)) THEN 1 ELSE 0 END) ph_m, SUM(CASE WHEN LTRIM(RTRIM(b.phoneNumber))=LTRIM(RTRIM(e.BillingTelephone)) THEN 1 ELSE 0 END) ph_b FROM #bc_raw b JOIN EQData.dbo.Customer e ON e.CustomerID=b.number LEFT JOIN ARData.dbo.customer c ON c.customer_number=b.number
+--- result
+n | d | name_eq | name30 | ph_m | ph_b
+3180 | 3180 | 2203 | 2572 | 2280 | 1579
+
+=== run_sql
+SELECT TABLE_CATALOG, TABLE_NAME, COUNT(*) n FROM (SELECT * FROM SAPData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQDataCor.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM IMData.INFORMATION_SCHEMA.COLUMNS) c WHERE TABLE_NAME LIKE '%Cust%' OR COLUMN_NAME LIKE '%Cust%' OR TABLE_NAME LIKE '%BC%' GROUP BY TABLE_CATALOG, TABLE_NAME
+--- result
+TABLE_CATALOG | TABLE_NAME | n
+SAPData | afrKPIDashboardTop5Customers | 2
+SAPData | arAging | 4
+SAPData | arBillingCodeAging | 1
+SAPData | arcCustomersOver60 | 13
+SAPData | arcCustomersOver60ForFInvoices | 13
+SAPData | arCustomerAgingParms | 19
+SAPData | ariFinanceChargeInvoices | 3
+SAPData | ariFinanceChargeInvoicesDetails | 1
+SAPData | ariInvoiceEmailQueue | 1
+SAPData | ariInvoiceInterfaceCheckAccounts | 1
+SAPData | ariRegister | 1
+SAPData | arSalesCommission | 2
+IMData | BackOrders | 1
+SAPData | BC_Customer | 116
+SAPData | BC_ItemLedgerEntries | 7
+SAPData | BC_PurchaseInvoice | 50
+SAPData | BC_PurchaseInvoiceDimension | 11
+SAPData | BC_PurchaseInvoiceLine | 30
+SAPData | BC_PurchaseOrder | 55
+SAPData | BC_PurchaseOrderDimension | 11
+SAPData | BC_PurchaseOrderLine | 40
+SAPData | BC_Reconcile | 14
+SAPData | BC_ReconcileRun | 14
+SAPData | BC_SalesInvoices | 11
+SAPData | BC_SalesOrder | 61
+SAPData | BC_SalesOrderDimension | 11
+SAPData | BC_SalesOrderLine | 40
+SAPData | BC_Stage_Customer | 14
+SAPData | BC_Stage_ItemLedgerEntry | 6
+SAPData | BC_Stage_SalesInvoice | 9
+SAPData | BC_SyncRun | 22
+SAPData | BC_SyncState | 2
+SAPData | BCDistrictPartsQuantity | 24
+EQDataCor | BillingInstructions | 1
+EQDataCor | BillingInstructions515 | 1
+EQDataCor | BillingInstructionsDetail | 1
+EQDataCor | BillingInstructionsDetail515 | 1
+SAPData | BL | 2
+SAPData | CCOAEmailLog | 2
+SAPData | commissionRegistry | 1
+EQDataCor | Crane | 1
+SAPData | CustomerContractChangeOrderDetails | 9
+SAPData | eqcBacklogCrane | 1
+SAPData | eqcMCLProcessStatus | 1
+SAPData | eqcOperatorHistory | 2
+SAPData | eqcRelatedForms | 2
+SAPData | eqcStatement | 1
+SAPData | eqcStatementDetails | 1
+SAPData | eqcStatementDetailsFC | 1
+SAPData | eqcStatementDetailsFCJIC | 1
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== run_sql
+SELECT TABLE_NAME, ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE FROM SAPData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME IN ('BC_Customer','BC_Stage_Customer') AND (TABLE_NAME='BC_Stage_Customer' OR ORDINAL_POSITION<=36) ORDER BY 1,2
+--- result
+TABLE_NAME | ORDINAL_POSITION | COLUMN_NAME | DATA_TYPE
+BC_Customer | 1 | CustomerID | nvarchar
+BC_Customer | 2 | SerialNumber | nvarchar
+BC_Customer | 3 | Model | nvarchar
+BC_Customer | 4 | SerialNumber2 | nvarchar
+BC_Customer | 5 | Model2 | nvarchar
+BC_Customer | 6 | Manufacturer | nvarchar
+BC_Customer | 7 | Class | nvarchar
+BC_Customer | 8 | ContractID | nvarchar
+BC_Customer | 9 | ContractStatus | char
+BC_Customer | 10 | ContractType | char
+BC_Customer | 11 | CustomerPO | nvarchar
+BC_Customer | 12 | Name | nvarchar
+BC_Customer | 13 | Namekey | nvarchar
+BC_Customer | 14 | CompanyCode | nvarchar
+BC_Customer | 15 | ProjectName | nvarchar
+BC_Customer | 16 | TaxingCity | nvarchar
+BC_Customer | 17 | TaxingCounty | nvarchar
+BC_Customer | 18 | TaxingState | nvarchar
+BC_Customer | 19 | TaxingCountry | nvarchar
+BC_Customer | 20 | DistrictID | smallint
+BC_Customer | 21 | District | nvarchar
+BC_Customer | 22 | SalesDistrict | nvarchar
+BC_Customer | 23 | MailingAddress | nvarchar
+BC_Customer | 24 | MailingContact | nvarchar
+BC_Customer | 25 | MailingTelephone | nvarchar
+BC_Customer | 26 | MailingFax | nvarchar
+BC_Customer | 27 | BillingAddress | nvarchar
+BC_Customer | 28 | BillingContact | nvarchar
+BC_Customer | 29 | BillingTelephone | nvarchar
+BC_Customer | 30 | BillingFax | nvarchar
+BC_Customer | 31 | ShippingAddress | nvarchar
+BC_Customer | 32 | ShippingContact | nvarchar
+BC_Customer | 33 | ShippingTelephone | nvarchar
+BC_Customer | 34 | ShippingFax | nvarchar
+BC_Customer | 35 | AgreementType | nvarchar
+BC_Customer | 36 | FoundationAnchorsType | nvarchar
+BC_Stage_Customer | 1 | Number | nvarchar
+BC_Stage_Customer | 2 | BcId | uniqueidentifier
+BC_Stage_Customer | 3 | DisplayName | nvarchar
+BC_Stage_Customer | 4 | AddressLine1 | nvarchar
+BC_Stage_Customer | 5 | AddressLine2 | nvarchar
+BC_Stage_Customer | 6 | PhoneNumber | nvarchar
+BC_Stage_Customer | 7 | ProjectBcId | uniqueidentifier
+BC_Stage_Customer | 8 | ProjectDisplayName | nvarchar
+BC_Stage_Customer | 9 | City | nvarchar
+BC_Stage_Customer | 10 | State | nvarchar
+BC_Stage_Customer | 11 | PostalCode | nvarchar
+BC_Stage_Customer | 12 | Country | nvarchar
+BC_Stage_Customer | 13 | Email | nvarchar
+BC_Stage_Customer | 14 | SalespersonCode | nvarchar
+
+=== run_sql
+SELECT ORDINAL_POSITION, COLUMN_NAME, DATA_TYPE FROM SAPData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='BC_Customer' AND ORDINAL_POSITION>36 ORDER BY 1
+--- result
+ORDINAL_POSITION | COLUMN_NAME | DATA_TYPE
+37 | Tie-inCollarsType | nvarchar
+38 | StrutsType | nvarchar
+39 | CageSize | nvarchar
+40 | ConsistingOf | nvarchar
+41 | Additional | nvarchar
+42 | FreightIn | nvarchar
+43 | FreightOut | nvarchar
+44 | Distribution | nvarchar
+45 | RepairAgreement | nvarchar
+46 | EntryDate | datetime
+47 | RevisionDate | datetime
+48 | ErectionDate | datetime
+49 | MinimumStartDate | datetime
+50 | DismantleDate | datetime
+51 | ReviewDate | datetime
+52 | MinimumTerm | smallint
+53 | JibReach | float
+54 | JibReachMetric | float
+55 | HoistRope | float
+56 | HoistRopeMetric | float
+57 | PowerCable | float
+58 | PowerCableMetric | float
+59 | InitialHUHTitle | nvarchar
+60 | InitialHeightUnderHook | float
+61 | InitialHeightUnderHookMetric | float
+62 | FinalHUHTitle | nvarchar
+63 | FinalHeightUnderHook | float
+64 | FinalHeightUnderHookMetric | float
+65 | HRReqd1 | float
+66 | HRReqd2 | float
+67 | Tie-inCollars | smallint
+68 | Struts | smallint
+69 | Shoes | smallint
+70 | FoundationAnchors | bit
+71 | GuideSection | bit
+72 | GuideSectionComment | nvarchar
+73 | CentralBallast | bit
+74 | CentralBallastComment | nvarchar
+75 | InsuranceCertificateReceived | bit
+76 | InsuranceExpirationDate | datetime
+77 | InsuranceValue | money
+78 | CustProjInfRcvd | bit
+79 | CustProjInfRcvdDate | datetime
+80 | Erection/DismantleAgreement | bit
+81 | Purchase Option | bit
+82 | Zoning | bit
+83 | AntiCollision | bit
+84 | CraneErectionStatus | char
+85 | BookDistrict | nvarchar
+86 | TaxDistrict | nvarchar
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== Claude
+Checking SAPData BC_Customer / BC_Stage_Customer, which look like BC-oriented copies.
+
+=== run_sql
+SELECT 'stage' t, COUNT(*) n, COUNT(DISTINCT Number) d, SUM(CASE WHEN EXISTS(SELECT 1 FROM #bc_raw b WHERE b.number=s.Number) THEN 1 ELSE 0 END) m FROM SAPData.dbo.BC_Stage_Customer s UNION ALL SELECT 'bccust', COUNT(*), COUNT(DISTINCT CustomerID), SUM(CASE WHEN EXISTS(SELECT 1 FROM #bc_raw b WHERE b.number=s.CustomerID) THEN 1 ELSE 0 END) FROM SAPData.dbo.BC_Customer s
+--- result
+SQL error: ('42000', '[42000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot perform an aggregate function on an expression containing an aggregate or a subquery. (130) (SQLExecDirectW); [42000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot perform an aggregate function on an expression containing an aggregate or a subquery. (130)')
+
+=== run_sql
+SELECT 'stage' t, COUNT(*) n, COUNT(DISTINCT s.Number) d, COUNT(b.number) m FROM SAPData.dbo.BC_Stage_Customer s LEFT JOIN #bc_raw b ON b.number=s.Number UNION ALL SELECT 'bccust', COUNT(*), COUNT(DISTINCT s.CustomerID), COUNT(b.number) FROM SAPData.dbo.BC_Customer s LEFT JOIN #bc_raw b ON b.number=s.CustomerID
+--- result
+t | n | d | m
+stage | 670 | 670 | 670
+bccust | 315 | 315 | 315
+
+=== run_sql
+SELECT COUNT(*) n, COUNT(s.CustomerID) has_supp, SUM(CASE WHEN LTRIM(RTRIM(b.displayName))=LTRIM(RTRIM(p.customer_name)) THEN 1 ELSE 0 END) parent_name, SUM(CASE WHEN LTRIM(RTRIM(b.displayName))=LTRIM(RTRIM(c.customer_name)) THEN 1 ELSE 0 END) own_name, SUM(CASE WHEN LTRIM(RTRIM(b.displayName))=LTRIM(RTRIM(p.customer_name)) OR LTRIM(RTRIM(b.displayName))=LTRIM(RTRIM(c.customer_name)) THEN 1 ELSE 0 END) either, SUM(CASE WHEN LTRIM(RTRIM(b.salespersonCode))=LTRIM(RTRIM(s.Salesman)) THEN 1 ELSE 0 END) sp_supp FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number LEFT JOIN ARData.dbo.ARCustSupp s ON s.CustomerID=c.customer_number LEFT JOIN ARData.dbo.customer p ON p.customer_number=s.BelongsTo
+--- result
+n | has_supp | parent_name | own_name | either | sp_supp
+3179 | 3179 | 0 | 2572 | 2572 | 198
+
+=== run_sql
+SELECT TOP 12 b.number, b.displayName, c.customer_name, s.BelongsTo, s.GroupKey, s.OrigBelongsTo, e.Name eqname, b.salespersonCode, c.salesman_number_1, s.Salesman FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number LEFT JOIN ARData.dbo.ARCustSupp s ON s.CustomerID=c.customer_number LEFT JOIN EQData.dbo.Customer e ON e.CustomerID=b.number WHERE LTRIM(RTRIM(b.displayName))<>LTRIM(RTRIM(c.customer_name)) AND LEN(b.number)=5
+--- result
+number | displayName | customer_name | BelongsTo | GroupKey | OrigBelongsTo | eqname | salespersonCode | salesman_number_1 | Salesman
+15311 | BRAGG CRANE & RIGGING CO. | BRAGG CRANE & RIGGING CO., INC | s.childs | NULL | j.satrum | BRAGG CRANE & RIGGING CO., INC. | EXECUTIVE | Executive | NULL
+15312 | BRAGG CRANE & RIGGING CO. | BRAGG CRANE & RIGGING CO., INC | s.childs | NULL | j.satrum | BRAGG CRANE & RIGGING CO., INC. | EXECUTIVE | Executive | NULL
+15313 | BRAGG CRANE & RIGGING CO. | BRAGG CRANE & RIGGING CO., INC | s.childs | NULL | j.satrum | BRAGG CRANE & RIGGING CO., INC. | EXECUTIVE | Executive | NULL
+15328 | SELLEN CONSTRUCTION COMPANY, I | SELLEN CONSTRUCTION COMPANY | s.childs | NULL | l.kimball | SELLEN CONSTRUCTION COMPANY | MORROW | Morrow | NULL
+15329 | SELLEN CONSTRUCTION COMPANY, I | SELLEN CONSTRUCTION COMPANY | s.childs | NULL | l.kimball | SELLEN CONSTRUCTION COMPANY | MORROW | Morrow | NULL
+15347 | JAMES MCHUGH CONSTRUCTION COMP | JAMES MCHUGH CONSTRUCTION CO. | s.childs | NULL | s.childs | JAMES MCHUGH CONSTRUCTION CO. | FRANCIS | Francis | NULL
+15348 | GRAND BAHAMA SHIPYARD LIMITED | GRAND BAHAMA SHIPYARD, LTD. | s.childs | NULL | s.childs | GRAND BAHAMA SHIPYARD, LTD. | MAIRN | Mairn | NULL
+15354 | LRC CONSTRUCTION, LLC | LRC CONSTRUCTION | s.childs | NULL | l.kimball | LRC CONSTRUCTION | YAKIN | Yakin | NULL
+15933 | J. T. VAUGHN CONSTRUCTION, LLC | J.T. VAUGHN CONSTRUCTION CO.,  | s.childs | NULL | s.childs | J.T. VAUGHN CONSTRUCTION CO., INC. | MADER | MADER | NULL
+15934 | J. T. VAUGHN CONSTRUCTION, LLC | J.T. VAUGHN CONSTRUCTION CO.,  | s.childs | NULL | s.childs | J.T. VAUGHN CONSTRUCTION CO., INC. | MADER | MADER | NULL
+15936 | JGR CONSTRUCTION | JGR CONSTRUCTION, INC. | s.childs | NULL | s.childs | JGR CONSTRUCTION, INC. | MAIRN | MAIRN | NULL
+15937 | JGR CONSTRUCTION | JGR CONSTRUCTION, INC. | s.childs | NULL | s.childs | JGR CONSTRUCTION, INC. | MAIRN | MAIRN | NULL
+
+=== run_sql
+SELECT LEN(b.number) l, c.CompanyAbbr, COUNT(*) n, SUM(CASE WHEN c.customer_number IS NULL THEN 1 ELSE 0 END) nomatch, SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.displayName)))=UPPER(LTRIM(RTRIM(c.customer_name))) THEN 1 ELSE 0 END) name_eq, SUM(CASE WHEN LTRIM(RTRIM(b.addressLine1))=LTRIM(RTRIM(c.home_office_address_line_1)) THEN 1 ELSE 0 END) a1, SUM(CASE WHEN UPPER(b.salespersonCode)=UPPER(LTRIM(RTRIM(c.salesman_number_1))) THEN 1 ELSE 0 END) sp, MIN(b.number) mn, MAX(b.number) mx FROM #bc_raw b LEFT JOIN ARData.dbo.customer c ON c.customer_number=b.number GROUP BY LEN(b.number), c.CompanyAbbr
+--- result
+l | CompanyAbbr | n | nomatch | name_eq | a1 | sp | mn | mx
+3 | NULL | 24 | 24 | 0 | 0 | 0 | ACW | TRN
+4 | NULL | 5 | 5 | 0 | 0 | 0 | 1000 | 1224
+5 | NULL | 3 | 0 | 1 | 2 | 2 | 80621 | 80640
+6 | NULL | 8 | 8 | 0 | 0 | 0 | 012026 | RENTMO
+7 | NULL | 3 | 3 | 0 | 0 | 0 | INVALID | PR00030
+9 | NULL | 1 | 1 | 0 | 0 | 0 | TESTPUSH1 | TESTPUSH1
+14 | NULL | 1 | 1 | 0 | 0 | 0 | TEMPLATE-CRANE | TEMPLATE-CRANE
+4 | AUS | 12 | 0 | 0 | 0 | 0 | 1011 | 1115
+5 | CAN | 20 | 0 | 16 | 20 | 20 | 17645 | 80647
+4 | COR | 4 | 0 | 3 | 2 | 1 | 2929 | CASH
+5 | COR | 3137 | 0 | 2551 | 2966 | 2684 | 11293 | 80650
+5 | MEX | 3 | 0 | 1 | 3 | 3 | 17654 | 17924
+
+=== run_sql
+SELECT SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.displayName)))<>UPPER(LTRIM(RTRIM(c.customer_name))) THEN 1 ELSE 0 END) mism, SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.displayName)))<>UPPER(LTRIM(RTRIM(c.customer_name))) AND LEFT(UPPER(LTRIM(b.displayName)),6)=LEFT(UPPER(LTRIM(c.customer_name)),6) THEN 1 ELSE 0 END) mism_same6, SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.displayName)))<>UPPER(LTRIM(RTRIM(e.Name))) AND UPPER(LTRIM(RTRIM(b.displayName)))<>UPPER(LTRIM(RTRIM(c.customer_name))) THEN 1 ELSE 0 END) mism_both, MAX(LEN(c.customer_name)) maxlen_ar, MAX(LEN(b.displayName)) maxlen_bc FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number LEFT JOIN EQData.dbo.Customer e ON e.CustomerID=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS'
+--- result
+mism | mism_same6 | mism_both | maxlen_ar | maxlen_bc
+595 | 533 | 525 | 30 | 53
+
+=== Claude
+Mapping fields now — checking whether SS4 holds city/state/zip separately or only inside address line 2.
+
+=== run_sql
+SELECT COUNT(*) n, COUNT(NULLIF(LTRIM(c.home_office_address_city),'')) ho_city, COUNT(NULLIF(LTRIM(c.billing_address_city),'')) b_city, COUNT(NULLIF(LTRIM(c.shipping_address_city),'')) s_city, COUNT(NULLIF(LTRIM(c.home_office_address_zip),'')) ho_zip, COUNT(NULLIF(LTRIM(c.home_office_address_line_3),'')) ho_l3, SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.addressLine2)))=UPPER(LTRIM(RTRIM(c.home_office_address_line_2))) THEN 1 ELSE 0 END) a2, SUM(CASE WHEN CHARINDEX(UPPER(LTRIM(RTRIM(b.city))), UPPER(c.home_office_address_line_2))=1 THEN 1 ELSE 0 END) city_in_l2, SUM(CASE WHEN CHARINDEX(LTRIM(RTRIM(b.postalCode)), c.home_office_address_line_2)>0 THEN 1 ELSE 0 END) zip_in_l2, COUNT(NULLIF(b.city,'')) bc_city FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS'
+--- result
+n | ho_city | b_city | s_city | ho_zip | ho_l3 | a2 | city_in_l2 | zip_in_l2 | bc_city
+3167 | 1 | 2 | 3114 | 1 | 164 | 2821 | 2750 | 2739 | 2938
+
+=== run_sql
+SELECT SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.city)))=UPPER(LTRIM(RTRIM(c.shipping_address_city))) THEN 1 ELSE 0 END) city_s, SUM(CASE WHEN LTRIM(RTRIM(b.state))=LTRIM(RTRIM(c.shipping_address_state)) THEN 1 ELSE 0 END) st_s, SUM(CASE WHEN LTRIM(RTRIM(b.postalCode))=LTRIM(RTRIM(c.shipping_address_zip)) THEN 1 ELSE 0 END) zip_s, COUNT(NULLIF(b.state,'')) bc_state, COUNT(NULLIF(b.postalCode,'')) bc_zip FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS'
+--- result
+city_s | st_s | zip_s | bc_state | bc_zip
+942 | 2790 | 0 | 2867 | 2954
+
+=== run_sql
+WITH x AS (SELECT b.city, b.state, b.postalCode, LTRIM(RTRIM(c.home_office_address_line_2)) l2 FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS'), p AS (SELECT *, CHARINDEX(',', l2) ci FROM x)
+SELECT COUNT(*) n, SUM(CASE WHEN ci>0 THEN 1 ELSE 0 END) hascomma,
+SUM(CASE WHEN ci>0 AND UPPER(LTRIM(RTRIM(city)))=UPPER(LTRIM(RTRIM(LEFT(l2,ci-1)))) THEN 1 ELSE 0 END) city_ok,
+SUM(CASE WHEN ci>0 AND LTRIM(RTRIM(state))=LEFT(LTRIM(SUBSTRING(l2,ci+1,100)),2) THEN 1 ELSE 0 END) st_ok,
+SUM(CASE WHEN ci>0 AND LTRIM(RTRIM(postalCode))=LTRIM(RTRIM(SUBSTRING(LTRIM(SUBSTRING(l2,ci+1,100)),3,100))) THEN 1 ELSE 0 END) zip_ok,
+SUM(CASE WHEN NULLIF(city,'') IS NOT NULL THEN 1 ELSE 0 END) bc_city
+FROM p
+--- result
+n | hascomma | city_ok | st_ok | zip_ok | bc_city
+3167 | 3048 | 2746 | 2427 | 2663 | 2938
+
+=== run_sql
+WITH x AS (SELECT b.number, b.addressLine2, b.city, b.state, b.postalCode, b.country, LTRIM(RTRIM(c.home_office_address_line_2)) l2 FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS'), p AS (SELECT *, CHARINDEX(',', l2) ci FROM x)
+SELECT TOP 20 number, addressLine2, l2, city, state, postalCode, country FROM p WHERE ci>0 AND NULLIF(state,'') IS NOT NULL AND LTRIM(RTRIM(state))<>LEFT(LTRIM(SUBSTRING(l2,ci+1,100)),2)
+--- result
+number | addressLine2 | l2 | city | state | postalCode | country
+15293 | 1455 NW IRVING STREET, SUITE 400 | 1455 NW IRVING STREET, SUITE 4 | Portland | OR | 97209 | US
+15294 | ATLANTA, GA  30339 | ATLANTA, GA 30339 | Atlanta | FL | 30339 | US
+15307 | SAINTE-MAIRE, QC  G6E 3T9 | SAINTE-MARIE, PQ G6E 4B6 | SAINTE-MARIE | MA | G6E 3T9 | CN
+15308 | SAINTE-MARIE, QC  G6E 3T9 | SAINTE-MARIE, PQ G6E 4B6 | SAINTE-MARIE | MA | G6E 3T9 | CN
+15315 | DES PERES, MO  63131-1836 | DES PERES, MO  63131-1836 | DES PERES | FL | 63131-1836 | US
+15338 | ST. LOUIS, MO  63119 | ST. LOUIS, MO  63119 | ST. LOUIS | FL | 63119 | US
+15339 | ST. LOUIS, MO  63119 | ST. LOUIS, MO  63119 | ST. LOUIS | FL | 63119 | US
+15354 | WHITE PLAINS, NY  10601 | WHITE PLAINS, NY  10601 | New York | CT | 10601 | US
+15357 | 207 KING STREET, SUITE 300 | 207 KING STREET, SUITE 300 | SAN FRANCISCO | CA | 94107 | US
+15358 | 207 KING STREET, SUITE 300 | 207 KING STREET, SUITE 300 | SAN FRANCISCO | CA | 94107 | US
+15925 | SAN FRANCISCO, CA  94103 | SAN FRANCISCO, CA  94103 | SAN FRANCISCO | WA | 94103 | US
+15929 | APEX, NC  27539 | APEX, NC  27539 | APEX | VA | 27539 | US
+15930 | APEX, NC  27539 | APEX, NC  27539 | APEX | VA | 27539 | US
+15973 | SAN ANTONIO, TX  78220 | SAN ANTONIO, TX  78220 | SAN ANTONIO | IN | 78220 | US
+15974 | SAN ANTONIO, TX  78220 | SAN ANTONIO, TX  78220 | SAN ANTONIO | IN | 78220 | US
+15990 | SACKVILLE, NB  E4L 1K9 | SACKVILLE, NB  E4L 1K9 | SACKVILLE | VA | E4L 1K9 | CA
+16551 | SARASOTA, FL  34238 | SARASOTA, FL  34238 | SARASOTA | NC | 34238 | US
+16556 | KENT, WA  98032-2442 | KENT, WA  98032-2442 | KENT | FL | 98032-2442 | US
+16560 | OLD BRIDGE, NJ  08857 | OLD BRIDGE, NJ  08857 | OLD BRIDGE | NY | 8857 | US
+16562 | SUITE 230, UNIT C | SUITE 230, UNIT C | SANTA BARBARA | CA | 93103 | US
+
+=== run_sql
+SELECT TOP 15 b.number, b.city, b.state, b.postalCode, c.shipping_address_city, c.shipping_address_state, c.shipping_address_zip, c.shipping_address_county, c.shipping_address_line_2, c.home_office_address_line_2 FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS' AND UPPER(LTRIM(RTRIM(b.city)))<>UPPER(LTRIM(RTRIM(c.shipping_address_city)))
+--- result
+number | city | state | postalCode | shipping_address_city | shipping_address_state | shipping_address_zip | shipping_address_county | shipping_address_line_2 | home_office_address_line_2
+15287 | SEATTLE | WA | 98109 | REDMOND | WA | NULL | KING | REDMOND, WA  98052 | SEATTLE, WA  98109
+15288 | SEATTLE | WA | 98109 | REDMOND | WA | NULL | KING | REDMOND, WA  98052 | SEATTLE, WA  98109
+15289 | SEATTLE | WA | 98109 | REDMOND | WA | NULL | KING | REDMOND, WA  98052 | SEATTLE, WA  98109
+15290 | SEATTLE | WA | 98109 | REDMOND | WA | NULL | KING | REDMOND, WA  98052 | SEATTLE, WA  98109
+15291 | SEATTLE | WA | 98109 | REDMOND | WA | NULL | KING | REDMOND, WA  98052 | SEATTLE, WA  98109
+15292 | SEATTLE | WA | 98109 | REDMOND | WA | NULL | KING | REDMOND, WA  98052 | SEATTLE, WA  98109
+15294 | Atlanta | FL | 30339 | MIRAMAR BEACH | FL | NULL | WALTON | 1 GRAND SANDESTIN BLVD. | ATLANTA, GA 30339
+15299 | ORANGE | CA | 92868 | INGLEWOOD | CA | NULL | LOS ANGELES | INGLEWOOD, CA  90303 | ORANGE, CA  92868
+15300 | ORANGE | CA | 92868 | INGLEWOOD | CA | NULL | LOS ANGELES | INGLEWOOD, CA  90303 | ORANGE, CA  92868
+15301 | Portland | OR | 97205 | HILLSBORO | OR | NULL | WASHINGTON | HILLSBORO, OR | PORTLAND, OR  97205
+15302 | Portland | OR | 97205 | HILLSBORO | OR | NULL | WASHINGTON | HILLSBORO, OR | PORTLAND, OR  97205
+15303 | Portland | OR | 97205 | HILLSBORO | OR | NULL | WASHINGTON | HILLSBORO, OR | PORTLAND, OR  97205
+15304 | Portland | OR | 97205 | HILLSBORO | OR | NULL | WASHINGTON | HILLSBORO, OR | PORTLAND, OR  97205
+15305 | Portland | OR | 97205 | HILLSBORO | OR | NULL | WASHINGTON | HILLSBORO, OR | PORTLAND, OR 97205
+15307 | SAINTE-MARIE | MA | G6E 3T9 | SOMERVILLE | MA | NULL | MIDDLESEX | SOMERVILLE, MA  02145 | SAINTE-MARIE, PQ G6E 4B6
+
+=== run_sql
+SELECT b.taxLiable, CASE WHEN NULLIF(LTRIM(c.tax_exempt_number),'') IS NULL THEN 'blank' ELSE 'set' END te, CASE WHEN c.state_tax>0 THEN 'st>0' ELSE 'st0' END st, b.blocked, COUNT(*) n FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS' GROUP BY b.taxLiable, CASE WHEN NULLIF(LTRIM(c.tax_exempt_number),'') IS NULL THEN 'blank' ELSE 'set' END, CASE WHEN c.state_tax>0 THEN 'st>0' ELSE 'st0' END, b.blocked
+--- result
+taxLiable | te | st | blocked | n
+False | blank | st0 | _x0020_ | 238
+False | set | st>0 | _x0020_ | 1
+False | set | st0 | _x0020_ | 1453
+True | blank | st0 | _x0020_ | 196
+True | set | st0 | _x0020_ | 1279
+
+=== run_sql
+SELECT COUNT(*) n, SUM(CASE WHEN TRY_CAST(b.balanceDue AS decimal(18,2))<>0 THEN 1 ELSE 0 END) bc_nz, SUM(CASE WHEN c.customer_balance<>0 THEN 1 ELSE 0 END) ss_nz, SUM(CASE WHEN TRY_CAST(b.balanceDue AS decimal(18,2))<>0 AND TRY_CAST(b.balanceDue AS decimal(18,2))=c.customer_balance THEN 1 ELSE 0 END) nz_eq, SUM(CASE WHEN TRY_CAST(b.balanceDue AS decimal(18,2))=0 AND c.customer_balance=0 THEN 1 ELSE 0 END) both0, SUM(CASE WHEN b.balanceDue IS NULL THEN 1 ELSE 0 END) bc_null FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS'
+--- result
+n | bc_nz | ss_nz | nz_eq | both0 | bc_null
+3167 | 304 | 12 | 0 | 1446 | 0
+
+=== Claude
+Balance and tax flags have no clean counterpart. Looking for email and country sources next.
+
+=== run_sql
+SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME FROM (SELECT * FROM ARData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQDataCor.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM SAPData.INFORMATION_SCHEMA.COLUMNS) c WHERE (COLUMN_NAME LIKE '%mail%' OR COLUMN_NAME LIKE '%Country%' OR COLUMN_NAME LIKE '%Taxable%' OR COLUMN_NAME LIKE '%Currency%') AND TABLE_NAME IN (SELECT TABLE_NAME FROM EQData.INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME='CustomerID' UNION SELECT TABLE_NAME FROM ARData.INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME IN ('CustomerID','customer_number') UNION SELECT TABLE_NAME FROM EQDataCor.INFORMATION_SCHEMA.COLUMNS WHERE COLUMN_NAME='CustomerID')
+--- result
+TABLE_CATALOG | TABLE_NAME | COLUMN_NAME
+EQData | Addresses | Country
+EQData | Addresses | Email
+ARData | ARInvoice | SendEmail
+ARData | ARInvoice | SRInvEmailFlag
+ARData | ARInvoice | SRInvEmailUser
+ARData | ARInvoiceDeleteArchive | SRInvEmailFlag
+ARData | ARInvoiceDeleteArchive | SRInvEmailUser
+EQDataCor | BillingInstructions | AccessoriesTaxable
+EQDataCor | BillingInstructions | AnchorTaxable
+EQDataCor | BillingInstructions | FreightInTaxable
+EQDataCor | BillingInstructions | FreightOutTaxable
+EQDataCor | BillingInstructions | PropertyTaxTaxable
+EQDataCor | BillingInstructions | RentTaxable
+EQDataCor | BillingInstructions | RepairAgreementTaxable
+EQDataCor | BillingInstructions515 | AccessoriesTaxable
+EQDataCor | BillingInstructions515 | AnchorTaxable
+EQDataCor | BillingInstructions515 | FreightInTaxable
+EQDataCor | BillingInstructions515 | FreightOutTaxable
+EQDataCor | BillingInstructions515 | PropertyTaxTaxable
+EQDataCor | BillingInstructions515 | RentTaxable
+EQDataCor | BillingInstructions515 | RepairAgreementTaxable
+EQDataCor | BillingInstructionsDetail | Taxable
+EQDataCor | BillingInstructionsDetail515 | Taxable
+ARData | CreditRequest | SendbackEmails
+EQData | Customer | MailingAddress
+EQData | Customer | MailingContact
+EQData | Customer | MailingFax
+EQData | Customer | MailingTelephone
+EQData | Customer | TaxingCountry
+EQData | CustSupp | CurrencyType
+EQData | CustSupp | ProjectEmail1
+EQData | CustSupp | ProjectEmail2
+EQDataCor | v_BillingInstructions | AccessoriesTaxable
+EQDataCor | v_BillingInstructions | AnchorTaxable
+EQDataCor | v_BillingInstructions | FreightInTaxable
+EQDataCor | v_BillingInstructions | FreightOutTaxable
+EQDataCor | v_BillingInstructions | PropertyTaxTaxable
+EQDataCor | v_BillingInstructions | RentTaxable
+EQDataCor | v_BillingInstructions | RepairAgreementTaxable
+EQData | vwCustomerInquiry | billingcountry
+EQData | vwCustomerInquiry | billingemail
+EQData | vwCustomerInquiry | MailAddressBlock
+EQData | vwCustomerInquiry | MailContactBlock
+EQData | vwCustomerInquiry | mailingaddress1
+EQData | vwCustomerInquiry | mailingaddress2
+EQData | vwCustomerInquiry | mailingaddress3
+EQData | vwCustomerInquiry | mailingaddress4
+EQData | vwCustomerInquiry | mailingcity
+EQData | vwCustomerInquiry | mailingcontact
+EQData | vwCustomerInquiry | mailingcountry
+(only the first 50 rows shown; aggregate or filter instead)
+
+=== run_sql
+SELECT COUNT(*) n, COUNT(s.CustomerID) has_s, COUNT(DISTINCT s.CustomerID) ds, SUM(CASE WHEN NULLIF(LTRIM(b.email),'') IS NOT NULL THEN 1 ELSE 0 END) bc_em, SUM(CASE WHEN LOWER(LTRIM(RTRIM(b.email)))=LOWER(LTRIM(RTRIM(s.ProjectEmail1))) THEN 1 ELSE 0 END) em1, SUM(CASE WHEN LOWER(LTRIM(RTRIM(b.email)))=LOWER(LTRIM(RTRIM(s.ProjectEmail2))) THEN 1 ELSE 0 END) em2, SUM(CASE WHEN b.currencyCode=s.CurrencyType THEN 1 ELSE 0 END) cur, SUM(CASE WHEN b.country=e.TaxingCountry THEN 1 ELSE 0 END) ctry, SUM(CASE WHEN NULLIF(b.country,'') IS NOT NULL THEN 1 ELSE 0 END) bc_ctry FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID=b.number LEFT JOIN EQData.dbo.Customer e ON e.CustomerID=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS'
+--- result
+n | has_s | ds | bc_em | em1 | em2 | cur | ctry | bc_ctry
+3167 | 3167 | 3167 | 2383 | 730 | 2 | 2874 | 0 | 2753
+
+=== run_sql
+SELECT TOP 10 b.number, b.email, s.ProjectEmail1, s.ProjectEmail2, b.country, e.TaxingCountry, b.currencyCode, s.CurrencyType FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID=b.number LEFT JOIN EQData.dbo.Customer e ON e.CustomerID=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS' AND b.email IS NOT NULL AND ISNULL(LOWER(LTRIM(RTRIM(b.email))),'')<>ISNULL(LOWER(LTRIM(RTRIM(s.ProjectEmail1))),'')
+--- result
+number | email | ProjectEmail1 | ProjectEmail2 | country | TaxingCountry | currencyCode | CurrencyType
+15287 | paul.padgett@skanska.com | paul.padgett@skanska.com,jeffrey.nelson@skanska.com | jlane@hswc.com | US | USA | USD | USD
+15292 | perkowskia@hswc.com | paul.padgett@skanska.com | jlane@hswc.com,jeffrey.nelson@skanska.com | US | USA | USD | USD
+15293 | mwright@batson-cook.com | perkowskia@hswc.com | jedgerton@hswc.com | US | USA | USD | USD
+15294 | mpeiser@austin-ind.com | mwright@batson-cook.com | rpruitt@batson-cook.com | US | USA | USD | USD
+15295 | julie@mrcrane.com;kameron@mrcrane.com | mpeiser@austin-ind.com | pwilliams@austin-ind.com | US | USA | USD | USD
+15299 | julie@mrcrane.com;kameron@mrcrane.com | julie@mrcrane.com,kameron@mrcrane.com | clint@mrcrane.com,alexl@mrcrane.com | US | USA | USD | USD
+15300 | kaleb-hunter@hoffmancorp.com | julie@mrcrane.com,kameron@mrcrane.com | clint@mrcrane.com,alexl@mrcrane.com | US | USA | USD | USD
+15305 | myy@ack-inc.com;ryan@ack-in.com;james@ack-inc.com | kaleb-hunter@hoffmancorp.com |  | US | USA | USD | USD
+15306 | jbrochu@structuresderek.com | myy@ack-inc.com,ryan@ack-in.com,james@ack-inc.com | aren@ack-inc.com,a.jones@morrow.com | US | USA | USD | USD
+15308 | glagerquist@andersen-const.com | jbrochu@structuresderek.com | dlessard@structuresderek.com | CN | USA | USD | USD
+
+=== Claude
+Interesting: BC emails look shifted by one record relative to SS4 ProjectEmail1. Measuring that.
+
+=== run_sql
+WITH s AS (SELECT CustomerID, REPLACE(LOWER(LTRIM(RTRIM(ProjectEmail1))),',',';') pe, LEAD(REPLACE(LOWER(LTRIM(RTRIM(ProjectEmail1))),',',';')) OVER (ORDER BY CustomerID) pe_next FROM EQData.dbo.CustSupp)
+SELECT COUNT(*) n, SUM(CASE WHEN NULLIF(LTRIM(b.email),'') IS NOT NULL THEN 1 ELSE 0 END) bc_em, SUM(CASE WHEN NULLIF(LTRIM(s.pe),'') IS NOT NULL THEN 1 ELSE 0 END) ss_em, SUM(CASE WHEN REPLACE(LOWER(LTRIM(RTRIM(b.email))),' ','')=REPLACE(s.pe,' ','') THEN 1 ELSE 0 END) same, SUM(CASE WHEN REPLACE(LOWER(LTRIM(RTRIM(b.email))),' ','')=REPLACE(s.pe_next,' ','') THEN 1 ELSE 0 END) nxt FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number LEFT JOIN s ON s.CustomerID=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS'
+--- result
+Rejected: one read-only query at a time; no INTO, EXEC, DDL or DML.
+
+=== run_sql
+WITH s AS (SELECT CustomerID, REPLACE(LOWER(LTRIM(RTRIM(ProjectEmail1))),',',CHAR(59)) pe, LEAD(REPLACE(LOWER(LTRIM(RTRIM(ProjectEmail1))),',',CHAR(59))) OVER (ORDER BY CustomerID) pe_next FROM EQData.dbo.CustSupp)
+SELECT COUNT(*) n, SUM(CASE WHEN NULLIF(LTRIM(b.email),'') IS NOT NULL THEN 1 ELSE 0 END) bc_em, SUM(CASE WHEN NULLIF(LTRIM(s.pe),'') IS NOT NULL THEN 1 ELSE 0 END) ss_em, SUM(CASE WHEN REPLACE(LOWER(LTRIM(RTRIM(b.email))),' ','')=REPLACE(s.pe,' ','') THEN 1 ELSE 0 END) same, SUM(CASE WHEN REPLACE(LOWER(LTRIM(RTRIM(b.email))),' ','')=REPLACE(s.pe_next,' ','') THEN 1 ELSE 0 END) nxt FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number LEFT JOIN s ON s.CustomerID=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS'
+--- result
+n | bc_em | ss_em | same | nxt
+3167 | 2383 | 2711 | 779 | 1910
+
+=== run_sql
+SELECT b.country, e.TaxingCountry, c.CompanyAbbr, s.CurrencyType, b.currencyCode, COUNT(*) n FROM #bc_raw b JOIN ARData.dbo.customer c ON c.customer_number=b.number LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID=b.number LEFT JOIN EQData.dbo.Customer e ON e.CustomerID=b.number WHERE ISNULL(c.CompanyAbbr,'')<>'AUS' GROUP BY b.country, e.TaxingCountry, c.CompanyAbbr, s.CurrencyType, b.currencyCode ORDER BY n DESC
+--- result
+country | TaxingCountry | CompanyAbbr | CurrencyType | currencyCode | n
+US | USA | COR | USD | USD | 2604
+NULL | USA | COR | USD | USD | 198
+NULL | NULL | COR | NULL | USD | 133
+NULL |  | COR |  | USD | 76
+US | NULL | COR | NULL | USD | 32
+CA | USA | COR | USD | USD | 20
+CA | CANADA | COR | USD | USD | 18
+US | USA | COR | NULL | USD | 14
+US | USA | COR | EUR | USD | 9
+CA | CANADA | CAN | CAD | USD | 8
+US | NULL | CAN | NULL | USD | 5
+CA | CANADA | CAN | EUR | USD | 4
+BS | Bahamas | COR | USD | USD | 4
+NULL |  | COR | USD | USD | 3
+US | NULL | NULL | NULL | USD | 3
+DE | USA | COR | USD | USD | 3
+MX | Mexico | MEX | USD | USD | 3
+BR | Brazil | COR | USD | USD | 2
+CN | USA | COR | USD | USD | 2
+KY | USA | COR | USD | USD | 2
+US |  | COR |  | USD | 2
+NULL | CANADA | COR | USD | USD | 2
+NULL | CAYMEN ISLANDS | COR | NULL | USD | 2
+BZ | USA | COR | USD | USD | 2
+CA | NULL | CAN | NULL | USD | 1
+CA | CANADA | CAN | CAD | CAD | 1
+CA | UNITED STATES | COR | USD | USD | 1
+CA | CANADA | CAN | USD | USD | 1
+CA | CANADA | COR | NULL | USD | 1
+BZ | BELIZE | COR | USD | USD | 1
+AU |  | COR |  | USD | 1
+US | UNITED STATES | COR | USD | USD | 1
+US | USA | COR | EUR | EUR | 1
+US | NULL | COR | USD | USD | 1
+CM | CAYMEN ISLANDS | COR | USD | USD | 1
+CN | Canada | COR | USD | USD | 1
+MX | USA | COR | EUR | USD | 1
+MX | USA | COR | USD | USD | 1
+HN | USA | COR | NULL | USD | 1
+KY | CAYMEN ISLANDS | COR | USD | USD | 1
+
+=== Claude
+Now drafting the spec and running it through check_spec.
+
+=== check_spec
+name: customers
+description: BC customers vs ARData customer master (+ EQData CustSupp email, EQData Customer taxing country)
+source_of_truth: ss4
+bc:
+  target: BC
+  api: standard
+  entity: customers
+  key: [number]
+ss4:
+  query: >-
+    SELECT c.customer_number, c.CompanyAbbr, c.customer_name,
+           c.home_office_address_line_1, c.home_office_address_line_2,
+           CASE WHEN CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) > 0
+                THEN LTRIM(RTRIM(LEFT(LTRIM(RTRIM(c.home_office_address_line_2)), CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) - 1))) END AS ho_city,
+           CASE WHEN CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) > 0
+                THEN LTRIM(RTRIM(SUBSTRING(LTRIM(SUBSTRING(LTRIM(RTRIM(c.home_office_address_line_2)), CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) + 1, 200)), 3, 200))) END AS ho_zip,
+           c.shipping_address_state, c.home_office_address_telephone,
+           UPPER(LTRIM(RTRIM(c.salesman_number_1))) AS salesman_upper,
+           REPLACE(s.ProjectEmail1, ',', CHAR(59)) AS project_email1,
+           CASE UPPER(LTRIM(RTRIM(e.TaxingCountry)))
+                WHEN 'USA' THEN 'US' WHEN 'UNITED STATES' THEN 'US'
+                WHEN 'CANADA' THEN 'CA' WHEN 'MEXICO' THEN 'MX'
+                WHEN 'BAHAMAS' THEN 'BS' WHEN 'BRAZIL' THEN 'BR'
+                WHEN 'BELIZE' THEN 'BZ' WHEN 'CAYMEN ISLANDS' THEN 'KY'
+                ELSE e.TaxingCountry END AS taxing_country_code
+      FROM ARData.dbo.customer c
+      LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.customer_number
+      LEFT JOIN EQData.dbo.Customer e ON e.CustomerID = c.customer_number
+  key: [customer_number]
+  where: ISNULL(CompanyAbbr, '') <> 'AUS'
+missing:
+  in_bc: info
+  in_ss4: error
+fields:
+  - bc: displayName
+    ss4: customer_name
+    type: text
+  - bc: addressLine1
+    ss4: home_office_address_line_1
+    type: text
+  - bc: addressLine2
+    ss4: home_office_address_line_2
+    type: text
+  - bc: city
+    ss4: ho_city
+    type: text
+  - bc: state
+    ss4: shipping_address_state
+    type: text
+  - bc: postalCode
+    ss4: ho_zip
+    type: text
+  - bc: country
+    ss4: taxing_country_code
+    type: text
+  - bc: phoneNumber
+    ss4: home_office_address_telephone
+    type: text
+  - bc: email
+    ss4: project_email1
+    type: text
+  - bc: salespersonCode
+    ss4: salesman_upper
+    type: text
+ignored:
+  - bc: type
+    reason: constant in BC
+
+--- result
+BC rows: 3,221   SS4 rows in scope: 14,261   paired by key: 3,167
+missing_in_ss4: 54   e.g. 1003, 1021, 1055, 1060, 1091
+missing_in_bc: 11,094   e.g. 0003, 0010, 0011, 0024, 0030
+field agreement on paired rows:
+  displayName -> customer_name: 595 differ of 3,167 compared (81.21% agree)
+      12919: BC='CIVIC CONSTRUCTION'  SS4='CIVIC CONSTRUCTION COMPANY, IN'
+      13004: BC='SELLEN CONSTRUCTION CO., INC.'  SS4='SELLEN CONSTRUCTION COMPANY'
+      14101: BC='HOFFMAN CONSTRUCTION COMPANY O'  SS4='HOFFMAN CONSTRUCTION CO. OF OR'
+  addressLine1 -> home_office_address_line_1: 172 differ of 3,167 compared (94.57% agree)
+      11678: BC='1000 DEXTER AVENUE N., SUITE 201'  SS4='1000 DEXTER AVENUE N., SUITE 2'
+      13630: BC='1751 HARBOR BAY PARKWAY, SUITE 200'  SS4='1751 HARBOR BAY PARKWAY, SUITE'
+      13836: BC='2101 N. ANDREWS AVE., SUITE 300'  SS4='2101 N. ANDREWS AVE., SUITE 30'
+  addressLine2 -> home_office_address_line_2: 345 differ of 3,167 compared (89.11% agree)
+      14338: BC='BROOKLYN, NY  11222'  SS4='BROOKLYN, NY 11222'
+      14473: BC=None  SS4='WEST POINT, GA  31833'
+      14530: BC=None  SS4='ST. LOUIS, MO  63114'
+  city -> ho_city: 409 differ of 3,167 compared (87.09% agree)
+      11934: BC='SAO PAULO'  SS4=None
+      14442: BC='LOS ANGELES'  SS4='550 SOUTH HOPE STREET'
+      14468: BC=None  SS4='GIG HARBOR'
+  state -> shipping_address_state: 367 differ of 3,167 compared (88.41% agree)
+      12084: BC=None  SS4='VA'
+      12909: BC=None  SS4='NJ'
+      12911: BC=None  SS4='NJ'
+  postalCode -> ho_zip: 485 differ of 3,167 compared (84.69% agree)
+      12909: BC='7073'  SS4='07073'
+      12911: BC='7073'  SS4='07073'
+      12912: BC='7073'  SS4='07073'
+  country -> taxing_country_code: 282 differ of 3,167 compared (91.10% agree)
+      14468: BC=None  SS4='US'
+      14474: BC=None  SS4='US'
+      14477: BC=None  SS4='US'
+  phoneNumber -> home_office_address_telephone: 328 differ of 3,167 compared (89.64% agree)
+      11678: BC=None  SS4='(206) 430-5975'
+      12767: BC=None  SS4='(414) 939-5979'
+      12908: BC=None  SS4='(201) 635-3600'
+  email -> project_email1: 2,134 differ of 3,167 compared (32.62% agree)
+      11678: BC=None  SS4='sness@hollandpartners.net'
+      12767: BC=None  SS4='kmerrill@gilbaneco.com'
+      12908: BC=None  SS4='krrundle@pcl.com'
+  salespersonCode -> salesman_upper: 455 differ of 3,167 compared (85.63% agree)
+      12084: BC=None  SS4='SIMPSON'
+      12909: BC=None  SS4='YAKIN'
+      12911: BC=None  SS4='YAKIN'
+
+=== submit_spec
+name: customers
+description: BC customers vs ARData customer master (+ EQData CustSupp email, EQData Customer taxing country)
+source_of_truth: ss4
+bc:
+  target: BC
+  api: standard
+  entity: customers
+  key: [number]
+ss4:
+  query: >-
+    SELECT c.customer_number, c.CompanyAbbr, c.customer_name,
+           c.home_office_address_line_1, c.home_office_address_line_2,
+           CASE WHEN CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) > 0
+                THEN LTRIM(RTRIM(LEFT(LTRIM(RTRIM(c.home_office_address_line_2)), CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) - 1))) END AS ho_city,
+           CASE WHEN CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) > 0
+                THEN LTRIM(RTRIM(SUBSTRING(LTRIM(SUBSTRING(LTRIM(RTRIM(c.home_office_address_line_2)), CHARINDEX(',', LTRIM(RTRIM(c.home_office_address_line_2))) + 1, 200)), 3, 200))) END AS ho_zip,
+           c.shipping_address_state, c.home_office_address_telephone,
+           UPPER(LTRIM(RTRIM(c.salesman_number_1))) AS salesman_upper,
+           REPLACE(s.ProjectEmail1, ',', CHAR(59)) AS project_email1,
+           CASE UPPER(LTRIM(RTRIM(e.TaxingCountry)))
+                WHEN 'USA' THEN 'US' WHEN 'UNITED STATES' THEN 'US'
+                WHEN 'CANADA' THEN 'CA' WHEN 'MEXICO' THEN 'MX'
+                WHEN 'BAHAMAS' THEN 'BS' WHEN 'BRAZIL' THEN 'BR'
+                WHEN 'BELIZE' THEN 'BZ' WHEN 'CAYMEN ISLANDS' THEN 'KY'
+                ELSE e.TaxingCountry END AS taxing_country_code
+      FROM ARData.dbo.customer c
+      LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.customer_number
+      LEFT JOIN EQData.dbo.Customer e ON e.CustomerID = c.customer_number
+  key: [customer_number]
+  where: ISNULL(CompanyAbbr, '') <> 'AUS'
+missing:
+  in_bc: info
+  in_ss4: error
+fields:
+  - bc: displayName
+    ss4: customer_name
+    type: text
+  - bc: addressLine1
+    ss4: home_office_address_line_1
+    type: text
+  - bc: addressLine2
+    ss4: home_office_address_line_2
+    type: text
+  - bc: city
+    ss4: ho_city
+    type: text
+  - bc: state
+    ss4: shipping_address_state
+    type: text
+  - bc: postalCode
+    ss4: ho_zip
+    type: text
+  - bc: country
+    ss4: taxing_country_code
+    type: text
+  - bc: phoneNumber
+    ss4: home_office_address_telephone
+    type: text
+  - bc: email
+    ss4: project_email1
+    type: text
+  - bc: salespersonCode
+    ss4: salesman_upper
+    type: text
+ignored:
+  - bc: type
+    reason: constant in BC ('Company')
+  - bc: website
+    reason: empty in BC
+  - bc: creditLimit
+    reason: empty in BC
+  - bc: taxRegistrationNumber
+    reason: empty in BC
+  - bc: id
+    reason: BC record GUID; not stored in ARData.dbo.customer. Partial BC-id copies exist (ARData.dbo.BC_Customers.BCId, SAPData.dbo.BC_Stage_Customer.BcId) but cover only ~200/670 rows
+  - bc: lastModifiedDateTime
+    reason: BC system timestamp, no SS4 counterpart
+  - bc: balanceDue
+    reason: BC computes it from its own ledger. ARData customer_balance is non-zero on only 12 paired rows and never equals a non-zero BC balance (304 rows). Deliberately not compared
+  - ss4: customer_balance
+    reason: looks like balanceDue, but it is a stale/unused balance (see balanceDue)
+  - bc: taxLiable
+    reason: no SS4 counterpart found. Does not line up with tax_exempt_number or state_tax
+  - bc: taxAreaId
+    reason: GUID of a BC lookup record (single value, 'AvaTax')
+  - bc: taxAreaDisplayName
+    reason: single value 'AvaTax' on 99.6% of rows, a BC-side setting with no SS4 counterpart
+  - bc: currencyId
+    reason: GUID of a BC lookup record
+  - bc: currencyCode
+    reason: EQData.CustSupp.CurrencyType was the candidate, but on the 23 paired rows where SS4 is non-USD, BC agrees on only 2. BC is USD almost everywhere. Agreement on distinctive values is too low to map
+  - bc: paymentTermsId
+    reason: GUID of a BC lookup record. The API exposes no code to compare
+  - bc: shipmentMethodId
+    reason: GUID of a BC lookup record. The API exposes no code to compare
+  - bc: paymentMethodId
+    reason: GUID of a BC lookup record. The API exposes no code to compare
+  - bc: blocked
+    reason: "'All' appears on only 11 rows, and none of them pair with SS4. No SS4 counterpart found (EQData.ARCustomerStatusFlags.AcctStatus does not line up)"
+
+TABLE / KEY
+- ARData.dbo.customer.customer_number = BC number. It is unique in SS4 (15,718 rows, 15,718 distinct) and in BC. 3,179 of 3,221 BC numbers exist there.
+- Alternatives considered: EQData.dbo.Customer (3,180 matches, but names agree worse: 2,203 vs 2,572). ARData.dbo.BC_Customers (1,222 rows, 207 match). SAPData.dbo.BC_Customer (315). SAPData.dbo.BC_Stage_Customer (670, a BC staging copy). All are partial; the last two look like copies of BC, not source data.
+
+SCOPE
+- where ISNULL(CompanyAbbr,'') <> 'AUS'. Twelve BC numbers (1011-1115) collide with Australian-company customer numbers. On those 12 pairs, name and address agree 0 times, so they are coincidental number collisions, not the same customer. CAN, MEX and NULL-company matches do agree on address, so they stay in.
+- No column cleanly separates the remaining ~11,094 unmatched SS4 rows; most are older numbers. I checked company, date_of_last_transaction, statement_sent_date, balance and ARCustomerStatusFlags. Match rate rises steadily with customer number (e.g. 100xx-128xx ≈0%, 148xx ≈55%), which suggests BC got an active subset chosen by some rule I could not find. missing_in_bc is set to info. A reviewer may want to identify the selection rule.
+- missing_in_ss4 (54): 24 three-letter codes (ACW…TRN), 4-digit 1000-1224 (BC-created numbers, 12 of them the AUS collisions above), 012026, RENTMO-like codes, INVALID, PR00030, TESTPUSH1, TEMPLATE-CRANE. These look BC-native or test records. I left this at error so they are reviewed.
+
+FIELDS (paired 3,167)
+- displayName -> customer_name: 81.2%. Of the 595 differences, 533 share the first 6 characters: legal-suffix variants such as 'CO., INC' vs 'COMPANY' and LLC vs INC. Some BC names are cut at 30 characters, others are longer than SS4 (also capped at 30). Same entity, edited names. Mapped; the differences are findings.
+- addressLine1 -> home_office_address_line_1: 94.6%. Many differences are SS4 truncated at 30 characters where BC has the full text.
+- addressLine2 -> home_office_address_line_2: 89.1%. Differences are BC blank where SS4 has a value, and double vs single spaces.
+- city / postalCode: SS4 stores them only inside home_office_address_line_2 ('CITY, ST  ZIP'), so the query parses them. These are computed columns: city is the text before the first comma; zip is the text after the comma minus the 2-letter state. City 87.1%, zip 84.7%. The differences are BC blanks, rows whose line 2 is a street or suite rather than city/state/zip, and BC zips that lost their leading zero (BC '7073' vs '07073', a BC-side defect).
+- state -> shipping_address_state (job-site state), not home office: 88.4% overall, 97% (2,790/2,867) where BC is filled. The home-office state parsed from line 2 agreed only 85% and disagreed on rows like ATLANTA, GA -> BC 'FL', where shipping state is FL. So BC state is the job-site/tax state while city and zip are the home office. This mixture is worth a reviewer's attention.
+- country -> EQData.Customer.TaxingCountry, mapped to ISO codes in the query (USA/UNITED STATES->US, CANADA->CA, etc.): 91.1%. Differences are mostly BC blank, plus some odd BC codes (CN, CM for Canada/Cayman).
+- phoneNumber -> home_office_address_telephone: 89.6%. Differences are mostly BC blank.
+- salespersonCode -> UPPER(salesman_number_1): 85.6%. SS4 is mixed case ('Morrow'), BC is upper. Differences are mostly BC blank.
+- email -> EQData.CustSupp.ProjectEmail1, with ',' replaced by ';' (BC uses ';' as separator): only 32.6% same-row agreement. I mapped it anyway because I verified the cause of most differences: 1,910 of 2,383 non-blank BC emails equal the ProjectEmail1 of the NEXT customer when CustSupp is ordered by CustomerID. For example, BC 15292 holds the email of SS4 15293. The BC emails appear shifted by one record, which looks like a load defect and is a major finding. ProjectEmail2 matches only 2.
+- Recurring pattern: blocks of paired records where BC is blank in address, phone, salesperson and country while SS4 has values, e.g. 12084, 12909-12912, 14468-14477. These are findings; I did not investigate the cause.
+
+UNCERTAIN
+- How the BC population was selected (see scope).
+- The city/zip parse is heuristic. Rows whose line 2 is not 'CITY, ST ZIP' will show as differences even when the data is fine.
+- source_of_truth = ss4: BC numbers and names come from the legacy system (30-character truncation), and SS4 holds no BC ids in the main table.
+--- result
+Saved to specs\proposed\customers.yaml. Finish with a short summary.
+
+=== Claude
+I've submitted the customers spec (saved to `specs\proposed\customers.yaml`). It maps BC customers to `ARData.dbo.customer`, keyed on `customer_number`, and 3,167 of the 3,221 BC rows pair. The most serious finding is that BC emails look shifted by one customer.
+
+**Fields compared** (agreement on the paired rows):
+
+| BC field | SS4 source | Agree |
+|---|---|---|
+| displayName | customer_name | 81% |
+| addressLine1 | home office address line 1 | 95% |
+| addressLine2 | home office address line 2 | 89% |
+| city, postalCode | worked out from home office line 2, which is the only place SS4 holds them | 87%, 85% |
+| state | shipping (job-site) state | 88%, or 97% where BC has a value |
+| country | `EQData.Customer.TaxingCountry`, with USA→US, CANADA→CA etc. | 91% |
+| phoneNumber | home office telephone | 90% |
+| salespersonCode | salesman_number_1, uppercased | 86% |
+| email | `EQData.CustSupp.ProjectEmail1`, commas swapped for semicolons | 33% |
+
+**What the reviewer should look at:**
+- **Emails:** 1,910 of the 2,383 BC emails match the *next* customer's email in SS4 (for example, BC 15292 holds 15293's email). I mapped the field anyway so the diff reports this.
+- **State:** BC's state comes from the job site, while its city and zip come from the home office address. On some customers they disagree (an Atlanta, GA office shows state FL).
+- **BC gaps:**
+  - Some customers have no address, phone or salesperson in BC even though SS4 has them (e.g. 12909–12912 and 14468–14477).
+  - Some BC zip codes lost their leading zero ('7073' instead of '07073').
+  - Most name differences are the same company with a different legal suffix ("CO., INC" vs "COMPANY").
+- **Scope:** I excluded the Australian company's customers. 12 BC numbers (1011–1115) happen to match Australian customer numbers, but names and addresses never agree, so they are different customers. I couldn't find what decided which of the other ~11,000 SS4 customers went into BC. It isn't company, last transaction date, statement date, balance or account status, and newer numbers are much more likely to be in BC. Rows missing from BC are therefore set to info.
+- **Rows only in BC (54):** these are left as errors. They look like records created in BC or test records, such as TESTPUSH1, TEMPLATE-CRANE and numbers 1000–1224.
+
+**Not compared**, with reasons in the spec:
+- **balanceDue:** the SS4 balance is almost always zero.
+- **currencyCode:** BC disagrees on 21 of the 23 customers where SS4 holds a non-USD currency.
+- **taxLiable and blocked:** no SS4 counterpart found.
+- **GUID lookups, the BC record id and timestamps:** not stored in the SS4 customer table.
+
+The city and zip split is a rough rule. Rows where address line 2 holds a street or suite rather than "City, ST ZIP" will show as differences even when the data is fine.
+
+Done: success, 48 turns, $1.04

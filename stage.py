@@ -41,10 +41,12 @@ def bc_url(spec: Spec, target: BcTarget) -> str:
 
 
 def fetch_bc(spec: Spec, client: BcClient) -> list[dict]:
-    """Every BC row, with only the fields the spec uses."""
+    """Every BC row the spec covers (its bc.filter, if any), with only the
+    fields the spec uses."""
     target = BcTarget.from_env(spec.bc.target)
     wanted = [*spec.bc.key, *(f.bc for f in spec.fields)]
-    return client.fetch_all(bc_url(spec, target), select=",".join(dict.fromkeys(wanted)))
+    return client.fetch_all(bc_url(spec, target), filter=spec.bc.filter,
+                            select=",".join(dict.fromkeys(wanted)))
 
 
 def convert(value, type_: str):
@@ -195,6 +197,7 @@ def is_default(text: str | None) -> bool:
         return False
 
 
+
 def profile_bc(rows: list[dict], fields: list[str]) -> list[FieldProfile]:
     """One profile per BC field.
 
@@ -206,13 +209,14 @@ def profile_bc(rows: list[dict], fields: list[str]) -> list[FieldProfile]:
       used      everything else
     """
     profiles = []
+    # loops over each field name from BC's received list of fields. 
     for name in fields:
-        values = Counter(raw_text(row.get(name)) for row in rows)
-        real = Counter({v: n for v, n in values.items() if not is_default(v)})
-        filled = sum(real.values())
-        if filled == 0:
+        values = Counter(raw_text(row.get(name)) for row in rows) #Counts every value (how often each instance of value in the field appears) 
+        real = Counter({v: n for v, n in values.items() if not is_default(v)}) #keep only the real values. real becomes a dictionary of only not-default values.
+        filled = sum(real.values()) #get the total of valid populated rows in this field. Uses it to answer: how mjuch evidence does this field offer?
+        if filled == 0: #An empty field can't be mapped at all.
             status = "empty"
-        elif len(values) == 1:
+        elif len(values) == 1: #If every value in the field is identical, it's a constant field, not useful for mapping and checking
             status = "constant"
         elif 100 * filled / len(rows) < SPARSE_PCT:
             status = "sparse"

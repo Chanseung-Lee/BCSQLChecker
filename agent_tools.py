@@ -19,7 +19,7 @@ from sqlalchemy.engine import Connection
 
 from diff import bc_is_blank, join_on, run_diff, ss4_scoped
 from spec import FORBIDDEN_SQL, Spec, SpecError, parse_spec
-from stage import FieldProfile, stage_bc
+from stage import FieldProfile, fetch_bc, stage_bc
 
 MAX_ROWS = 50                 # rows a query may return to the agent
 MAX_CELL = 80                 # characters per value shown
@@ -41,6 +41,7 @@ class MappingSession:
     entity: str
     submitted: Path | None = None
     log: list[str] = field(default_factory=list)   # every tool call, for review
+    client: Any = None    # BcClient, for re-fetching when a draft has a bc.filter
 
 
 def reply(text: str) -> dict[str, Any]:
@@ -81,8 +82,18 @@ def agree_pct(compared: int, differ: int) -> str:
     return f"{100 * (compared - differ) / compared:.2f}%" if compared else "n/a"
 
 
-def evaluate(conn: Connection, spec: Spec, rows: list[dict]) -> str:
+def evaluate(conn: Connection, spec: Spec, rows: list[dict], client=None) -> str:
     """Runs the real diff with a draft spec and summarizes it for the agent."""
+    # A bc.filter narrows which BC rows belong. It is OData syntax, so BC itself
+    # applies it: fetch again with the filter rather than reuse every staged row.
+    # A filter BC cannot parse comes back as an error the agent can read.
+    filter_note = ""
+    if spec.bc.filter:
+        if client is None:
+            raise RuntimeError("this draft has a bc.filter, but no BC client was provided")
+        rows = fetch_bc(spec, client)
+        filter_note = f" (after bc.filter: {spec.bc.filter})"
+
     stage = stage_bc(conn, spec, rows)
     conn.commit()   # a later rollback must not drop the staged table
     pairs = f"FROM {stage} b JOIN {ss4_scoped(spec)} s ON {join_on(spec)}"
@@ -94,7 +105,7 @@ def evaluate(conn: Connection, spec: Spec, rows: list[dict]) -> str:
     for f in findings:
         groups.setdefault((f.kind, f.column), []).append(f)
 
-    lines = [f"BC rows: {len(rows):,}   SS4 rows in scope: {in_scope:,}   paired by key: {paired:,}"]
+    lines = [f"BC rows: {len(rows):,}{filter_note}   SS4 rows in scope: {in_scope:,}   paired by key: {paired:,}"]
     for kind in ("duplicate_in_ss4", "duplicate_in_bc", "missing_in_ss4", "missing_in_bc"):
         items = groups.get((kind, None), [])
         if items:
@@ -181,7 +192,7 @@ def build_tools(session: MappingSession) -> list:
             return reply(f"The bc section must be target: {session.target}, api: {session.api}, "
                          f"entity: {session.entity}, the table being mapped.")
         try:
-            return reply(evaluate(conn, spec, session.rows))
+            return reply(evaluate(conn, spec, session.rows, session.client))
         except Exception as ex:
             conn.rollback()
             return reply(f"Running the diff failed: {error_text(ex)}")

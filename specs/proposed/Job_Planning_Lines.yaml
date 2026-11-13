@@ -1,0 +1,149 @@
+# PROPOSED by the mapping agent -- review before use.
+#
+# SCOPE
+# - BC side: bc.filter Job_Task_No eq '9500'. sov_planning_lines.py writes every SOV item to task 9500 (SOV_TASK) as a Billable G/L Account line (ROUTE='billable'). In BC, task 9500 holds 994 rows across 140 projects. All are Billable and G/L Account, and all were made by user C.LEE. The other 10,018 BC rows (tasks 1000/2000/2100/2200/...) come from other imports (the rent schedule and so on) or were entered by hand, so they are out of scope.
+# - SS4 side: ss4.query is the script's SQL_SOV_ITEMS plus build_lines(), turned into one SELECT:
+#   * The CTEs are rewritten as nested selects, with these parameters filled in: company '01', AS_OF 2026-10-30, since 2026-09-01, status 'A', rent code 'RNT'.
+#   * The latest SOV per ARID (MAX(PKID)) replaces the sov_rank window.
+#   * The script's Python filters are in the WHERE: Units<>0; NewContractAmount>0; Billable=1; BillAsCode not in TXT/RNT/RPR/PTX/ACT; ARBilling.Account2 not blank.
+#   * Line_No = 10000 x ROW_NUMBER per project, ordered by SOVItemNumber. This copies place_lines(), which starts numbering at 10000 because task 9500 was empty before the import. The 'skip identical existing line' check cannot be reproduced; it should not apply because the task was new.
+#   * Quantity/Unit_Price follow billable_line() with BILLABLE_AMOUNT='full'. If the contract amount divides evenly by the rate, the line is amount/rate units at the rate; otherwise it is 1 unit at the amount.
+#   * Planning date follows billable_date(): erection codes take Customer.ErectionDate, dismantle codes take DismantleDate, everything else takes AS_OF. The date is never earlier than 2026-10-30.
+# - Key: Job_No + Job_Task_No + Line_No. Every BC row paired (994/994), with no duplicates on either side. Before using the full scope I tested a stricter join (job + line no + G/L + description): 986 of the 994 matched.
+#
+# FIELD AGREEMENT (994 paired rows)
+# - Line_Type: 100%. Type: 100%. Both are constant, so this is weak evidence.
+# - No (G/L from ARBilling.Account2): 98.7%. Description (WorkDesc trimmed, first 100 chars): 98.3%.
+# - Quantity, Quantity_Base, Qty_to_Transfer_to_Invoice and Qty_to_Invoice: 98.8% each.
+# - Unit_Price and Unit_Price_LCY: 98.5%.
+# - Line_Amount, Line_Amount_LCY, Total_Price and Total_Price_LCY: 98.3%. All equal the contract amount.
+# - Planning_Date, Planned_Delivery_Date and Currency_Date: 99.3%. Currency_Date equals Planning_Date on every BC row.
+# - About 17 rows differ, concentrated in a few projects: 17241, 17242, 17282, 17460, 17556 and 17559. They look like neighbouring lines swapped or shifted: BC line N holds the item SS4 now numbers N±1. My inference, not checked: the SOV items in ss4 were added, removed, renumbered or repriced after the import, so the line numbers I compute no longer line up. Project 17393 (and a few others) has date differences: BC 2026-11-11 vs ss4 2026-11-16, and 2027-02-28 vs 2026-11-11 on 17245. This suggests the erection/dismantle dates in EQData.Customer changed after the import (also not verified). These are findings to review, not mapping errors.
+#
+# MISSING
+# - missing_in_bc: 1,000 SS4 lines, all on projects with no task-9500 lines in BC. The BC projects run 16600–17584, and the missing ones start at 17587. The script splits output into files of up to 1,000 lines (BATCH_SIZE), grouped by project in project order, and 994 is about one file. So my inference is that only part 1 was imported and part 2 (projects 17587 onward) was not. I left this as an error.
+# - Some differences may come from the scope itself. "Current contract" depends on live data (latest rent invoice, DismantleDate, ContractStatus), and a project can enter or leave scope after 2026-10-30. That could also cause missing_in_bc rows. No BC rows are missing from SS4 today.
+#
+# IGNORED
+# - BC-assigned fields: Job_Contract_Entry_No, User_ID, Gen_Prod_Posting_Group (comes from the G/L account, which is compared), Gen_Bus_Posting_Group (comes from the customer), and constants.
+# - Cost, posted and invoiced fields are empty or zero within task 9500.
+# - The script's review-file decisions (already-invoiced items, items with more than one SOV) cannot be compared.
+
+name: Job_Planning_Lines
+description: BC project planning lines in task 9500 (SOV billable lines from sov_planning_lines.py) vs ss4 Schedule of Values items
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Job_Planning_Lines
+  key: [Job_No, Job_Task_No, Line_No]
+  filter: Job_Task_No eq '9500'
+ss4:
+  query: >-
+    SELECT x.Job_No, '9500' AS Job_Task_No, x.Line_No, x.SOVItemNumber, x.BillAsCode, x.GL, x.WorkDesc,
+           'Billable' AS Line_Type, 'G/L Account' AS LineKind,
+           CASE WHEN x.Rate > 0 AND x.Amount % x.Rate = 0 THEN x.Amount / x.Rate ELSE 1 END AS Quantity,
+           CASE WHEN x.Rate > 0 AND x.Amount % x.Rate = 0 THEN x.Amount / x.Rate ELSE 1 END AS Quantity_Base,
+           CASE WHEN x.Rate > 0 AND x.Amount % x.Rate = 0 THEN x.Amount / x.Rate ELSE 1 END AS Qty_To_Transfer,
+           CASE WHEN x.Rate > 0 AND x.Amount % x.Rate = 0 THEN x.Amount / x.Rate ELSE 1 END AS Qty_To_Invoice,
+           CASE WHEN x.Rate > 0 AND x.Amount % x.Rate = 0 THEN x.Rate ELSE x.Amount END AS Unit_Price,
+           CASE WHEN x.Rate > 0 AND x.Amount % x.Rate = 0 THEN x.Rate ELSE x.Amount END AS Unit_Price_LCY,
+           x.Amount AS Line_Amount, x.Amount AS Line_Amount_LCY, x.Amount AS Total_Price, x.Amount AS Total_Price_LCY,
+           CASE WHEN x.EventDate IS NULL OR x.EventDate < '2026-10-30' THEN CAST('2026-10-30' AS date) ELSE x.EventDate END AS Planning_Date,
+           CASE WHEN x.EventDate IS NULL OR x.EventDate < '2026-10-30' THEN CAST('2026-10-30' AS date) ELSE x.EventDate END AS Delivery_Date,
+           CASE WHEN x.EventDate IS NULL OR x.EventDate < '2026-10-30' THEN CAST('2026-10-30' AS date) ELSE x.EventDate END AS Currency_Date
+      FROM (SELECT LTRIM(RTRIM(s.ARID)) AS Job_No, d.SOVItemNumber,
+                   LTRIM(RTRIM(ISNULL(d.BillAsCode, ''))) AS BillAsCode,
+                   LTRIM(RTRIM(ISNULL(a.Account2, ''))) AS GL,
+                   LEFT(LTRIM(RTRIM(ISNULL(d.WorkDesc, ''))), 100) AS WorkDesc,
+                   CAST(d.Rate AS decimal(19, 2)) AS Rate,
+                   CAST(d.NewContractAmount AS decimal(19, 2)) AS Amount,
+                   CAST(CASE WHEN LTRIM(RTRIM(d.BillAsCode)) IN ('ELSM','ELST','ELSWD','ETR','ETWE','EPD','LMPE','BSLSM','FRI','FRL','FRP','ANC','PRT') THEN cur.ErectionDate
+                        WHEN LTRIM(RTRIM(d.BillAsCode)) IN ('DLSM','DLST','DLSWD','DSTR','DPD','LMPD','FRO') THEN cur.DismantleDate END AS date) AS EventDate,
+                   10000 * ROW_NUMBER() OVER (PARTITION BY LTRIM(RTRIM(s.ARID)) ORDER BY d.SOVItemNumber) AS Line_No
+              FROM (SELECT ri.CustomerID, c.ErectionDate, c.DismantleDate
+                      FROM (SELECT i.InvoiceDate, LTRIM(RTRIM(i.CustomerID)) AS CustomerID,
+                                   ROW_NUMBER() OVER (PARTITION BY LTRIM(RTRIM(i.CustomerID)) ORDER BY i.InvoiceDate DESC, i.InvoiceID DESC) AS rn
+                              FROM ARData.dbo.ARInvoice i
+                             WHERE i.Company = '01' AND i.[Type] IN ('R', 'A') AND i.ProcessStatus = 'FINISHED'
+                               AND EXISTS (SELECT 1 FROM ARData.dbo.ARInvoiceDetail y WHERE y.InvoiceID = i.InvoiceID AND y.Item = 1 AND y.Quantity <> 0 AND y.Code = 'RNT')) ri
+                      JOIN EQData.dbo.Customer c ON LTRIM(RTRIM(c.CustomerID)) = ri.CustomerID
+                     WHERE ri.rn = 1 AND ri.InvoiceDate >= '2026-09-01' AND c.DismantleDate > '2026-10-30' AND c.ContractStatus = 'A') cur
+              JOIN SAPData.dbo.maSOV s ON LTRIM(RTRIM(s.ARID)) = cur.CustomerID
+              JOIN SAPData.dbo.maSOVDetails d ON d.SOVID = s.PKID
+              LEFT JOIN ARData.dbo.ARBilling a ON a.Company = '01' AND a.Code = d.BillAsCode
+             WHERE s.PKID = (SELECT MAX(s2.PKID) FROM SAPData.dbo.maSOV s2 WHERE LTRIM(RTRIM(s2.ARID)) = LTRIM(RTRIM(s.ARID)))
+               AND d.Units <> 0 AND ISNULL(d.NewContractAmount, 0) > 0 AND d.Billable = 1
+               AND LTRIM(RTRIM(ISNULL(d.BillAsCode, ''))) NOT IN ('TXT', 'RNT', 'RPR', 'PTX', 'ACT')
+               AND LTRIM(RTRIM(ISNULL(a.Account2, ''))) <> '') x
+  key: [Job_No, Job_Task_No, Line_No]
+missing:
+  in_bc: error
+  in_ss4: error
+fields:
+  - {bc: Line_Type, ss4: Line_Type, type: enum}
+  - {bc: Type, ss4: LineKind, type: enum}
+  - {bc: "No", ss4: GL, type: text}
+  - {bc: Description, ss4: WorkDesc, type: text}
+  - {bc: Quantity, ss4: Quantity, type: decimal}
+  - {bc: Quantity_Base, ss4: Quantity_Base, type: decimal}
+  - {bc: Qty_to_Transfer_to_Invoice, ss4: Qty_To_Transfer, type: decimal}
+  - {bc: Qty_to_Invoice, ss4: Qty_To_Invoice, type: decimal}
+  - {bc: Unit_Price, ss4: Unit_Price, type: decimal}
+  - {bc: Unit_Price_LCY, ss4: Unit_Price_LCY, type: decimal}
+  - {bc: Line_Amount, ss4: Line_Amount, type: decimal}
+  - {bc: Line_Amount_LCY, ss4: Line_Amount_LCY, type: decimal}
+  - {bc: Total_Price, ss4: Total_Price, type: decimal}
+  - {bc: Total_Price_LCY, ss4: Total_Price_LCY, type: decimal}
+  - {bc: Planning_Date, ss4: Planning_Date, type: date}
+  - {bc: Planned_Delivery_Date, ss4: Delivery_Date, type: date}
+  - {bc: Currency_Date, ss4: Currency_Date, type: date}
+ignored:
+  - {bc: Document_No, reason: empty in BC}
+  - {bc: Variant_Code, reason: empty in BC}
+  - {bc: Work_Type_Code, reason: empty in BC}
+  - {bc: Qty_to_Assemble, reason: empty in BC}
+  - {bc: Reserved_Quantity, reason: empty in BC}
+  - {bc: Line_Discount_Amount, reason: empty in BC}
+  - {bc: Line_Discount_Percent, reason: empty in BC}
+  - {bc: Qty_Posted, reason: empty in BC}
+  - {bc: Posted_Total_Cost, reason: empty in BC}
+  - {bc: Posted_Total_Cost_LCY, reason: empty in BC}
+  - {bc: Posted_Line_Amount, reason: empty in BC}
+  - {bc: Posted_Line_Amount_LCY, reason: empty in BC}
+  - {bc: Serial_No, reason: empty in BC}
+  - {bc: Lot_No, reason: empty in BC}
+  - {bc: Ledger_Entry_Type, reason: empty in BC}
+  - {bc: Ledger_Entry_No, reason: empty in BC}
+  - {bc: System_Created_Entry, reason: empty in BC}
+  - {bc: Qty_Picked, reason: empty in BC}
+  - {bc: Qty_Picked_Base, reason: empty in BC}
+  - {bc: Usage_Link, reason: empty within task 9500 scope; import does not set it}
+  - {bc: Tax_Group_Code, reason: empty within task 9500 scope}
+  - {bc: Description_2, reason: empty within task 9500 scope}
+  - {bc: Location_Code, reason: empty within task 9500 scope}
+  - {bc: Bin_Code, reason: empty within task 9500 scope}
+  - {bc: Unit_of_Measure_Code, reason: empty within task 9500 scope}
+  - {bc: Remaining_Qty, reason: empty within task 9500 scope}
+  - {bc: Direct_Unit_Cost_LCY, reason: empty within task 9500 scope (no cost on SOV billable lines)}
+  - {bc: Unit_Cost, reason: empty within task 9500 scope}
+  - {bc: Unit_Cost_LCY, reason: empty within task 9500 scope}
+  - {bc: Total_Cost, reason: empty within task 9500 scope}
+  - {bc: Total_Cost_LCY, reason: empty within task 9500 scope}
+  - {bc: Remaining_Total_Cost, reason: empty within task 9500 scope}
+  - {bc: Remaining_Total_Cost_LCY, reason: empty within task 9500 scope}
+  - {bc: Remaining_Line_Amount, reason: empty within task 9500 scope}
+  - {bc: Remaining_Line_Amount_LCY, reason: empty within task 9500 scope}
+  - {bc: Qty_Invoiced, reason: "empty within task 9500 scope; BC posting state, not imported"}
+  - {bc: Qty_Transferred_to_Invoice, reason: "0 on all 9500 lines; BC invoicing state, not imported"}
+  - {bc: Invoiced_Amount_LCY, reason: empty within task 9500 scope; BC posting state}
+  - {bc: Invoiced_Cost_Amount_LCY, reason: empty within task 9500 scope; BC posting state}
+  - {bc: Overdue, reason: empty within task 9500 scope; BC-computed flag}
+  - {bc: Price_Calculation_Method, reason: "constant in BC (BC default 'Lowest Price')"}
+  - {bc: Cost_Calculation_Method, reason: "constant in BC (BC default 'Lowest Price')"}
+  - {bc: ReserveName, reason: "constant in BC within scope ('Never', BC default)"}
+  - {bc: Contract_Line, reason: constant True in scope; BC sets it for Billable lines}
+  - {bc: Gen_Bus_Posting_Group, reason: "BC fills from the project's customer (69 of 994 rows 'DOMESTIC'); no ss4 source in the import"}
+  - {bc: Gen_Prod_Posting_Group, reason: "BC fills it from the G/L account (No), which is compared; the import does not set it"}
+  - {bc: User_ID, reason: "BC user who ran the import (C.LEE on all 994); no ss4 counterpart"}
+  - {bc: Job_Contract_Entry_No, reason: "BC-assigned sequence number; no ss4 counterpart"}

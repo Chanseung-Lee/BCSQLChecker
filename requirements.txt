@@ -6,3 +6,4 @@ pandas
 msal
 httpx
 pyyaml
+openpyxl

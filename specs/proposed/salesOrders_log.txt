@@ -1,61 +1,61 @@
 === task
 Map the BC table `salesOrders` to SS4.
 
-It has 141 rows, all staged in #bc_raw.
+It has 147 rows, all staged in #bc_raw.
 
 BC field profile ("real values" excludes blanks, zeros and false):
 field | status | real values | distinct | most common values
-id | used | 100.0% | 141 | '830251ca-9821-f111-8340-6045bdd66a89' x1, '3592d1d2-9271-f111-8070-7c1e5297c45e' x1, '7b898bc8-ce73-f111-8070-7c1e52a414ec' x1
-number | used | 100.0% | 141 | 'S-ORD101001' x1, 'S-ORD101010' x1, 'S-ORD101011' x1
-externalDocumentNumber | used | 7.1% | 5 | 'PO-2929-2026' x4, 'PO#' x3, '123456789' x1
-orderDate | used | 100.0% | 37 | '2026-11-02' x39, '2026-11-03' x8, '2026-11-05' x8
-postingDate | used | 100.0% | 37 | '2026-11-02' x39, '2026-11-03' x8, '2026-11-05' x8
-customerId | used | 95.7% | 50 | 'b58173ce-78d1-f111-a056-6045bd7bc60d' x20, '6b6e548d-f901-f111-8405-000d3a4f1754' x13, '880da808-e590-f111-8072-000d3a04fb23' x8
-customerNumber | used | 95.7% | 50 | 'INVALID' x20, '2929' x13, 'AME' x8
-customerName | used | 95.7% | 37 | 'Morrow Equipment Company, L.L.C.' x48, 'MEC Internal Salem District' x18, 'KIEWIT POWER CONSTRUCTORS' x13
-billToName | used | 95.7% | 37 | 'Morrow Equipment Company, L.L.C.' x48, 'MEC Internal Salem District' x18, 'KIEWIT POWER CONSTRUCTORS' x13
-billToCustomerId | used | 95.7% | 49 | 'b58173ce-78d1-f111-a056-6045bd7bc60d' x20, '6b6e548d-f901-f111-8405-000d3a4f1754' x13, '880da808-e590-f111-8072-000d3a04fb23' x8
-billToCustomerNumber | used | 95.7% | 49 | 'INVALID' x20, '2929' x13, 'AME' x8
-shipToName | used | 95.7% | 37 | 'Morrow Equipment Company, L.L.C.' x48, 'MEC Internal Salem District' x18, 'KIEWIT POWER CONSTRUCTORS' x13
-shipToContact | used | 16.3% | 15 | 'JOSH CALQUHOUN' x3, 'DALE D.WRIGHT@MORROW.COM' x2, 'ROBERTA HSU' x2
-sellToAddressLine1 | used | 93.6% | 48 | '3218 Pringle Rd SE' x21, 'PO BOX 452500' x13, '3218 Pringle Road, SE' x9
-sellToAddressLine2 | used | 47.5% | 26 | 'Salem District' x18, 'P.O. Box 3306' x9, 'P.O. Box 250\nMillwood, NY  10546-0250' x5
-sellToCity | used | 75.9% | 36 | 'Salem' x31, 'American Canyon' x8, 'NWAcworth' x6
-sellToCountry | used | 74.5% | 3 | 'US' x97, 'CA' x7, 'BR' x1
-sellToState | used | 66.0% | 17 | 'OR' x32, 'IL' x10, 'CA' x9
-sellToPostCode | used | 41.8% | 26 | '97302' x22, '90071' x4, '77539-2417' x4
-billToAddressLine1 | used | 93.6% | 47 | '3218 Pringle Rd SE' x21, 'PO BOX 452500' x13, '3218 Pringle Road, SE' x9
-billToAddressLine2 | used | 46.8% | 25 | 'Salem District' x18, 'P.O. Box 3306' x9, 'P.O. Box 250\nMillwood, NY  10546-0250' x5
-billToCity | used | 75.9% | 36 | 'Salem' x30, 'American Canyon' x8, 'NWAcworth' x7
-billToCountry | used | 74.5% | 3 | 'US' x97, 'CA' x7, 'BR' x1
-billToState | used | 66.0% | 17 | 'OR' x31, 'IL' x10, 'CA' x9
-billToPostCode | used | 41.1% | 26 | '97302' x21, '90071' x4, '77539-2417' x4
-shipToAddressLine1 | used | 93.6% | 49 | '3218 Pringle Rd SE' x21, 'PO BOX 452500' x10, '3218 Pringle Road, SE' x9
-shipToAddressLine2 | used | 50.4% | 29 | 'Salem District' x18, 'P.O. Box 3306' x9, 'P.O. Box 250\nMillwood, NY  10546-0250' x5
-shipToCity | used | 78.7% | 38 | 'Salem' x31, 'American Canyon' x8, 'NWAcworth' x6
-shipToCountry | used | 75.9% | 3 | 'US' x99, 'CA' x7, 'BR' x1
-shipToState | used | 69.5% | 18 | 'OR' x32, 'IL' x10, 'CA' x9
-shipToPostCode | used | 45.4% | 29 | '97302' x22, '90071' x4, '77539-2417' x4
-shortcutDimension1Code | used | 31.2% | 11 | 'MAN' x18, 'ACW' x8, 'POM' x3
+id | used | 100.0% | 147 | '830251ca-9821-f111-8340-6045bdd66a89' x1, '3592d1d2-9271-f111-8070-7c1e5297c45e' x1, '7b898bc8-ce73-f111-8070-7c1e52a414ec' x1
+number | used | 100.0% | 147 | 'S-ORD101001' x1, 'S-ORD101010' x1, 'S-ORD101011' x1
+externalDocumentNumber | used | 6.8% | 5 | 'PO-2929-2026' x4, 'PO#' x3, '123456789' x1
+orderDate | used | 100.0% | 38 | '2026-11-02' x39, '2026-11-03' x8, '2026-11-05' x8
+postingDate | used | 100.0% | 38 | '2026-11-02' x39, '2026-11-03' x8, '2026-11-05' x8
+customerId | used | 95.9% | 52 | 'b58173ce-78d1-f111-a056-6045bd7bc60d' x20, '6b6e548d-f901-f111-8405-000d3a4f1754' x13, '880da808-e590-f111-8072-000d3a04fb23' x8
+customerNumber | used | 95.9% | 52 | 'INVALID' x20, '2929' x13, 'AME' x8
+customerName | used | 95.9% | 37 | 'Morrow Equipment Company, L.L.C.' x53, 'MEC Internal Salem District' x18, 'KIEWIT POWER CONSTRUCTORS' x13
+billToName | used | 95.9% | 37 | 'Morrow Equipment Company, L.L.C.' x53, 'MEC Internal Salem District' x18, 'KIEWIT POWER CONSTRUCTORS' x13
+billToCustomerId | used | 95.9% | 51 | 'b58173ce-78d1-f111-a056-6045bd7bc60d' x20, '6b6e548d-f901-f111-8405-000d3a4f1754' x13, '880da808-e590-f111-8072-000d3a04fb23' x8
+billToCustomerNumber | used | 95.9% | 51 | 'INVALID' x20, '2929' x13, 'AME' x8
+shipToName | used | 95.9% | 37 | 'Morrow Equipment Company, L.L.C.' x53, 'MEC Internal Salem District' x18, 'KIEWIT POWER CONSTRUCTORS' x13
+shipToContact | used | 15.6% | 15 | 'JOSH CALQUHOUN' x3, 'DALE D.WRIGHT@MORROW.COM' x2, 'ROBERTA HSU' x2
+sellToAddressLine1 | used | 93.9% | 49 | '3218 Pringle Rd SE' x21, 'PO BOX 452500' x13, '3218 Pringle Road, SE' x9
+sellToAddressLine2 | used | 46.3% | 27 | 'Salem District' x18, 'P.O. Box 3306\n' x6, 'P.O. Box 250\nMillwood, NY  10546-0250' x6
+sellToCity | used | 76.2% | 37 | 'Salem' x31, 'American Canyon' x8, 'NWAcworth' x6
+sellToCountry | used | 74.8% | 3 | 'US' x102, 'CA' x7, 'BR' x1
+sellToState | used | 66.7% | 17 | 'OR' x32, 'IL' x10, 'CA' x9
+sellToPostCode | used | 40.1% | 26 | '97302' x22, '90071' x4, '77539-2417' x4
+billToAddressLine1 | used | 93.9% | 48 | '3218 Pringle Rd SE' x21, 'PO BOX 452500' x13, '3218 Pringle Road, SE' x9
+billToAddressLine2 | used | 45.6% | 26 | 'Salem District' x18, 'P.O. Box 3306\n' x6, 'P.O. Box 250\nMillwood, NY  10546-0250' x6
+billToCity | used | 76.2% | 37 | 'Salem' x30, 'American Canyon' x8, 'NWAcworth' x7
+billToCountry | used | 74.8% | 3 | 'US' x102, 'CA' x7, 'BR' x1
+billToState | used | 66.7% | 17 | 'OR' x31, 'IL' x10, 'CA' x9
+billToPostCode | used | 39.5% | 26 | '97302' x21, '90071' x4, '77539-2417' x4
+shipToAddressLine1 | used | 93.9% | 50 | '3218 Pringle Rd SE' x21, 'PO BOX 452500' x10, '3218 Pringle Road, SE' x9
+shipToAddressLine2 | used | 49.0% | 30 | 'Salem District' x18, 'P.O. Box 3306\n' x6, 'P.O. Box 250\nMillwood, NY  10546-0250' x6
+shipToCity | used | 78.9% | 39 | 'Salem' x31, 'American Canyon' x8, 'NWAcworth' x6
+shipToCountry | used | 76.2% | 3 | 'US' x104, 'CA' x7, 'BR' x1
+shipToState | used | 70.1% | 18 | 'OR' x32, 'IL' x10, 'CA' x9
+shipToPostCode | used | 43.5% | 29 | '97302' x22, '90071' x4, '77539-2417' x4
+shortcutDimension1Code | used | 32.7% | 12 | 'MAN' x18, 'ACW' x8, 'TAM' x4
 shortcutDimension2Code | sparse | 1.4% | 2 | '16498' x1, '15578' x1
-currencyId | used | 5.7% | 2 | '0cdf7b19-31fd-f011-8405-7c1e52fd407e' x4, '07df7b19-31fd-f011-8405-7c1e52fd407e' x4
-currencyCode | used | 100.0% | 3 | 'USD' x133, 'EUR' x4, 'CAD' x4
+currencyId | used | 5.4% | 2 | '0cdf7b19-31fd-f011-8405-7c1e52fd407e' x4, '07df7b19-31fd-f011-8405-7c1e52fd407e' x4
+currencyCode | used | 100.0% | 3 | 'USD' x139, 'EUR' x4, 'CAD' x4
 pricesIncludeTax | empty | 0.0% | 0 | 
-paymentTermsId | used | 63.8% | 4 | '12968313-31fd-f011-8405-7c1e52fd407e' x69, '737eefed-e001-f111-8405-000d3a4f1754' x18, '10968313-31fd-f011-8405-7c1e52fd407e' x2
-shipmentMethodId | used | 20.6% | 7 | '9f4c9179-63cd-f111-a056-7c1e52e7b237' x15, '1168ad15-2cc3-f111-a056-7c1e524506e4' x3, '117ba4fb-88be-f111-aaa8-7c1e52cc3fa7' x3
-salesperson | used | 12.8% | 10 | 'MAIRN' x3, 'PNW' x3, 'JONES' x2
-partialShipping | constant | 100.0% | 1 | 'True' x141
-requestedDeliveryDate | used | 6.4% | 7 | '2026-11-10' x2, '2026-11-09' x2, '2026-08-14' x1
+paymentTermsId | used | 61.9% | 4 | '12968313-31fd-f011-8405-7c1e52fd407e' x70, '737eefed-e001-f111-8405-000d3a4f1754' x18, '10968313-31fd-f011-8405-7c1e52fd407e' x2
+shipmentMethodId | used | 19.7% | 7 | '9f4c9179-63cd-f111-a056-7c1e52e7b237' x15, '1168ad15-2cc3-f111-a056-7c1e524506e4' x3, '117ba4fb-88be-f111-aaa8-7c1e52cc3fa7' x3
+salesperson | used | 12.2% | 10 | 'MAIRN' x3, 'PNW' x3, 'JONES' x2
+partialShipping | constant | 100.0% | 1 | 'True' x147
+requestedDeliveryDate | used | 6.8% | 8 | '2026-11-10' x2, '2026-11-09' x2, '2026-08-14' x1
 discountAmount | empty | 0.0% | 0 | 
-discountAppliedBeforeTax | used | 83.7% | 1 | 'True' x118
-totalAmountExcludingTax | used | 58.2% | 55 | '233.74' x9, '500' x7, '200' x4
-totalTaxAmount | used | 6.4% | 9 | '232.5' x1, '0.5' x1, '5508.51' x1
-totalAmountIncludingTax | used | 58.2% | 60 | '233.74' x8, '500' x7, '200' x4
-fullyShipped | used | 68.1% | 1 | 'True' x96
-status | used | 100.0% | 3 | 'Draft' x106, 'Open' x32, 'In_x0020_Review' x3
-lastModifiedDateTime | used | 100.0% | 141 | '2026-11-10T05:30:26.047Z' x1, '2026-09-29T23:26:07.583Z' x1, '2026-11-04T23:05:51.44Z' x1
-phoneNumber | used | 29.8% | 17 | '5035855721' x18, '(425) 861-9520' x3, '(808) 671-6460' x2
-email | used | 41.1% | 19 | 'sf@morrow.com' x8, 'salem@morrow.com' x7, 'atlanta@morrow.com' x6
+discountAppliedBeforeTax | used | 83.7% | 1 | 'True' x123
+totalAmountExcludingTax | used | 59.2% | 57 | '233.74' x9, '500' x7, '200' x4
+totalTaxAmount | used | 6.1% | 9 | '232.5' x1, '0.5' x1, '5508.51' x1
+totalAmountIncludingTax | used | 59.2% | 62 | '233.74' x8, '500' x7, '200' x4
+fullyShipped | used | 68.7% | 1 | 'True' x101
+status | used | 100.0% | 3 | 'Draft' x108, 'Open' x36, 'In_x0020_Review' x3
+lastModifiedDateTime | used | 100.0% | 147 | '2026-11-10T05:30:26.047Z' x1, '2026-09-29T23:26:07.583Z' x1, '2026-11-04T23:05:51.44Z' x1
+phoneNumber | used | 28.6% | 17 | '5035855721' x18, '(425) 861-9520' x3, '(808) 671-6460' x2
+email | used | 42.9% | 20 | 'sf@morrow.com' x8, 'salem@morrow.com' x7, 'atlanta@morrow.com' x6
 
 SS4 databases to search: SAPData, EQData, EQDataCor, ARData, IMData
 
@@ -64,9 +64,9 @@ api: standard, entity: salesOrders. When you are confident, call submit_spec.
 
 
 === run_sql
-SELECT TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, COUNT(*) c FROM (SELECT * FROM SAPData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQDataCor.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM ARData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM IMData.INFORMATION_SCHEMA.COLUMNS) x WHERE TABLE_NAME LIKE '%order%' OR TABLE_NAME LIKE '%sales%' OR TABLE_NAME LIKE '%SO%' GROUP BY TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME
+SELECT TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME, COUNT(*) cols FROM (SELECT * FROM SAPData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM EQDataCor.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM ARData.INFORMATION_SCHEMA.COLUMNS UNION ALL SELECT * FROM IMData.INFORMATION_SCHEMA.COLUMNS) c WHERE TABLE_NAME LIKE '%order%' OR TABLE_NAME LIKE '%sales%' OR TABLE_NAME LIKE '%SO%' GROUP BY TABLE_CATALOG, TABLE_SCHEMA, TABLE_NAME
 --- result
-TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | c
+TABLE_CATALOG | TABLE_SCHEMA | TABLE_NAME | cols
 ARData | dbo | ECRSODetail | 6
 ARData | dbo | salesman | 6
 ARData | dbo | SRSODetail | 6
@@ -176,13 +176,7 @@ Email | nvarchar
 (only the first 50 rows shown; aggregate or filter instead)
 
 === run_sql
-SELECT COUNT(*) n FROM SAPData.dbo.BC_SalesOrder
---- result
-n
-123
-
-=== run_sql
-SELECT COLUMN_NAME, DATA_TYPE FROM SAPData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='BC_SalesOrder' AND ORDINAL_POSITION>50 ORDER BY ORDINAL_POSITION
+SELECT COLUMN_NAME, DATA_TYPE FROM SAPData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='BC_SalesOrder' AND ORDINAL_POSITION>50 ORDER BY ORDINAL_POSITION;
 --- result
 COLUMN_NAME | DATA_TYPE
 LastModifiedDateTime | datetimeoffset
@@ -198,47 +192,89 @@ ArchivedBy | nvarchar
 ArchiveCheckedAt | datetime2
 
 === run_sql
-SELECT (SELECT COUNT(*) FROM #bc_raw b JOIN SAPData.dbo.BC_SalesOrder s ON s.Number=b.number) byNum, (SELECT COUNT(*) FROM #bc_raw b JOIN SAPData.dbo.BC_SalesOrder s ON s.Id=TRY_CAST(b.id AS uniqueidentifier)) byId, (SELECT COUNT(DISTINCT Number) FROM SAPData.dbo.BC_SalesOrder) dn, (SELECT COUNT(*) FROM SAPData.dbo.BC_SalesOrder WHERE Number IS NULL OR Number='') blank, (SELECT COUNT(*) FROM #bc_raw b JOIN SAPData.dbo.BC_SalesOrder s ON s.Number=b.number AND s.Id<>TRY_CAST(b.id AS uniqueidentifier)) idDiff
+SELECT COUNT(*) total, COUNT(DISTINCT Number) dn, COUNT(DISTINCT Id) di, SUM(CASE WHEN EXISTS(SELECT 1 FROM #bc_raw b WHERE b.number=s.Number) THEN 1 ELSE 0 END) num_match, SUM(CASE WHEN EXISTS(SELECT 1 FROM #bc_raw b WHERE TRY_CAST(b.id AS uniqueidentifier)=s.Id) THEN 1 ELSE 0 END) id_match FROM SAPData.dbo.BC_SalesOrder s
 --- result
-byNum | byId | dn | blank | idDiff
-100 | 100 | 123 | 0 | 0
+SQL error: ('42000', '[42000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot perform an aggregate function on an expression containing an aggregate or a subquery. (130) (SQLExecDirectW); [42000] [Microsoft][ODBC Driver 17 for SQL Server][SQL Server]Cannot perform an aggregate function on an expression containing an aggregate or a subquery. (130)')
 
 === run_sql
-SELECT s.CompanyId, s.IsDeleted, CASE WHEN b.number IS NULL THEN 0 ELSE 1 END matched, COUNT(*) n, MIN(s.LastSeenAt) minSeen, MAX(s.LastSeenAt) maxSeen, MAX(s.LastSyncedAt) maxSync FROM SAPData.dbo.BC_SalesOrder s LEFT JOIN #bc_raw b ON b.number=s.Number GROUP BY s.CompanyId, s.IsDeleted, CASE WHEN b.number IS NULL THEN 0 ELSE 1 END
+SELECT TOP 5 Number, OrderNumber=NULL FROM SAPData.dbo.BC_SalesOrder; 
 --- result
-CompanyId | IsDeleted | matched | n | minSeen | maxSeen | maxSync
-C463254A-7C06-F111-8405-6045BDD66A89 | False | 1 | 100 | 2026-11-11 22:30:05.890000 | 2026-11-11 22:30:05.890000 | 2026-11-10 22:30:15.341000
-C463254A-7C06-F111-8405-6045BDD66A89 | True | 0 | 23 | 2026-09-22 15:00:12.098000 | 2026-10-28 22:00:03.785000 | 2026-10-28 22:30:07.315000
+Number | OrderNumber
+S-ORD101012 | NULL
+S-ORD101013 | NULL
+S-ORD101058 | NULL
+S-ORD101059 | NULL
+S-ORD101037 | NULL
 
 === run_sql
-SELECT MIN(b.number) mn, MAX(b.number) mx, MIN(b.lastModifiedDateTime) minmod, MAX(b.lastModifiedDateTime) maxmod, COUNT(*) n FROM #bc_raw b WHERE NOT EXISTS (SELECT 1 FROM SAPData.dbo.BC_SalesOrder s WHERE s.Number=b.number)
+SELECT CAST(s.CompanyId AS nvarchar(40)) co, s.IsDeleted, CASE WHEN s.ArchiveVersionNo IS NULL THEN 0 ELSE 1 END arch, COUNT(*) n, COUNT(DISTINCT s.Number) dn, SUM(CASE WHEN b.number IS NOT NULL THEN 1 ELSE 0 END) nm, SUM(CASE WHEN b.id IS NOT NULL AND TRY_CAST(b.id AS uniqueidentifier)=s.Id THEN 1 ELSE 0 END) idm FROM SAPData.dbo.BC_SalesOrder s LEFT JOIN #bc_raw b ON b.number=s.Number GROUP BY s.CompanyId, s.IsDeleted, CASE WHEN s.ArchiveVersionNo IS NULL THEN 0 ELSE 1 END
 --- result
-mn | mx | minmod | maxmod | n
-S-ORD101148 | S-ORD101191 | 2026-11-03T13:26:54.56Z | 2026-11-11T22:37:34.157Z | 41
+co | IsDeleted | arch | n | dn | nm | idm
+C463254A-7C06-F111-8405-6045BDD66A89 | False | 0 | 100 | 100 | 100 | 100
+C463254A-7C06-F111-8405-6045BDD66A89 | True | 0 | 2 | 2 | 0 | 0
+C463254A-7C06-F111-8405-6045BDD66A89 | True | 1 | 21 | 21 | 0 | 0
 
 === run_sql
-SELECT MAX(Number) mx, MIN(Number) mn, MAX(LastModifiedDateTime) maxmod, MAX(FirstSeenAt) maxfirst FROM SAPData.dbo.BC_SalesOrder WHERE IsDeleted=0
+SELECT b.number, b.status, b.orderDate, b.lastModifiedDateTime FROM #bc_raw b WHERE NOT EXISTS (SELECT 1 FROM SAPData.dbo.BC_SalesOrder s WHERE s.Number=b.number) ORDER BY b.number
 --- result
-mx | mn | maxmod | maxfirst
-S-ORD101147 | S-ORD101001 | 2026-11-10 22:28:01.247000+00:00 | 2026-11-02 21:30:09.257000
+number | status | orderDate | lastModifiedDateTime
+S-ORD101148 | Draft | 2026-11-02 | 2026-11-05T23:46:07.2Z
+S-ORD101150 | Draft | 2026-11-03 | 2026-11-11T22:37:32.547Z
+S-ORD101151 | Draft | 2026-11-03 | 2026-11-03T13:26:54.56Z
+S-ORD101152 | Draft | 2026-11-03 | 2026-11-03T16:24:22.237Z
+S-ORD101153 | In_x0020_Review | 2026-11-03 | 2026-11-11T22:37:32.647Z
+S-ORD101154 | Draft | 2026-11-03 | 2026-11-11T22:37:32.743Z
+S-ORD101155 | Open | 2026-11-03 | 2026-11-11T22:37:32.837Z
+S-ORD101156 | Draft | 2026-11-03 | 2026-11-11T22:37:32.893Z
+S-ORD101157 | Open | 2026-11-03 | 2026-11-11T22:37:32.943Z
+S-ORD101158 | Draft | 2026-11-04 | 2026-11-04T18:36:12.413Z
+S-ORD101159 | Draft | 2026-11-04 | 2026-11-11T22:37:33.007Z
+S-ORD101162 | Draft | 2026-11-05 | 2026-11-11T22:37:33.077Z
+S-ORD101163 | Draft | 2026-11-05 | 2026-11-11T22:37:33.123Z
+S-ORD101164 | Draft | 2026-11-05 | 2026-11-11T22:37:33.16Z
+S-ORD101165 | Draft | 2026-11-05 | 2026-11-11T22:37:33.2Z
+S-ORD101166 | Draft | 2026-11-05 | 2026-11-11T22:37:33.24Z
+S-ORD101167 | Draft | 2026-11-05 | 2026-11-11T22:37:33.283Z
+S-ORD101168 | Draft | 2026-11-05 | 2026-11-05T20:49:24.257Z
+S-ORD101169 | Draft | 2026-11-05 | 2026-11-11T22:37:33.327Z
+S-ORD101170 | Draft | 2026-11-06 | 2026-11-11T22:37:33.367Z
+S-ORD101171 | Draft | 2026-11-06 | 2026-11-11T22:37:33.44Z
+S-ORD101172 | Open | 2026-11-06 | 2026-11-11T22:37:33.49Z
+S-ORD101173 | Draft | 2026-11-06 | 2026-11-11T22:37:33.557Z
+S-ORD101174 | Open | 2026-11-06 | 2026-11-11T22:37:33.603Z
+S-ORD101175 | Open | 2026-11-06 | 2026-11-11T22:37:33.64Z
+S-ORD101176 | Open | 2026-11-06 | 2026-11-11T22:37:33.677Z
+S-ORD101177 | Draft | 2026-11-09 | 2026-11-11T22:37:33.717Z
+S-ORD101178 | Open | 2026-11-09 | 2026-11-11T22:37:33.767Z
+S-ORD101179 | Open | 2026-11-09 | 2026-11-11T22:37:33.803Z
+S-ORD101180 | Open | 2026-11-09 | 2026-11-11T22:37:33.847Z
+S-ORD101181 | Draft | 2026-11-09 | 2026-11-11T22:37:33.887Z
+S-ORD101182 | Draft | 2026-11-09 | 2026-11-09T22:19:57.837Z
+S-ORD101183 | Draft | 2026-07-15 | 2026-11-11T22:37:33.953Z
+S-ORD101184 | Draft | 2026-11-10 | 2026-11-10T13:38:19.713Z
+S-ORD101185 | Draft | 2026-11-10 | 2026-11-11T22:37:33.997Z
+S-ORD101186 | Draft | 2026-11-10 | 2026-11-10T19:55:53.3Z
+S-ORD101187 | Draft | 2026-11-10 | 2026-11-11T22:37:34.033Z
+S-ORD101188 | Draft | 2026-11-11 | 2026-11-11T22:37:34.077Z
+S-ORD101189 | Draft | 2026-11-11 | 2026-11-11T15:19:43.747Z
+S-ORD101190 | Open | 2026-11-11 | 2026-11-11T22:37:34.117Z
+S-ORD101191 | Open | 2026-11-11 | 2026-11-11T22:37:34.157Z
+S-ORD101192 | Draft | 2026-11-12 | 2026-11-12T16:18:49.023Z
+S-ORD101193 | Draft | 2026-11-12 | 2026-11-12T12:39:02.733Z
+S-ORD101194 | Open | 2026-11-12 | 2026-11-12T16:18:49.1Z
+S-ORD101195 | Open | 2026-11-12 | 2026-11-12T16:18:49.147Z
+S-ORD101196 | Open | 2026-11-12 | 2026-11-12T16:18:49.213Z
+S-ORD101197 | Open | 2026-11-12 | 2026-11-12T16:18:49.24Z
 
 === run_sql
-SELECT LEFT(b.lastModifiedDateTime,10) d, COUNT(*) n FROM #bc_raw b WHERE NOT EXISTS (SELECT 1 FROM SAPData.dbo.BC_SalesOrder s WHERE s.Number=b.number) GROUP BY LEFT(b.lastModifiedDateTime,10)
+SELECT MAX(Number) mx, MAX(LastSyncedAt) ls, MAX(LastSeenAt) lseen, MAX(LastModifiedDateTime) lm FROM SAPData.dbo.BC_SalesOrder WHERE IsDeleted=0
 --- result
-d | n
-2026-11-03 | 2
-2026-11-04 | 1
-2026-11-05 | 2
-2026-11-09 | 1
-2026-11-10 | 2
-2026-11-11 | 33
-
-=== Claude
-I've found the SS4 table: SAPData.dbo.BC_SalesOrder. Next I'm drafting the spec and testing it.
+mx | ls | lseen | lm
+S-ORD101147 | 2026-11-10 22:30:15.341000 | 2026-11-12 16:00:07.306000 | 2026-11-10 22:28:01.247000+00:00
 
 === check_spec
 name: salesOrders
-description: BC sales orders vs SAPData BC_SalesOrder sync table
+description: BC sales orders vs SAPData.dbo.BC_SalesOrder (SS4 sync copy of BC)
 source_of_truth: bc
 bc:
   target: BC
@@ -265,8 +301,6 @@ fields:
   - {bc: billToCustomerId, ss4: BillToCustomerId, type: guid}
   - {bc: billToCustomerNumber, ss4: BillToCustomerNumber, type: text}
   - {bc: billToName, ss4: BillToName, type: text}
-  - {bc: shipToName, ss4: ShipToName, type: text}
-  - {bc: shipToContact, ss4: ShipToContact, type: text}
   - {bc: sellToAddressLine1, ss4: SellToAddressLine1, type: text}
   - {bc: sellToAddressLine2, ss4: SellToAddressLine2, type: text}
   - {bc: sellToCity, ss4: SellToCity, type: text}
@@ -279,6 +313,8 @@ fields:
   - {bc: billToState, ss4: BillToState, type: text}
   - {bc: billToPostCode, ss4: BillToPostCode, type: text}
   - {bc: billToCountry, ss4: BillToCountry, type: text}
+  - {bc: shipToName, ss4: ShipToName, type: text}
+  - {bc: shipToContact, ss4: ShipToContact, type: text}
   - {bc: shipToAddressLine1, ss4: ShipToAddressLine1, type: text}
   - {bc: shipToAddressLine2, ss4: ShipToAddressLine2, type: text}
   - {bc: shipToCity, ss4: ShipToCity, type: text}
@@ -297,7 +333,7 @@ fields:
   - {bc: totalTaxAmount, ss4: TotalTaxAmount, type: decimal}
   - {bc: totalAmountIncludingTax, ss4: TotalAmountIncludingTax, type: decimal}
   - {bc: fullyShipped, ss4: FullyShipped, type: bool}
-  - {bc: status, ss4: Status, type: text}
+  - {bc: status, ss4: Status, type: enum}
   - {bc: lastModifiedDateTime, ss4: LastModifiedDateTime, type: datetime}
   - {bc: phoneNumber, ss4: PhoneNumber, type: text}
   - {bc: email, ss4: Email, type: text}
@@ -307,8 +343,8 @@ ignored:
   - {bc: partialShipping, reason: constant in BC}
 
 --- result
-BC rows: 141   SS4 rows in scope: 100   paired by key: 100
-missing_in_ss4: 41   e.g. S-ORD101148, S-ORD101150, S-ORD101151, S-ORD101152, S-ORD101184
+BC rows: 147   SS4 rows in scope: 100   paired by key: 100
+missing_in_ss4: 47   e.g. S-ORD101148, S-ORD101150, S-ORD101151, S-ORD101152, S-ORD101184
 field agreement on paired rows:
   id -> Id: 0 differ of 100 compared (100.00% agree)
   externalDocumentNumber -> ExternalDocumentNumber: 0 differ of 100 compared (100.00% agree)
@@ -323,40 +359,22 @@ field agreement on paired rows:
   billToCustomerId -> BillToCustomerId: 0 differ of 100 compared (100.00% agree)
   billToCustomerNumber -> BillToCustomerNumber: 0 differ of 100 compared (100.00% agree)
   billToName -> BillToName: 0 differ of 100 compared (100.00% agree)
-  shipToName -> ShipToName: 0 differ of 100 compared (100.00% agree)
-  shipToContact -> ShipToContact: 0 differ of 100 compared (100.00% agree)
-  sellToAddressLine1 -> SellToAddressLine1: 9 differ of 100 compared (91.00% agree)
-      S-ORD101114: BC='2611 Stolle Road'  SS4='2611 Stolle Road\n'
-      S-ORD101117: BC='12 Schuman Road'  SS4='12 Schuman Road\n'
-      S-ORD101120: BC='621 Long Lake Drive'  SS4='621 Long Lake Drive\n'
-  sellToAddressLine2 -> SellToAddressLine2: 6 differ of 100 compared (94.00% agree)
-      S-ORD101027: BC='P.O. Box 3306'  SS4='P.O. Box 3306\n'
-      S-ORD101029: BC='P.O. Box 3306'  SS4='P.O. Box 3306\n'
-      S-ORD101030: BC='P.O. Box 3306'  SS4='P.O. Box 3306\n'
+  sellToAddressLine1 -> SellToAddressLine1: 0 differ of 100 compared (100.00% agree)
+  sellToAddressLine2 -> SellToAddressLine2: 0 differ of 100 compared (100.00% agree)
   sellToCity -> SellToCity: 0 differ of 100 compared (100.00% agree)
   sellToState -> SellToState: 0 differ of 100 compared (100.00% agree)
   sellToPostCode -> SellToPostCode: 0 differ of 100 compared (100.00% agree)
   sellToCountry -> SellToCountry: 0 differ of 100 compared (100.00% agree)
-  billToAddressLine1 -> BillToAddressLine1: 9 differ of 100 compared (91.00% agree)
-      S-ORD101114: BC='2611 Stolle Road'  SS4='2611 Stolle Road\n'
-      S-ORD101117: BC='12 Schuman Road'  SS4='12 Schuman Road\n'
-      S-ORD101120: BC='621 Long Lake Drive'  SS4='621 Long Lake Drive\n'
-  billToAddressLine2 -> BillToAddressLine2: 6 differ of 100 compared (94.00% agree)
-      S-ORD101027: BC='P.O. Box 3306'  SS4='P.O. Box 3306\n'
-      S-ORD101029: BC='P.O. Box 3306'  SS4='P.O. Box 3306\n'
-      S-ORD101030: BC='P.O. Box 3306'  SS4='P.O. Box 3306\n'
+  billToAddressLine1 -> BillToAddressLine1: 0 differ of 100 compared (100.00% agree)
+  billToAddressLine2 -> BillToAddressLine2: 0 differ of 100 compared (100.00% agree)
   billToCity -> BillToCity: 0 differ of 100 compared (100.00% agree)
   billToState -> BillToState: 0 differ of 100 compared (100.00% agree)
   billToPostCode -> BillToPostCode: 0 differ of 100 compared (100.00% agree)
   billToCountry -> BillToCountry: 0 differ of 100 compared (100.00% agree)
-  shipToAddressLine1 -> ShipToAddressLine1: 9 differ of 100 compared (91.00% agree)
-      S-ORD101114: BC='2611 Stolle Road'  SS4='2611 Stolle Road\n'
-      S-ORD101117: BC='12 Schuman Road'  SS4='12 Schuman Road\n'
-      S-ORD101120: BC='621 Long Lake Drive'  SS4='621 Long Lake Drive\n'
-  shipToAddressLine2 -> ShipToAddressLine2: 6 differ of 100 compared (94.00% agree)
-      S-ORD101027: BC='P.O. Box 3306'  SS4='P.O. Box 3306\n'
-      S-ORD101029: BC='P.O. Box 3306'  SS4='P.O. Box 3306\n'
-      S-ORD101030: BC='P.O. Box 3306'  SS4='P.O. Box 3306\n'
+  shipToName -> ShipToName: 0 differ of 100 compared (100.00% agree)
+  shipToContact -> ShipToContact: 0 differ of 100 compared (100.00% agree)
+  shipToAddressLine1 -> ShipToAddressLine1: 0 differ of 100 compared (100.00% agree)
+  shipToAddressLine2 -> ShipToAddressLine2: 0 differ of 100 compared (100.00% agree)
   shipToCity -> ShipToCity: 0 differ of 100 compared (100.00% agree)
   shipToState -> ShipToState: 0 differ of 100 compared (100.00% agree)
   shipToPostCode -> ShipToPostCode: 0 differ of 100 compared (100.00% agree)
@@ -377,25 +395,14 @@ field agreement on paired rows:
       96.0% of compared rows hold '0.0000000000'; on the other 4: 0 differ (100.00% agree)
   totalAmountIncludingTax -> TotalAmountIncludingTax: 0 differ of 100 compared (100.00% agree)
   fullyShipped -> FullyShipped: 0 differ of 100 compared (100.00% agree)
-  status -> Status: 2 differ of 100 compared (98.00% agree)
-      S-ORD101012: BC='In_x0020_Review'  SS4='In Review'
-      S-ORD101138: BC='In_x0020_Review'  SS4='In Review'
-  lastModifiedDateTime -> LastModifiedDateTime: 100 differ of 100 compared (0.00% agree)
-      S-ORD101001: BC='2026-11-10 05:30:26.000'  SS4='2026-11-10 05:30:26.0470000 +00:00'
-      S-ORD101010: BC='2026-09-29 23:26:07.000'  SS4='2026-09-29 23:26:07.5830000 +00:00'
-      S-ORD101011: BC='2026-11-04 23:05:51.000'  SS4='2026-11-04 23:05:51.4400000 +00:00'
+  status -> Status: 0 differ of 100 compared (100.00% agree)
+  lastModifiedDateTime -> LastModifiedDateTime: 0 differ of 100 compared (100.00% agree)
   phoneNumber -> PhoneNumber: 0 differ of 100 compared (100.00% agree)
   email -> Email: 0 differ of 100 compared (100.00% agree)
 
-=== run_sql
-SELECT SUM(CASE WHEN CAST(s.LastModifiedDateTime AS datetime2(3)) = CAST(TRY_CAST(b.lastModifiedDateTime AS datetimeoffset) AS datetime2(3)) THEN 1 ELSE 0 END) eq3, SUM(CASE WHEN DATEDIFF(second, s.LastModifiedDateTime, TRY_CAST(b.lastModifiedDateTime AS datetimeoffset))=0 THEN 1 ELSE 0 END) eqsec, SUM(CASE WHEN b.sellToAddressLine1 LIKE '%'+CHAR(10) OR b.sellToAddressLine1 LIKE '%'+CHAR(13) THEN 1 ELSE 0 END) bcTrailNL, SUM(CASE WHEN s.SellToAddressLine1 LIKE '%'+CHAR(10) THEN 1 ELSE 0 END) ssTrailNL, COUNT(*) n FROM #bc_raw b JOIN SAPData.dbo.BC_SalesOrder s ON s.Number=b.number
---- result
-eq3 | eqsec | bcTrailNL | ssTrailNL | n
-100 | 100 | 0 | 9 | 100
-
 === submit_spec
 name: salesOrders
-description: BC sales orders vs SAPData BC_SalesOrder (SS4 sync copy of BC salesOrders)
+description: BC sales orders vs SAPData.dbo.BC_SalesOrder (SS4 sync copy of BC)
 source_of_truth: bc
 bc:
   target: BC
@@ -422,8 +429,6 @@ fields:
   - {bc: billToCustomerId, ss4: BillToCustomerId, type: guid}
   - {bc: billToCustomerNumber, ss4: BillToCustomerNumber, type: text}
   - {bc: billToName, ss4: BillToName, type: text}
-  - {bc: shipToName, ss4: ShipToName, type: text}
-  - {bc: shipToContact, ss4: ShipToContact, type: text}
   - {bc: sellToAddressLine1, ss4: SellToAddressLine1, type: text}
   - {bc: sellToAddressLine2, ss4: SellToAddressLine2, type: text}
   - {bc: sellToCity, ss4: SellToCity, type: text}
@@ -436,6 +441,8 @@ fields:
   - {bc: billToState, ss4: BillToState, type: text}
   - {bc: billToPostCode, ss4: BillToPostCode, type: text}
   - {bc: billToCountry, ss4: BillToCountry, type: text}
+  - {bc: shipToName, ss4: ShipToName, type: text}
+  - {bc: shipToContact, ss4: ShipToContact, type: text}
   - {bc: shipToAddressLine1, ss4: ShipToAddressLine1, type: text}
   - {bc: shipToAddressLine2, ss4: ShipToAddressLine2, type: text}
   - {bc: shipToCity, ss4: ShipToCity, type: text}
@@ -454,47 +461,40 @@ fields:
   - {bc: totalTaxAmount, ss4: TotalTaxAmount, type: decimal}
   - {bc: totalAmountIncludingTax, ss4: TotalAmountIncludingTax, type: decimal}
   - {bc: fullyShipped, ss4: FullyShipped, type: bool}
-  - {bc: status, ss4: Status, type: text}
+  - {bc: status, ss4: Status, type: enum}
+  - {bc: lastModifiedDateTime, ss4: LastModifiedDateTime, type: datetime}
   - {bc: phoneNumber, ss4: PhoneNumber, type: text}
   - {bc: email, ss4: Email, type: text}
 ignored:
   - {bc: pricesIncludeTax, reason: empty in BC}
   - {bc: discountAmount, reason: empty in BC}
   - {bc: partialShipping, reason: constant in BC}
-  - bc: lastModifiedDateTime
-    reason: "Counterpart is LastModifiedDateTime. Checked in SQL: it matches BC to the millisecond on 100/100 paired rows. It is left out because the diff engine drops BC's fractional seconds (it reads '...26.047Z' as '...26.000'), so every row would show a false difference. Map it again once the engine parses BC's milliseconds."
 
-TABLE: SAPData.dbo.BC_SalesOrder. It is a sync copy of BC: it stores BC GUIDs (Id, CustomerId and others) plus sync columns (CompanyId, LastSyncedAt, IsDeleted, FirstSeenAt, LastSeenAt, archive columns). So source_of_truth is bc. I found no other candidate. IMData.dbo.SO, SODetail and similar tables are the old SS4 order system, not this BC entity.
+TABLE: SAPData.dbo.BC_SalesOrder is a sync copy of BC sales orders. It stores the BC GUID (Id), CompanyId, LastSyncedAt/FirstSeenAt/LastSeenAt, and soft-delete and archive columns, so source_of_truth = bc. Other tables were looked at by name: IMData.dbo.SO/NewSO (legacy SO tables) and SAPData.BC_SalesOrderLine/Dimension (line and dimension tables, not headers). Their contents were not tested, because BC_SalesOrder matched on the GUID itself.
 
-KEY: number = Number. Number is unique in SS4 (123 distinct out of 123 rows) and none are blank. On all 100 pairs, Id also matches the BC id.
+KEY: Number <-> number. Number is unique in SS4 (123 rows, 123 distinct). For all 100 paired rows, Id also equals the BC id.
 
-SCOPE: where IsDeleted = 0. SS4 holds 123 rows, all with one CompanyId. All 100 rows that match BC have IsDeleted=0. The other 23 have IsDeleted=1, and their LastSeenAt dates run from 2026-09-22 to 2026-10-28. These look like orders deleted in BC or turned into something else. I infer this from the sync flags and did not check it in BC. They are outside the scope of the current BC table, so I excluded them.
+SCOPE: where IsDeleted = 0. SS4 has only one CompanyId (C463254A-...). Of the 123 SS4 rows, 23 have IsDeleted = 1: 21 of them also carry archive info (ArchiveVersionNo set) and 2 do not. None of those 23 numbers is in BC, so they are deleted or archived history and outside this BC table. The 100 rows with IsDeleted = 0 all pair with BC.
 
-MAIN FINDING: 41 BC orders are missing from SS4 (marked error). They are S-ORD101148 to S-ORD101191, and SS4's highest number is S-ORD101147. The newest FirstSeenAt in SS4 is 2026-11-02 21:30. Existing rows are still being updated (LastSeenAt 2026-11-11 22:30, LastSyncedAt up to 2026-11-10). So the sync appears to have stopped inserting new orders after about 2026-11-02 while it still updates existing ones. That is my inference from these timestamps; I have not seen the sync job.
+FINDING, missing_in_ss4 = 47: BC orders S-ORD101148 and S-ORD101150 through S-ORD101197 have no row in SS4. Their order dates run 2026-11-02 to 2026-11-12, except S-ORD101183, dated 2026-07-15. The highest Number in SS4 is S-ORD101147. Max LastSyncedAt is 2026-11-10 22:30, while max LastSeenAt is 2026-11-12 16:00. Several missing orders were last modified in BC before 2026-11-10 22:30 (e.g. S-ORD101151, modified 2026-11-03). So "created after the last sync" does not fully explain the gap. I have not investigated the cause. The rule is set to error because these rows should have arrived.
 
-FIELD AGREEMENT (100 paired rows):
-- 100% on id, the dates, customer and bill-to ids/numbers/names, shipToName/Contact, city/state/postcode/country for all three addresses, the dimensions, currency, paymentTermsId, shipmentMethodId, salesperson, the totals, the bool flags, phone and email.
-- Several fields are mostly blank or dominated by one value, so their evidence rests on few rows: externalDocumentNumber (6 filled rows), requestedDeliveryDate (4), shortcutDimension2Code (2), currencyId/currencyCode (5 non-default), totalTaxAmount (4 non-zero). All of these agree.
-- *AddressLine1: 91% agree. *AddressLine2: 94% agree. Every difference is a trailing line feed (CHAR(10)) in SS4 that BC does not have. I checked that #bc_raw has no trailing CR/LF on these rows. I don't know whether BC's API trims it or the SS4 copy is stale. The fields are kept mapped and the 9+6 rows per address type show up as findings.
-- status: 98% agree. The 2 differences are BC 'In_x0020_Review' vs SS4 'In Review'. That is the same enum value; BC's export shows the space XML-escaped as _x0020_. They will appear as differences because the spec has no transform for this. The reviewer may want a value map.
-- lastModifiedDateTime: ignored. It matches exactly in SQL, but the diff engine drops BC's milliseconds (see the reason in the spec).
+FIELDS: all 47 mapped fields agree 100% on the 100 paired rows (check_spec). For the sparse fields, the agreement on filled rows is: externalDocumentNumber 6 of 6, requestedDeliveryDate 4 of 4, shortcutDimension2Code 2 of 2, currencyId 5 of 5, non-USD currencyCode 5 of 5, non-zero totalTaxAmount 4 of 4. Those counts are small, but the column names match directly.
 
-NOT MAPPED: the GUID lookup ids (paymentTermsId, shipmentMethodId, currencyId) are mapped directly because SS4 stores the same GUIDs. BC exposes no code fields for payment terms or shipment method.
+paymentTermsId and shipmentMethodId are GUIDs of BC lookup records. BC has no code field for them, and SS4 stores the same GUIDs, so they are compared as guid. Every column is compared with no transformation. status is compared as enum (BC sends 'In_x0020_Review' for 'In Review').
+
+IGNORED: pricesIncludeTax and discountAmount are empty in BC. partialShipping is constant 'True' in BC.
 --- result
 Saved to specs\proposed\salesOrders.yaml. Finish with a short summary.
 
 === Claude
-I've mapped BC `salesOrders` to **SAPData.dbo.BC_SalesOrder** and saved the spec to `specs\proposed\salesOrders.yaml`. The main finding is that 41 of the 141 BC orders never reached SS4. The other 100 pair up and agree almost perfectly.
+I've submitted the spec. BC `salesOrders` maps to `SAPData.dbo.BC_SalesOrder`, and 47 of the 147 BC orders are not in that table yet.
 
-- **Why this table:** it's a copy of BC: it stores BC's own GUIDs plus sync timestamps, so I set BC as the source of truth. The key is `number` = `Number`, which is unique and never blank in SS4. On all 100 paired rows the order `id` also matches.
-- **Which rows are compared:** `IsDeleted = 0`. All 100 rows that match BC have that flag. SS4's other 23 rows are flagged deleted and were last seen between 22 Sep and 28 Oct. They look like orders that no longer exist in BC; I didn't check that in BC.
-- **Missing orders:** S-ORD101148 to S-ORD101191 are in BC but not SS4, and the spec reports them as errors. SS4's newest order is S-ORD101147, first seen 2026-11-02, but existing rows were still updated today. That suggests the sync stopped adding new orders around 2 Nov while still updating old ones. I'm inferring this from the timestamps; I haven't looked at the sync job.
-- **Fields:** 46 fields are mapped, almost all at 100% agreement. Some are mostly blank in BC, so their 100% rests on only 2 to 6 filled rows. Two kinds of difference will show in the report:
-  - **Addresses:** 9 to 15 differences per address type (Line1 and Line2). Every one is an extra line break at the end of the SS4 value; BC's value doesn't have it. I don't know which side is "right".
-  - **Status:** 2 differences. BC shows "In_x0020_Review" and SS4 shows "In Review". These are the same status (BC's export writes the space as `_x0020_`). The spec can't translate values, so they'll show as differences unless someone adds a value map.
-- **Not compared:**
-  - `pricesIncludeTax` and `discountAmount`: empty in BC.
-  - `partialShipping`: always True in BC.
-  - `lastModifiedDateTime`: a direct database query shows it matches to the millisecond on all 100 rows, but the diff tool drops BC's milliseconds, so every row would show a false difference. It can be mapped once the tool reads BC's milliseconds.
+- **Table:** this table is a sync copy of BC. It stores BC's own record id, sync timestamps and soft-delete flags, so I set BC as the source of truth.
+- **Key:** BC's order `number` pairs with `Number`, which is unique in SS4. On every paired row the stored BC id matches as well.
+- **Filter:** `IsDeleted = 0`. That leaves 100 SS4 rows, and all of them pair with BC. The other 23 SS4 rows are marked deleted (21 also have archive details), and none of their numbers exist in BC.
+- **Fields:** all 47 mapped fields agree 100% on the 100 paired rows, with no transformations. A few sparse fields rest on only 2 to 6 filled rows, though. Three BC fields are left out: `pricesIncludeTax` and `discountAmount` are empty in BC, and `partialShipping` has the same value on every row.
+- **Missing orders (set as an error):** the 47 are S-ORD101148 and S-ORD101150 through S-ORD101197. The highest number in SS4 is S-ORD101147, and the last recorded sync was 2026-11-10 22:30. "Created after the last sync" doesn't explain all of them: some were last changed in BC days earlier, such as S-ORD101151 on 2026-11-03. I didn't look into the cause.
 
-Done: success, 13 turns, $0.31
+The spec is saved to `specs\proposed\salesOrders.yaml`.
+
+Done: success, 11 turns, $0.27

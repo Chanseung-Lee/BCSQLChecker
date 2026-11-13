@@ -28,6 +28,7 @@ class BcSide:
     api: str           # standard | odata | custom
     entity: str        # e.g. "items"
     key: list[str]     # BC field(s) that identify a row
+    filter: str | None = None  # OData $filter: which BC rows belong to this check
 
 
 @dataclass(frozen=True)
@@ -139,7 +140,8 @@ def parse_spec(raw, label: str = "spec") -> Spec:
         bc=BcSide(target=need(bc_raw, "target", "bc"),
                   api=bc_raw.get("api", "standard"),
                   entity=need(bc_raw, "entity", "bc"),
-                  key=as_list(need(bc_raw, "key", "bc"))),
+                  key=as_list(need(bc_raw, "key", "bc")),
+                  filter=bc_raw.get("filter")),
         ss4=Ss4Side(database=ss4_raw.get("database"),
                     table=ss4_raw.get("table"),
                     query=ss4_raw.get("query"),

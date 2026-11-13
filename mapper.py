@@ -4,6 +4,7 @@ to SS4, and writes that mapping as a spec.
 
     python mapper.py items
     python mapper.py items --hint "the parts master is in IMData"   (optional pointer)
+    python mapper.py salesOrders --source so_population.sql          (how the import was built)
 
 The agent gets the BC field profile, the three tools in agent_tools.py, and
 the instructions below -- nothing else. No built-in Claude Code tools (no
@@ -23,6 +24,7 @@ from claude_agent_sdk import (AssistantMessage, ClaudeAgentOptions, ClaudeSDKCli
 
 from agent_tools import PROPOSED_DIR, MappingSession, build_tools, profile_text
 from connections import BcClient, BcTarget, ss4_engine
+from sources import SourceError, read_sources
 from stage import fetch_bc_raw, profile_bc, stage_bc_raw
 
 # The databases the agent is told it may search (the read-only login decides
@@ -61,6 +63,13 @@ accurate and honest about uncertainty rather than complete-looking.
 2. Pin down the key: the SS4 column(s) matching BC's identifying field for nearly
    every row. Check whether the key is unique on both sides. Everything else
    depends on rows pairing correctly.
+   Watch for keys the import GENERATED, such as line numbers counted up per
+   document. SS4 does not hold them, and recomputing them (ROW_NUMBER) only
+   works while SS4 is unchanged: one item added or removed in SS4 shifts every
+   later number, so the rows after it pair with the wrong partners and show as
+   false differences. Prefer a natural key built from content (document +
+   account + description, say). Fall back to recomputed numbering only when no
+   natural key is unique, and say so in the notes.
 3. Find the scope. If the SS4 table holds more than this BC table covers (several
    companies, inactive or historical rows), find the filter that makes the two
    populations line up -- for example, group matched vs unmatched SS4 rows by a
@@ -69,6 +78,13 @@ accurate and honest about uncertainty rather than complete-looking.
    hide data problems such as duplicates, blank keys or unsynced rows. Those are
    findings the diff exists to report -- leave them in and describe them in the
    notes.
+   The BC side can be narrowed the same way with bc.filter, an OData $filter
+   over the BC field names in #bc_raw -- for example Job_Task_No eq '9500' and
+   Line_Type eq 'Billable' (text in single quotes, numbers bare). Use it when the
+   BC table holds more than this import or sync produced: other imports, rows
+   entered by hand. Same rule: it says which rows belong, never hides problems.
+   check_spec re-fetches from BC with the filter, so a filter BC cannot parse
+   shows up there as an error.
 4. Map the fields. For each BC field in use, find the SS4 column holding the same
    values on paired rows. Measure; do not guess. Values may be transformed
    (trimmed, case, truncated, rounded, codes). Note any you rely on. A field
@@ -191,6 +207,33 @@ Rules for the query:
   (d.Units * d.Rate AS ContractAmount), and say so in the notes.
 - Prefer the plain table form when one table is enough.
 
+# Source files
+
+The user may attach the files that built the import: the SQL query or script
+that populated a config package template, and/or the template itself
+(summarized as sheets, column headers and sample rows). When they are present:
+
+- Treat them as strong evidence of INTENT: which tables, joins, filters and
+  transformations were used, and which BC fields the import filled. Start from
+  them instead of searching by name.
+- They are not proof. The query may have changed since the import, SS4 data may
+  have changed, and the import may have rejected or altered rows -- which is
+  exactly what this check exists to find. Verify every field with check_spec.
+  Where the data contradicts a source file, map what the data supports and
+  report the contradiction in the notes.
+- Where the population query can serve as ss4.query, adapt it: remove ORDER BY,
+  rewrite WITH / CTEs as nested SELECTs, replace parameters with the values the
+  script uses (or the data shows), and keep the column aliases. Say in the notes
+  what you changed.
+- Template column headers are BC field CAPTIONS ("No.", "Project Task No."),
+  not API field names. Match them to #bc_raw's fields by meaning and values.
+- Logic the spec cannot express (row numbering, rules applied in a script's own
+  code) may make some fields impossible to compare exactly. Put those under
+  ignored with the reason, or compare what you can and explain.
+- A field the template fills that is empty in BC is a likely import failure,
+  not an unused field: map it anyway so the diff reports it. The profile's
+  "empty" rule does not apply to fields the source files say were filled.
+
 # Notes for the reviewer (submit_spec)
 
 For each mapped field, the agreement figure that supports it. For each judgment
@@ -198,8 +241,12 @@ call, the reason. Anything uncertain, and alternatives you considered and reject
 """
 
 
-def task_prompt(args, row_count: int, profiles) -> str:
+def task_prompt(args, row_count: int, profiles, sources_text: str) -> str:
     hint = f"\nA pointer from the user: {args.hint}\n" if args.hint else ""
+    sources = ""
+    if sources_text:
+        sources = ("\nSource files from the user, showing how this import was built "
+                   "(see 'Source files' in your instructions):\n\n" + sources_text + "\n")
     return f"""\
 Map the BC table `{args.entity}` to SS4.
 
@@ -209,7 +256,7 @@ BC field profile ("real values" excludes blanks, zeros and false):
 {profile_text(profiles)}
 
 SS4 databases to search: {", ".join(DATABASES)}
-{hint}
+{hint}{sources}
 In the spec use: name: {args.name}, and in the bc section target: {args.target},
 api: {args.api}, entity: {args.entity}. When you are confident, call submit_spec.
 """
@@ -262,20 +309,32 @@ def show(message, transcript: list[str]) -> None:
 # ---------------------------------------------------------------- main
 
 async def run(args) -> None:
+    # Read the source files first, so a wrong path fails before anything is fetched.
+    try:
+        sources_text = read_sources(args.source)
+    except SourceError as ex:
+        raise SystemExit(str(ex))
+    for path in args.source:
+        print(f"source file: {path}")
+
     target = BcTarget.from_env(args.target)
     print(f"fetching {args.entity} from BC ({target.environment} / {target.company}) ...")
-    rows = fetch_bc_raw(BcClient(), target, args.api, args.entity)
+    client = BcClient()
+    rows = fetch_bc_raw(client, target, args.api, args.entity)
     print(f"   {len(rows):,} rows")
     if not rows:
         raise SystemExit("BC returned no rows; nothing to map.")
 
     transcript: list[str] = []
-    with ss4_engine().connect() as conn:
-        _, fields = stage_bc_raw(conn, rows)
-        conn.commit()   # #bc_raw must survive the rollback run_sql does after an error
-        profiles = profile_bc(rows, fields)
+    with ss4_engine().connect() as conn: #Open a connection to SS4, everything below uses this one connection, closes when finished automatically
+        _, fields = stage_bc_raw(conn, rows)  #copy the BC-returned rows into a temporary table called #bc_raw on SS4, one column per BC field, under BC's own field names
+        #stage_bc_raw returns the table's name, and the list of field names.
+        conn.commit()   # #bc_raw must survive the rollback run_sql does after an error. the commit makes the temp table permanent for the rest of the connection
+        profiles = profile_bc(rows, fields) #BC has many fields, plenty are unused, always blank, always zero, or always the same value, and thus irrelevant when comparing with same data in SS4
+        #produces one FieldProfile object per field, 
 
-        session = MappingSession(conn, rows, target=args.target, api=args.api, entity=args.entity)
+        session = MappingSession(conn, rows, target=args.target, api=args.api, entity=args.entity,
+                                 client=client)
         server = create_sdk_mcp_server(name="mapper", tools=build_tools(session))
 
         options = ClaudeAgentOptions(
@@ -291,7 +350,7 @@ async def run(args) -> None:
             model=args.model,
         )
 
-        prompt = task_prompt(args, len(rows), profiles)
+        prompt = task_prompt(args, len(rows), profiles, sources_text)
         transcript.append(f"=== task\n{prompt}")
         print(f"starting the agent (max {args.max_turns} turns, ${args.budget:.2f} budget) ...")
         async with ClaudeSDKClient(options=options) as client:
@@ -318,6 +377,9 @@ def main() -> None:
     parser.add_argument("--api", default="standard", choices=["standard", "odata"])
     parser.add_argument("--name", help="spec name (default: the entity)")
     parser.add_argument("--hint", help="an optional pointer for the agent")
+    parser.add_argument("--source", action="append", default=[],
+                        help="a file that built the import: the population query or script, "
+                             "or the filled-in template. Repeat for several files.")
     parser.add_argument("--model", help="Claude model (default: the SDK's default)")
     parser.add_argument("--max-turns", type=int, default=80)
     parser.add_argument("--budget", type=float, default=5.0, help="stop at this many USD")

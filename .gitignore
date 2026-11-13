@@ -8,5 +8,6 @@ __pycache__/
 
 # Generated output (BC data, diffs, staged extracts)
 output/
+results/
 *.xlsx
 *.csv

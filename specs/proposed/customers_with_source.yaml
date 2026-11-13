@@ -1,0 +1,153 @@
+# PROPOSED by the mapping agent -- review before use.
+#
+# KEY / TABLE
+# - The table is EQData.dbo.Customer (the push job's SourceTable), keyed on CustomerID = BC number. 3,180 of 3,221 BC rows pair. CustomerID is unique, and the joins to CustSupp and BillingInstructions do not multiply rows (no duplicates were reported).
+# - I also checked ARData.dbo.customer, which pairs 3,179 rows. Its name and address fields are 30-character copies and agree better in some places: exact name 2,572 vs 2,203, line1 2,993 vs 3,117, line2 2,821 vs 2,834. EQData follows the source file and is the current system of record, so I used it. Many BC names look like the 30-character AR values (see displayName).
+# - SAPData.dbo.BC_Customer only covers 315 rows.
+#
+# SCOPE (no where clause)
+# - No SS4 column separates the BC population cleanly. I tested Inactive, ContractStatus, AcctStatus, CreateDate year, DismantleDate, Included, BcNumber and company code.
+# - BC rows are spread across CreateDate years, mostly 2017 to 2026. 24 BC rows are Inactive=1 in EQData.
+# - The push job's filter (Inactive=0 AND CreateDate>=2026-01-01) is only its change window, not the BC population, so I did not use it.
+# - missing_in_bc is 12,308, set to info: SS4 keeps historical customers.
+# - missing_in_ss4 is 41, set to error. These are BC-only numbers: district/company codes (ACW, AME, CAN, COR, DAL, DEN, DUP, ELB, FON...), C00xxx numbers (BC-created, Oct to Nov 2026), 1000-1003, 1224, 012026, INVALID, KAP, MAN, MON.
+#
+# FIELDS (agreement on 3,180 paired rows; text comparison appears case-insensitive)
+# - displayName -> Name: 69.3%. Explained differences:
+#   - 440 BC names are Name truncated to 30 characters (verified).
+#   - About 73 rows have a completely different company. These are mostly reused low numbers (1011, 1016, 1053... where SS4 holds old Australian customers) and some 4-digit numbers.
+#   - The rest are names hand-edited in BC (punctuation and suffixes, e.g. 'JGR CONSTRUCTION' vs 'JGR CONSTRUCTION, INC.').
+#   - The source file maps Name, so I kept it. Expect noise here.
+# - addressLine1 -> first line of MailingAddress (CR stripped, split on LF): 98.1%.
+# - addressLine2 -> the SECOND line only: 89.2%.
+#   - For 3-line addresses BC holds only the suite line, with city/state/zip in their own fields. That contradicts the push job, which joins lines 2+ with ', '. I used the form BC actually holds.
+#   - About 206 rows are blank in BC where SS4 has a value (mostly the 14xxx range, which is also blank for city, state and zip). These are likely not loaded.
+# - city / state / postalCode -> parsed from the last line ('CITY, ST  ZIP'), as ParseCityStateZip does. Agreement: city 91.0%, zip 88.6%, state 80.0%.
+#   - On 287 rows BC's state equals Customer.TaxingState (the job site) instead of the mailing state (verified), e.g. 15888 Chicago 'FL'.
+#   - The source file explicitly rejects TaxingState, so those rows are reported as findings.
+# - country -> TaxingCountry mapped to ISO codes: 90.7%.
+#   - I extended the source's CA/MX/else-US mapping with BS, BZ, BR, KY and AU because BC holds those codes.
+#   - I did not default unknown values to US.
+#   - 414 BC rows have a blank country.
+#   - The reused low numbers show AU in SS4 vs US in BC.
+# - phoneNumber -> MailingTelephone: 89.4%. About 302 are blank in BC where SS4 has a value, and 13 the other way round.
+# - email -> CustSupp.ProjectEmail1 with ',' changed to ';' (BC stores several addresses joined by ';'): only 32.9%. Mapped anyway because the cause is established:
+#   - In 1,909 of 2,384 BC rows with an email, BC's email equals the ProjectEmail1 of the NEXT CustomerID in sort order. Example: BC 15293 holds 15294's email. This was verified across all number prefixes (15xxx, 16xxx, 17xxx, 80xxx).
+#   - That points to an off-by-one row shift in the email load. This is the main finding of this check.
+#   - The source job sends only the first address; the baseline load evidently sent all of them.
+# - salespersonCode -> BillingInstructions.SalesmanOne with the source's fixups (EXCECUTIVE/EXEUTIVE -> EXECUTIVE, POBANZ -> POBANZ-J): 85.2%.
+#   - Most differences are BC blank where SS4 has a salesperson (about 380, e.g. Morrow, Toner, MAIRN).
+#   - 'POBANZ, J.' is not fixed up by the job.
+# - currencyCode -> CustSupp.CurrencyType, blank/NULL defaulted to 'USD': 98.9%.
+#   - The default is my assumption that blank means local currency.
+#   - The 34 differences are SS4 AUD/EUR/CAD vs BC USD.
+#   - Only 2 non-USD rows were compared, both equal, so this is weak evidence.
+#
+# UNCERTAIN
+# - source_of_truth is set to 'both': the baseline load was SS4 -> BC, but the job also writes BC ids back to SS4.
+# - The address/city parsing is done in SQL and treats the first comma of the last line as the city separator.
+
+name: customers_with_source
+description: BC customers vs EQData.dbo.Customer (+ EQData.dbo.CustSupp, EQDataCor.dbo.BillingInstructions), following BcCustomerPushJob's field map
+source_of_truth: both
+bc:
+  target: BC
+  api: standard
+  entity: customers
+  key: [number]
+ss4:
+  query: >-
+    SELECT x.CustomerID, x.Name, x.Inactive, x.MailingTelephone,
+           CASE WHEN CHARINDEX(CHAR(10), x.m) > 0 THEN LEFT(x.m, CHARINDEX(CHAR(10), x.m) - 1) ELSE x.m END AS AddressLine1,
+           CASE WHEN CHARINDEX(CHAR(10), x.r) > 0 THEN LEFT(x.r, CHARINDEX(CHAR(10), x.r) - 1) ELSE x.r END AS AddressLine2,
+           CASE WHEN x.r IS NOT NULL AND CHARINDEX(',', x.lastline) > 0 THEN LTRIM(RTRIM(LEFT(x.lastline, CHARINDEX(',', x.lastline) - 1))) END AS City,
+           CASE WHEN x.r IS NOT NULL AND CHARINDEX(',', x.lastline) > 0 THEN LEFT(LTRIM(SUBSTRING(x.lastline, CHARINDEX(',', x.lastline) + 1, 400)), 2) END AS State,
+           CASE WHEN x.r IS NOT NULL AND CHARINDEX(',', x.lastline) > 0 THEN LTRIM(RTRIM(SUBSTRING(LTRIM(SUBSTRING(x.lastline, CHARINDEX(',', x.lastline) + 1, 400)), 3, 400))) END AS PostalCode,
+           CASE WHEN UPPER(LTRIM(RTRIM(x.TaxingCountry))) IN ('USA','US','UNITED STATES') THEN 'US'
+                WHEN UPPER(LTRIM(RTRIM(x.TaxingCountry))) IN ('CA','CAN','CANADA') THEN 'CA'
+                WHEN UPPER(LTRIM(RTRIM(x.TaxingCountry))) IN ('MX','MEX','MEXICO') THEN 'MX'
+                WHEN UPPER(LTRIM(RTRIM(x.TaxingCountry))) = 'BAHAMAS' THEN 'BS'
+                WHEN UPPER(LTRIM(RTRIM(x.TaxingCountry))) = 'BELIZE' THEN 'BZ'
+                WHEN UPPER(LTRIM(RTRIM(x.TaxingCountry))) = 'BRAZIL' THEN 'BR'
+                WHEN UPPER(LTRIM(RTRIM(x.TaxingCountry))) = 'CAYMEN ISLANDS' THEN 'KY'
+                WHEN UPPER(LTRIM(RTRIM(x.TaxingCountry))) = 'AUSTRALIA' THEN 'AU'
+                ELSE NULLIF(LTRIM(RTRIM(x.TaxingCountry)), '') END AS Country,
+           REPLACE(REPLACE(LTRIM(RTRIM(s.ProjectEmail1)), ', ', ','), ',', CHAR(59)) AS Email,
+           CASE UPPER(LTRIM(RTRIM(b.SalesmanOne))) WHEN 'EXCECUTIVE' THEN 'EXECUTIVE' WHEN 'EXEUTIVE' THEN 'EXECUTIVE' WHEN 'POBANZ' THEN 'POBANZ-J' ELSE LTRIM(RTRIM(b.SalesmanOne)) END AS SalespersonCode,
+           COALESCE(NULLIF(LTRIM(RTRIM(s.CurrencyType)), ''), 'USD') AS CurrencyCode
+      FROM (SELECT c.*, REPLACE(c.MailingAddress, CHAR(13), '') AS m,
+                   CASE WHEN CHARINDEX(CHAR(10), REPLACE(c.MailingAddress, CHAR(13), '')) > 0
+                        THEN SUBSTRING(REPLACE(c.MailingAddress, CHAR(13), ''), CHARINDEX(CHAR(10), REPLACE(c.MailingAddress, CHAR(13), '')) + 1, 4000) END AS r,
+                   LTRIM(RTRIM(RIGHT(REPLACE(c.MailingAddress, CHAR(13), ''), CHARINDEX(CHAR(10), REVERSE(REPLACE(c.MailingAddress, CHAR(13), '')) + CHAR(10)) - 1))) AS lastline
+              FROM EQData.dbo.Customer c) x
+      LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = x.CustomerID
+      LEFT JOIN EQDataCor.dbo.BillingInstructions b ON b.CustomerID = x.CustomerID
+  key: [CustomerID]
+missing:
+  in_bc: info
+  in_ss4: error
+fields:
+  - bc: displayName
+    ss4: Name
+    type: text
+  - bc: addressLine1
+    ss4: AddressLine1
+    type: text
+  - bc: addressLine2
+    ss4: AddressLine2
+    type: text
+  - bc: city
+    ss4: City
+    type: text
+  - bc: state
+    ss4: State
+    type: text
+  - bc: postalCode
+    ss4: PostalCode
+    type: text
+  - bc: country
+    ss4: Country
+    type: text
+  - bc: phoneNumber
+    ss4: MailingTelephone
+    type: text
+  - bc: email
+    ss4: Email
+    type: text
+  - bc: salespersonCode
+    ss4: SalespersonCode
+    type: text
+  - bc: currencyCode
+    ss4: CurrencyCode
+    type: text
+ignored:
+  - bc: id
+    reason: EQData.dbo.Customer.BcId stores the BC id only for the 333 rows the push job created or synced (all 333 equal BC id, verified). The other 2,847 paired rows have it NULL, so comparing would only report "not stored".
+  - bc: type
+    reason: constant in BC ('Company')
+  - bc: website
+    reason: empty in BC
+  - bc: creditLimit
+    reason: empty in BC
+  - bc: taxRegistrationNumber
+    reason: empty in BC
+  - bc: balanceDue
+    reason: BC calculates it from its own ledger. EQData CustomerBalance and ARData customer_balance agree on only 11 and 0 of the 312 non-zero BC balances, so there is no stored counterpart.
+  - bc: taxLiable
+    reason: No SS4 counterpart found. ARData tax_exempt_number does not line up with it (209 of the 1,488 taxLiable=True rows have no exemption number).
+  - bc: taxAreaId
+    reason: GUID of a BC lookup record. A single value (AvaTax) set in BC.
+  - bc: taxAreaDisplayName
+    reason: Single BC value 'AvaTax' set in BC. No SS4 counterpart.
+  - bc: currencyId
+    reason: GUID of a BC lookup record. currencyCode is mapped instead.
+  - bc: paymentTermsId
+    reason: GUID of a BC lookup record, and the customers API exposes no code to compare. The source is probably EQDataCor.BillingInstructions.PMTTerms, but this was not verified.
+  - bc: shipmentMethodId
+    reason: GUID of a BC lookup record with no code exposed. No SS4 counterpart identified.
+  - bc: paymentMethodId
+    reason: GUID of a BC lookup record with no code exposed. No SS4 counterpart identified.
+  - bc: blocked
+    reason: No SS4 counterpart. 'All' on 11 rows, and none of them is Inactive in EQData. AcctStatus is blank on every BC-paired row, so it does not explain blocked either.
+  - bc: lastModifiedDateTime
+    reason: BC system timestamp
