@@ -111,21 +111,24 @@ def run_diff(conn: Connection, spec: Spec) -> list[Finding]:
     """All findings for one spec. The BC rows must already be staged on conn."""
     stage = stage_table_name(spec)
     parts = []
-    parts.append(duplicates_sql(spec, stage, "ss4"))
-    parts.append(duplicates_sql(spec, stage, "bc"))
+    parts.append(duplicates_sql(spec, stage, "ss4")) #first check: are there any duplicates in SS4? Is any key on more than one row?
+    parts.append(duplicates_sql(spec, stage, "bc"))  #second: are there any duplicates on the BC side?
 
     if spec.missing_in_ss4 != "ignore":
+        #Which BC rows have no SS4 row with the same key?
         parts.append(f"""
 SELECT 'missing_in_ss4', '{spec.missing_in_ss4}', {key_expr(spec, 'b')}, NULL, NULL, NULL
   FROM {stage} b
- WHERE NOT EXISTS (SELECT 1 FROM {ss4_scoped(spec)} s WHERE {join_on(spec)})""")
+ WHERE NOT EXISTS (SELECT 1 FROM {ss4_scoped(spec)} s WHERE {join_on(spec)})""")  
 
+        #which SS4 rows that are in scope have no BC row with the same key?
     if spec.missing_in_bc != "ignore":
         parts.append(f"""
 SELECT 'missing_in_bc', '{spec.missing_in_bc}', {key_expr(spec, 's')}, NULL, NULL, NULL
   FROM {ss4_scoped(spec)} s
  WHERE NOT EXISTS (SELECT 1 FROM {stage} b WHERE {join_on(spec)})""")
 
+    #For each mapped field, which paired rows hold different values? 
     for f in spec.fields:
         if f.ss4 not in spec.ss4.key:
             parts.append(mismatch_sql(spec, stage, f))

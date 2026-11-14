@@ -81,47 +81,74 @@ def agree_pct(compared: int, differ: int) -> str:
     """Two decimals, so 2 differences in 26,000 rows don't round up to 100.0%."""
     return f"{100 * (compared - differ) / compared:.2f}%" if compared else "n/a"
 
-
+#Checks whether Claude's draft mapping actually holds up against the real data.
+#A draft spec has a set of claims, such as BC's number matches SS4's number, etc.
+#This tests thsoe claims by applying the mapping to every row and measuring how well BC and SS4
+#line up as a result.
+#Important: evaluate runs while Claude is still working, in the middle of the mapping.
 def evaluate(conn: Connection, spec: Spec, rows: list[dict], client=None) -> str:
     """Runs the real diff with a draft spec and summarizes it for the agent."""
     # A bc.filter narrows which BC rows belong. It is OData syntax, so BC itself
     # applies it: fetch again with the filter rather than reuse every staged row.
     # A filter BC cannot parse comes back as an error the agent can read.
     filter_note = ""
+
+    # 1. If the spec's "filter" narrows the BC side, fetch just those rows from BC
     if spec.bc.filter:
         if client is None:
             raise RuntimeError("this draft has a bc.filter, but no BC client was provided")
         rows = fetch_bc(spec, client)
         filter_note = f" (after bc.filter: {spec.bc.filter})"
 
+    # 2. Put BC's rows on SS4, shaped the way spec describes
+    #This means the spec decides which columns the staging table gets, what they're called and what type each column is
     stage = stage_bc(conn, spec, rows)
     conn.commit()   # a later rollback must not drop the staged table
     pairs = f"FROM {stage} b JOIN {ss4_scoped(spec)} s ON {join_on(spec)}"
+
+    #How many BC rows found an SS4 partner
     paired = conn.exec_driver_sql(f"SELECT COUNT(*) {pairs}").scalar()
+    #Scope is equivalent to filter from BC's side, it's which SS4 rows are supposed to correspond to this BC table,
+    #set by the spec's 'where' field.
     in_scope = conn.exec_driver_sql(f"SELECT COUNT(*) FROM {ss4_scoped(spec)} s").scalar()
+    #run_diff writes SQL that refers to both tables by name and the sql server does the actual pairing and comparing
     findings = run_diff(conn, spec)
 
+    #below code is putting together a summary to send back to Claude from the run_diff output
+
+    #Build a dictionary of piles, one pile her kind and field tuple. 
     groups: dict[tuple, list] = {}
     for f in findings:
         groups.setdefault((f.kind, f.column), []).append(f)
 
+    # the headline
     lines = [f"BC rows: {len(rows):,}{filter_note}   SS4 rows in scope: {in_scope:,}   paired by key: {paired:,}"]
+
+    # one line per kind, so one for duplicates in ss4, duplicates in bc, etc.
     for kind in ("duplicate_in_ss4", "duplicate_in_bc", "missing_in_ss4", "missing_in_bc"):
         items = groups.get((kind, None), [])
         if items:
             lines.append(f"{kind}: {len(items):,}   e.g. {', '.join(f.key for f in items[:5])}")
 
+    #Now for mismatches. For every field logged in spec (meaning determined as used by Claude after looking at BC):
     lines.append("field agreement on paired rows:")
     for fm in spec.fields:
         if fm.ss4 in spec.ss4.key:
             continue
         col = f"b.[{fm.ss4}]"
+
+        #Get this field's pile of mismatches from earlier groups dictionary, blank if it's not there
         items = groups.get(("mismatch", fm.ss4), [])
 
         # With bc_blank: ignore, rows where BC is blank are not compared at all,
         # so agreement is measured only over the rows that actually were.
         blank_filter = f" AND NOT ({bc_is_blank(col, fm)})" if fm.bc_blank == "ignore" else ""
+        #compared runs a small query: how many paired rows, meaning records that matched by key between BC and SS4 (excluding blank-BC rows)?
+        #so without the blank_filter, it gets the same number every time in this for loop
+        #the field having bc_blank: ignore means 'when BC is blank on a row, don't count that as a difference.
+        #scenarios for this would be, if BC stores 0 for 'not set', such as unit price
         compared = conn.exec_driver_sql(f"SELECT COUNT(*) {pairs} WHERE 1 = 1{blank_filter}").scalar()
+        #So above translates to: Count the BC rows that have a partner in SS4, but only those where BC's value for the field isn't blank or zero. (assuming blank_filter is set to ignore)
         lines.append(f"  {fm.bc} -> {fm.ss4}: {len(items):,} differ of {compared:,} compared "
                      f"({agree_pct(compared, len(items))} agree)")
         if compared < paired:
@@ -184,14 +211,20 @@ def build_tools(session: MappingSession) -> list:
           {"spec_yaml": str})
     async def check_spec(args):
         session.log.append("check_spec:\n" + args["spec_yaml"])
+        #first, turn the text into a Spec, and check it for mistakes
         try:
+            #safe_load turns the yaml text into a Python dictionary, the PyYAML library doing the text parsing
+            #parse_spec takes that dictionary and builds the Spec object out of it, the BcSide, the Ss4Side, a FieldMap for each field
             spec = parse_spec(yaml.safe_load(args["spec_yaml"]), "draft")
         except (SpecError, yaml.YAMLError) as ex:
             return reply(f"Not valid:\n{ex}")
+        # make sure it's about the table being mapped, verify the spec's identity with the session's
         if (spec.bc.target, spec.bc.api, spec.bc.entity) != (session.target, session.api, session.entity):
             return reply(f"The bc section must be target: {session.target}, api: {session.api}, "
                          f"entity: {session.entity}, the table being mapped.")
+        #run the comparison and report back
         try:
+            #evaluate is the comparison engine.
             return reply(evaluate(conn, spec, session.rows, session.client))
         except Exception as ex:
             conn.rollback()

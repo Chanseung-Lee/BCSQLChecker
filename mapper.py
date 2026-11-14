@@ -333,14 +333,20 @@ async def run(args) -> None:
         profiles = profile_bc(rows, fields) #BC has many fields, plenty are unused, always blank, always zero, or always the same value, and thus irrelevant when comparing with same data in SS4
         #produces one FieldProfile object per field, 
 
+        #MappingSession object holds all resources that CLaude will need, like ss4, how to reach BC, returned rows we got earlier, etc.
         session = MappingSession(conn, rows, target=args.target, api=args.api, entity=args.entity,
-                                 client=client)
+                                 client=client) 
+        #build_tools returns a list of 3 different tool objects. These are small packages from Claude's agent SDK
+        #bundling the function with its label and expected inputs. 
         server = create_sdk_mcp_server(name="mapper", tools=build_tools(session))
+        #Claude-provided function that creates the server that offers the tools given to Claude.
+        #It doesn't run Claude here, Anthropic runs Claude on their side.
 
+        #ClaudeAgentOptions is the SDK's settings object, how the Claude session should behave.
         options = ClaudeAgentOptions(
-            system_prompt=SYSTEM_PROMPT,
-            mcp_servers={"mapper": server},
-            tools=[],                                  # no built-in tools at all
+            system_prompt=SYSTEM_PROMPT, 
+            mcp_servers={"mapper": server},           #the tool bundle from earlier
+            tools=[],                                  # no built-in tools at all for safety
             allowed_tools=[f"mcp__mapper__{t}" for t in TOOL_NAMES],
             permission_mode="dontAsk",                 # anything not allowed above is denied
             setting_sources=[],                        # ignore your Claude Code settings
@@ -350,13 +356,23 @@ async def run(args) -> None:
             model=args.model,
         )
 
+        #There are two separate prompts, playing different roles.
+        #SYSTEM_PROMPT is a long fixed block of text, telling CLaude who it is and how to work.
+        #this task_prompt builds a fresh message string for this particular run, from this run's data, using profiles, rows, etc.
         prompt = task_prompt(args, len(rows), profiles, sources_text)
+
+        #The conversation loop.
+        #transcript is a list of text that becomes the log file by the end, the first entry is the task prompt itself.
         transcript.append(f"=== task\n{prompt}")
         print(f"starting the agent (max {args.max_turns} turns, ${args.budget:.2f} budget) ...")
+
+        #starts the session, SDK launches, configured with the ClaudeAgentOptions above. When the block ends, it shuts down.
+        #Tool requests are what create the back-and-forth
         async with ClaudeSDKClient(options=options) as client:
-            await client.query(prompt)
-            async for message in client.receive_response():
-                show(message, transcript)
+            await client.query(prompt) #send the task prompt
+            async for message in client.receive_response(): #receives everything that happens, one message at a time. Essentially watch it work until it's done
+                show(message, transcript) #print and record the received message
+                #show() checks what kind of message arrived and handles each one differently.
 
     PROPOSED_DIR.mkdir(parents=True, exist_ok=True)
     log_path = PROPOSED_DIR / f"{args.name}_log.txt"
