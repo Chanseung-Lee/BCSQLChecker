@@ -64,6 +64,10 @@ def main() -> None:
     target = BcTarget.from_env(spec.bc.target)
     bc_filter = " and ".join(f"{field} eq '{value.replace(chr(39), chr(39) * 2)}'"
                              for field, value in zip(spec.bc.key, key_values))
+    # Stay inside the spec's BC scope, e.g. only task 9500 planning lines, so a
+    # same-named record outside the check is not picked up instead.
+    if spec.bc.filter:
+        bc_filter = f"({spec.bc.filter}) and {bc_filter}"
     bc_rows = BcClient().fetch_all(bc_url(spec, target), filter=bc_filter)
     print(f"BC  ({target.environment} / {target.company}, {spec.bc.entity}): "
           f"{len(bc_rows)} record(s) where {bc_filter}")

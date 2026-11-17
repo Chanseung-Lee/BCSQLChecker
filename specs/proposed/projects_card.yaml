@@ -1,0 +1,251 @@
+# PROPOSED by the mapping agent -- review before use.
+#
+# KEY / SCOPE
+# - The key is BC No = EQData.dbo.Customer.CustomerID, as the user said (one project per customer). 672 of the 683 BC rows exist in SS4.
+# - The where clause is the customers spec's scope: ContractStatus = 'A' AND ARData customer_company_code IN ('01','15'). 616 rows pair.
+# - missing_in_ss4 = 67, set to info. Breakdown:
+#   - 11 are not in SS4 at all (test/internal numbers such as BT-2026 and TESTPUSH1).
+#   - 29 have a blank ContractStatus. These are 80612-80650, apparently new contracts; 25 of them have no Sell_to_Customer_No in BC.
+#   - 18 have status 'C'.
+#   - 3 are company 90.
+#   - 6 have no ARData row (012026, 17927, 17928, ...).
+#   If the 806xx contracts belong in scope, a reviewer may want to widen the status filter.
+# - missing_in_bc = 11,132, set to info, the same reasoning as customers_card: BC only holds projects for recent contracts.
+#
+# SOURCE FILES
+# The query is the customers_card query, cut down to what projects need, with BuildProjectFields columns added:
+# - SearchDescription = UPPER(Class + ' ' + Model)
+# - YourReference = Model [+ ' S/N ' + Serial], cut to 35 characters
+# - Ship-to contact and phone
+# - Erection and Dismantle dates, with the push job's placeholders 1900-01-01 and 2099-12-31 when null
+# Country uses the same extended country mapping as customers_card (changed after review, at the user's
+# request): each SS4 country maps to its two-letter code, blank or US variants stay US, and Netherlands
+# Antilles / West Indies are left blank. A project's sell-to country then always matches its customer's.
+#
+# ALSO CHANGED AFTER REVIEW, at the user's decision
+# - Scope excludes customers flagged Inactive in SS4 and customers with no name, as customers_card does,
+#   so both templates cover exactly the same records.
+# - Starting/Ending Date are left blank when SS4 has no erection/dismantle date, instead of the push
+#   job's 1900-01-01 / 2099-12-31 placeholders.
+# - Global_Dimension_1_Code (DISTRICT) <- EQData.dbo.Customer.District, as on customers.
+#   Global_Dimension_2_Code (PROJECT) <- the project's own number (= CustomerID); every value needs a
+#   PROJECT dimension value in BC before import. Project_Card_Excel does not expose these fields, so
+#   check.py will show them blank in BC; the template fill is what they are for.
+#
+# KEY PATTERN: OLD vs NEW ROWS
+# Measured by CreateDate: 339 paired rows created in 2026 (the push job's CreatedAfter scope) and 277 older rows.
+# - On the 2026 rows the push fields agree almost exactly:
+#   - Search_Description 337/339
+#   - Your_Reference 337/339
+#   - Ending_Date 339/339
+#   - Ship_to_Contact 327/339
+#   - Ship_to_Phone 322/339
+# - On older rows they mostly differ:
+#   - Search_Description: 232 of 277 equal UPPER(Class Model S/N Serial). The older load evidently included the serial.
+#   - Your_Reference: 141 of 277 agree.
+#   - Ending_Date: 91 of 277 agree.
+#   - Ship-to contact: 77 of 277 agree. Ship-to phone: 71 of 277 agree.
+# I inferred that older projects came from a different baseline load and the push does not touch them; I did not verify the load itself. I mapped these fields with the push rule anyway, because they are 99%+ on its scope. Expect roughly 140-280 findings each on older rows.
+#
+# FIELD EVIDENCE (616 paired rows)
+# - Description -> ProjectName: 99.7%. The 2 differences are BC double spaces / a trailing '.'.
+# - Sell_to_Customer_No / Bill_to_Customer_No -> CustomerID: 77.0%. All 142 differences are BC blank, almost all on 2026 rows: the project is not linked to its customer in BC. These are real findings.
+# - Sell_to_Customer_Name / Bill_to_Name -> Name: 59.9%.
+#   - 142 are BC blank (see above).
+#   - Of the old rows, 216 equal LEFT(Name,30), i.e. truncated.
+#   - The rest are wording differences.
+#   Full Name is compared, as in customers_card.
+# - Sell-to address and contact: Address 86.5%, Address_2 88.8%, City 93.3%, County 95.9%, Post_Code 90.9%, Country 99.7%, Contact 86.2%. Differences are mostly different addresses or contacts entirely (e.g. 16988 Tampa vs Boca Raton).
+# - SellToPhoneNo -> MailingTelephone: 90.85% where BC is filled (397/437). SellToEmail -> first ProjectEmail1: 130/131.
+#   BC is blank on 179 rows (phone) and 485 rows (email). The push job says BC fills these from the contact and does not push them, so bc_blank is set to ignore. This is a judgment call; drop the two fields if you prefer not to compare BC-derived contact data.
+# - Payment_Terms_Code: 84.7%. BC is NET30 everywhere; SS4 has NET45/60/90 on 27 paired rows, and those all differ. The other differences are SS4 terms blank. Same situation as customers_card.
+# - Starting_Date: 97.7%. Ending_Date: 69.8% (see above).
+# - Ship_to_Contact / Ship_to_Phone_No: about 65%. The push uses SkipWhenEmpty here, so where SS4 is blank BC keeps its default (the sell-to contact or phone). The spec cannot ignore SS4-side blanks, so those rows show as differences: an expected artefact, not a data error.
+#
+# NOT MAPPED
+# - Bill-to and ship-to address blocks: BC copies of the sell-to. Bill_to_Address equals Sell_to_Address on 454/474. Ship_to_Address equals the sell-to on 328/348 and matches SS4 ShippingAddress on only 2.
+# - External_Document_No: CustomerPO agrees on only 81 of 161.
+# - Creation_Date: matches the date of LastSyncedAt (292 rows), so it is BC's own creation date.
+# - Task_Billing_Method: constant on the SS4 side. 1 BC row holds 'Multiple customers'.
+# Details for these and the rest are in the ignored list.
+
+name: projects_card
+description: BC Project Card (Excel page) vs EQData.dbo.Customer (active contracts, SS4 companies 01/15). Each project shares its customer's number. Project fields follow BcCustomerPushJob.BuildProjectFields; sell-to rules are reused from customers_card.
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Project_Card_Excel
+  key: ['No']
+ss4:
+  query: >-
+    SELECT x.CustomerID, x.CustomerID AS SellToNo, x.CustomerID AS BillToNo, x.ContractStatus, x.CompanyCode,
+           x.Inactive, x.District, x.CustomerID AS ProjectDimension,
+           x.Name, x.Name AS BillToName, x.ProjectName,
+           x.Line1, x.Rest, x.Country, x.PaymentTerms, x.MailingTelephone, x.MailingContact, x.Email,
+           x.SearchDescription, x.YourReference, x.ShippingContact, x.ShippingTelephone,
+           x.ErectionDate, x.DismantleDate,
+           CASE WHEN x.Ok = 1 THEN LTRIM(RTRIM(LEFT(x.LastLine, CHARINDEX(',', x.LastLine) - 1))) END AS City,
+           CASE WHEN x.Ok = 1 THEN LEFT(x.AfterComma, 2) END AS State,
+           CASE WHEN x.Ok = 1 THEN NULLIF(LTRIM(RTRIM(SUBSTRING(x.AfterComma, 3, 400))), '') END AS Zip
+      FROM (
+        SELECT y.*,
+               CASE WHEN CHARINDEX(',', y.LastLine) > 1
+                     AND (y.AfterComma LIKE '[A-Za-z][A-Za-z]' OR y.AfterComma LIKE '[A-Za-z][A-Za-z] %')
+                    THEN 1 ELSE 0 END AS Ok
+          FROM (
+            SELECT z.*,
+                   LTRIM(SUBSTRING(z.LastLine, CHARINDEX(',', z.LastLine) + 1, 400)) AS AfterComma
+              FROM (
+                SELECT c.CustomerID, c.ContractStatus, c.Name, c.ProjectName,
+                       ISNULL(c.Inactive, 0) AS Inactive, NULLIF(LTRIM(RTRIM(c.District)), '') AS District,
+                       c.MailingTelephone, c.MailingContact, c.ShippingContact, c.ShippingTelephone,
+                       NULLIF(LTRIM(RTRIM(LEFT(s.ProjectEmail1, CHARINDEX(',', s.ProjectEmail1 + ',') - 1))), '') AS Email,
+                       CAST(c.ErectionDate AS date) AS ErectionDate,
+                       CAST(c.DismantleDate AS date) AS DismantleDate,
+                       NULLIF(UPPER(LTRIM(RTRIM(LTRIM(RTRIM(ISNULL(c.Class, ''))) + ' ' + LTRIM(RTRIM(ISNULL(c.Model, '')))))), '') AS SearchDescription,
+                       CASE WHEN NULLIF(LTRIM(RTRIM(c.Model)), '') IS NULL THEN NULL
+                            WHEN NULLIF(LTRIM(RTRIM(c.SerialNumber)), '') IS NULL THEN LEFT(LTRIM(RTRIM(c.Model)), 35)
+                            ELSE LEFT(LTRIM(RTRIM(c.Model)) + ' S/N ' + LTRIM(RTRIM(c.SerialNumber)), 35) END AS YourReference,
+                       CASE UPPER(LTRIM(RTRIM(ISNULL(c.TaxingCountry, ''))))
+                            WHEN '' THEN 'US' WHEN 'US' THEN 'US' WHEN 'USA' THEN 'US' WHEN 'UNITED STATES' THEN 'US'
+                            WHEN 'CA' THEN 'CA' WHEN 'CAN' THEN 'CA' WHEN 'CANADA' THEN 'CA'
+                            WHEN 'MX' THEN 'MX' WHEN 'MEX' THEN 'MX' WHEN 'MEXICO' THEN 'MX'
+                            WHEN 'BRAZIL' THEN 'BR' WHEN 'DOMINICAN REPUBLIC' THEN 'DO'
+                            WHEN 'VENEZUELA' THEN 'VE' WHEN 'VENUZUELA' THEN 'VE'
+                            WHEN 'BAHAMAS' THEN 'BS' WHEN 'GRAND BAHAMA' THEN 'BS'
+                            WHEN 'PERU' THEN 'PE' WHEN 'CHILE' THEN 'CL' WHEN 'COSTA RICA' THEN 'CR' WHEN 'ECUADOR' THEN 'EC'
+                            WHEN 'CAYMEN ISLANDS' THEN 'KY' WHEN 'CAYMAN ISLANDS' THEN 'KY' WHEN 'GRAND CAYMAN' THEN 'KY'
+                            WHEN 'THE NETHERLANDS' THEN 'NL' WHEN 'NETHERLANDS' THEN 'NL' WHEN 'THE NEATHERLANDS' THEN 'NL'
+                            WHEN 'PANAMA' THEN 'PA' WHEN 'GUAM' THEN 'GU' WHEN 'HONDURAS' THEN 'HN' WHEN 'BERMUDA' THEN 'BM'
+                            WHEN 'GUATEMALA' THEN 'GT' WHEN 'NEW ZEALAND' THEN 'NZ' WHEN 'PUERTO RICO' THEN 'PR'
+                            WHEN 'SOUTH KOREA' THEN 'KR' WHEN 'GERMANY' THEN 'DE' WHEN 'PHILIPPINES' THEN 'PH'
+                            WHEN 'BRITISH VIRGIN ISLANDS' THEN 'VG' WHEN 'NIGERIA' THEN 'NG' WHEN 'BELIZE' THEN 'BZ'
+                            ELSE NULL END AS Country,
+                       NULLIF(UPPER(REPLACE(LTRIM(RTRIM(b.PMTTerms)), ' ', '')), '') AS PaymentTerms,
+                       a.customer_company_code AS CompanyCode,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(LEFT(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) - 1), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(c.MailingAddress)) END AS Line1,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) = 0 THEN NULL
+                            WHEN DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1 = CHARINDEX(CHAR(10), c.MailingAddress)
+                            THEN LTRIM(RTRIM(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1, 4000), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(REPLACE(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1,
+                                     (DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1) - CHARINDEX(CHAR(10), c.MailingAddress) - 1),
+                                     CHAR(13), ''), CHAR(10), ', ')))
+                            END AS Rest,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(RIGHT(c.MailingAddress, CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) - 1), CHAR(13), '')))
+                            END AS LastLine
+                  FROM EQData.dbo.Customer c
+                  LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.CustomerID
+                  LEFT JOIN EQDataCor.dbo.BillingInstructions b ON b.CustomerID = c.CustomerID
+                  LEFT JOIN ARData.dbo.customer a ON a.customer_number = c.CustomerID
+              ) z
+          ) y
+      ) x
+  key: [CustomerID]
+  where: ContractStatus = 'A' AND CompanyCode IN ('01', '15') AND Inactive = 0 AND NULLIF(LTRIM(RTRIM(Name)), '') IS NOT NULL
+missing:
+  in_bc: info
+  in_ss4: info
+fields:
+  - {bc: Description, ss4: ProjectName, type: text}
+  - {bc: Sell_to_Customer_No, ss4: SellToNo, type: text}
+  - {bc: Sell_to_Customer_Name, ss4: Name, type: text}
+  - {bc: Bill_to_Customer_No, ss4: BillToNo, type: text}
+  - {bc: Bill_to_Name, ss4: BillToName, type: text}
+  - {bc: Sell_to_Address, ss4: Line1, type: text}
+  - {bc: Sell_to_Address_2, ss4: Rest, type: text}
+  - {bc: Sell_to_City, ss4: City, type: text}
+  - {bc: Sell_to_County, ss4: State, type: text}
+  - {bc: Sell_to_Post_Code, ss4: Zip, type: text}
+  - {bc: Sell_to_Country_Region_Code, ss4: Country, type: text}
+  - {bc: Sell_to_Contact, ss4: MailingContact, type: text}
+  - {bc: SellToPhoneNo, ss4: MailingTelephone, type: text, bc_blank: ignore}
+  - {bc: SellToEmail, ss4: Email, type: text, bc_blank: ignore}
+  - {bc: Search_Description, ss4: SearchDescription, type: text}
+  - {bc: Your_Reference, ss4: YourReference, type: text}
+  - {bc: Payment_Terms_Code, ss4: PaymentTerms, type: text}
+  - {bc: Ship_to_Contact, ss4: ShippingContact, type: text}
+  - {bc: Ship_to_Phone_No, ss4: ShippingTelephone, type: text}
+  - {bc: Starting_Date, ss4: ErectionDate, type: date}
+  - {bc: Ending_Date, ss4: DismantleDate, type: date}
+  - {bc: Global_Dimension_1_Code, ss4: District, type: text}
+  - {bc: Global_Dimension_2_Code, ss4: ProjectDimension, type: text}
+ignored:
+  - {bc: Bill_to_Name_2, reason: "BC copy of the sell-to/customer name 2; SS4 ProjectName is already compared via Description"}
+  - {bc: Sell_to_Customer_Name_2, reason: "BC copies the customer's Name 2 (= SS4 ProjectName) onto the project; sparse (5%). ProjectName is compared via Description"}
+  - {bc: Bill_to_Address, reason: "BC copy of the sell-to address: of 474 filled paired rows, 454 equal BC Sell_to_Address. SS4 BillingAddress line 1 matches only 388. Not pushed"}
+  - {bc: Bill_to_Address_2, reason: "BC copy of the sell-to address (see Bill_to_Address)"}
+  - {bc: Bill_to_City, reason: "BC copy of the sell-to address"}
+  - {bc: Bill_to_County, reason: "BC copy of the sell-to address"}
+  - {bc: Bill_to_Post_Code, reason: "BC copy of the sell-to address"}
+  - {bc: Bill_to_Country_Region_Code, reason: "BC copy of the sell-to address"}
+  - {bc: Bill_to_Contact, reason: "BC copy of Sell_to_Contact (286 of 294 filled paired rows). SS4 BillingContact matches only 39"}
+  - {bc: Bill_to_Contact_No, reason: "BC contact number (CT...), generated by BC"}
+  - {bc: Sell_to_Contact_No, reason: "BC contact number (CT...), generated by BC"}
+  - {bc: ContactPhoneNo, reason: "duplicate of SellToPhoneNo in BC: equal on all 616 paired rows"}
+  - {bc: ContactEmail, reason: "duplicate of SellToEmail in BC: equal on all 683 rows"}
+  - {bc: ContactMobilePhoneNo, reason: "sparse (1 row, '12.01.26'), BC contact data"}
+  - {bc: SellToMobilePhoneNo, reason: "sparse (1 row, '12.01.26'), BC contact data"}
+  - {bc: Ship_to_Name, reason: "BC default copy of the sell-to name: equal to Sell_to_Customer_Name on all 348 filled paired rows. Not pushed"}
+  - {bc: Ship_to_Name_2, reason: "BC default copy of the sell-to data"}
+  - {bc: Ship_to_Address, reason: "BC default copy of the sell-to address (328 of 348 filled rows). SS4 ShippingAddress line 1 matches only 2. Not pushed"}
+  - {bc: Ship_to_Address_2, reason: "BC default copy of the sell-to address"}
+  - {bc: Ship_to_City, reason: "BC default copy of the sell-to address"}
+  - {bc: Ship_to_County, reason: "BC default copy of the sell-to address"}
+  - {bc: Ship_to_Post_Code, reason: "BC default copy of the sell-to address"}
+  - {bc: Ship_to_Country_Region_Code, reason: "BC default copy of the sell-to address"}
+  - {bc: BillToOptions, reason: "BC page option derived from whether the bill-to differs from the customer; no SS4 counterpart"}
+  - {bc: ShippingOptions, reason: "BC page option derived from the ship-to; no SS4 counterpart"}
+  - {bc: External_Document_No, reason: "no counterpart found: SS4 CustomerPO equals it on only 81 of 161 filled paired rows. Not in the push job"}
+  - {bc: Person_Responsible, reason: "BC user IDs (SCHILDS, ASTUDEBAKER...), entered in BC. Not pushed, no SS4 counterpart"}
+  - {bc: Last_Date_Modified, reason: "BC system timestamp"}
+  - {bc: Creation_Date, reason: "BC creation date: equals the date of SS4 LastSyncedAt on 292 rows and SS4 CreateDate on only 28"}
+  - {bc: Task_Billing_Method, reason: "pushed as the constant 'One customer'. 682 of 683 rows hold it; 1 row is 'Multiple customers'. Constant on the SS4 side, so there is nothing to compare"}
+  - {bc: Payment_Method_Code, reason: "BC setup, single value CHECK. Not pushed"}
+  - {bc: Allow_Schedule_Contract_Lines, reason: "BC project setup flag (True on 370 rows). No SS4 counterpart"}
+  - {bc: Apply_Usage_Link, reason: "BC project setup flag (True on 370 rows). No SS4 counterpart"}
+  - {bc: No_of_Archived_Versions, reason: "BC statistic (sparse)"}
+  - {bc: Percent_Completed, reason: "BC-computed statistic (sparse)"}
+  - {bc: Percent_Invoiced, reason: "BC-computed statistic (sparse)"}
+  - {bc: Percent_of_Overdue_Planning_Lines, reason: "BC-computed statistic (sparse)"}
+  - {bc: Status, reason: constant in BC}
+  - {bc: Job_Posting_Group, reason: constant in BC}
+  - {bc: WIP_Posting_Method, reason: constant in BC}
+  - {bc: Exch_Calculation_Cost, reason: constant in BC}
+  - {bc: Exch_Calculation_Price, reason: constant in BC}
+  - {bc: Blocked, reason: empty in BC}
+  - {bc: Project_Manager, reason: empty in BC}
+  - {bc: Location_Code, reason: empty in BC}
+  - {bc: Bin_Code, reason: empty in BC}
+  - {bc: WIP_Method, reason: empty in BC}
+  - {bc: Ship_to_Code, reason: empty in BC}
+  - {bc: Currency_Code, reason: empty in BC}
+  - {bc: Invoice_Currency_Code, reason: empty in BC}
+  - {bc: Price_Calculation_Method, reason: empty in BC}
+  - {bc: Cost_Calculation_Method, reason: empty in BC}
+  - {bc: Language_Code, reason: empty in BC}
+  - {bc: WIP_Posting_Date, reason: empty in BC}
+  - {bc: Total_WIP_Sales_Amount, reason: empty in BC}
+  - {bc: Applied_Sales_G_L_Amount, reason: empty in BC}
+  - {bc: Total_WIP_Cost_Amount, reason: empty in BC}
+  - {bc: Applied_Costs_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Sales_Amount, reason: empty in BC}
+  - {bc: Recog_Costs_Amount, reason: empty in BC}
+  - {bc: Recog_Profit_Amount, reason: empty in BC}
+  - {bc: Recog_Profit_Percent, reason: empty in BC}
+  - {bc: Acc_WIP_Costs_Amount, reason: empty in BC}
+  - {bc: Acc_WIP_Sales_Amount, reason: empty in BC}
+  - {bc: Calc_Recog_Sales_Amount, reason: empty in BC}
+  - {bc: Calc_Recog_Costs_Amount, reason: empty in BC}
+  - {bc: WIP_G_L_Posting_Date, reason: empty in BC}
+  - {bc: Total_WIP_Sales_G_L_Amount, reason: empty in BC}
+  - {bc: Total_WIP_Cost_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Sales_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Costs_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Profit_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Profit_G_L_Percent, reason: empty in BC}
+  - {bc: Calc_Recog_Sales_G_L_Amount, reason: empty in BC}
+  - {bc: Calc_Recog_Costs_G_L_Amount, reason: empty in BC}

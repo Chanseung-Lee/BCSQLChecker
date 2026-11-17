@@ -1,0 +1,64 @@
+# Hand-written (not by the mapping agent): the rule was settled with the user.
+#
+# TASKS PER PROJECT
+# - Every project gets 9500 Schedule of Values ("everything else").
+# - A project billed rent also gets its rent task, by the type of its LATEST finished rent
+#   invoice (type R or A with a non-zero RNT charge on line 1, the rent scripts' test):
+#     R -> 2100 Monthly Rent      A -> 2200 Rent 28 Day      no rent invoice -> no rent task
+# - Type Posting, posting group SETTING UP, no WIP method or totaling: as on every UAT task.
+# - Global Dimension 1 (DISTRICT) and 2 (PROJECT) as on the project itself.
+# UAT's projects also carry 1000/2000/3000/4000; prod deliberately does not (user's decision),
+# so those show as missing_in_ss4 (info) if this spec is checked against UAT.
+#
+# SCOPE: the same projects as projects_card -- active, named customers of SS4 companies 01 and 15.
+# Rent invoices are read for both companies (01 and 15).
+
+name: project_tasks
+description: Project tasks (table 1001) -- 9500 on every project, plus 2100/2200 by latest rent invoice type
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Job_Task_Lines
+  key: [Job_No, Job_Task_No]
+ss4:
+  query: >-
+    SELECT p.CustomerID AS ProjectNo, t.TaskNo, t.Description,
+           'Posting' AS TaskType, 'SETTING UP' AS PostingGroup,
+           p.District, p.CustomerID AS ProjectDimension,
+           p.ContractStatus, p.CompanyCode, p.Inactive, p.Name
+      FROM (
+        SELECT c.CustomerID, c.ContractStatus, c.Name, a.customer_company_code AS CompanyCode,
+               ISNULL(c.Inactive, 0) AS Inactive, NULLIF(LTRIM(RTRIM(c.District)), '') AS District,
+               lr.RentType
+          FROM EQData.dbo.Customer c
+          LEFT JOIN ARData.dbo.customer a ON a.customer_number = c.CustomerID
+          LEFT JOIN (
+            SELECT LTRIM(RTRIM(i.CustomerID)) AS CustomerID, i.[Type] AS RentType,
+                   ROW_NUMBER() OVER (PARTITION BY LTRIM(RTRIM(i.CustomerID))
+                                      ORDER BY i.InvoiceDate DESC, i.InvoiceID DESC) AS rn
+              FROM ARData.dbo.ARInvoice i
+             WHERE i.Company IN ('01', '15') AND i.[Type] IN ('R', 'A') AND i.ProcessStatus = 'FINISHED'
+               AND EXISTS (SELECT 1 FROM ARData.dbo.ARInvoiceDetail x
+                            WHERE x.InvoiceID = i.InvoiceID AND x.Item = 1
+                              AND x.Quantity <> 0 AND x.Code = 'RNT')
+          ) lr ON lr.CustomerID = LTRIM(RTRIM(c.CustomerID)) AND lr.rn = 1
+      ) p
+      JOIN (VALUES ('9500', 'Schedule of Values', NULL),
+                   ('2100', 'Monthly Rent', 'R'),
+                   ('2200', 'Rent 28 Day', 'A')) AS t(TaskNo, Description, RentType)
+        ON t.RentType IS NULL OR t.RentType = p.RentType
+  key: [ProjectNo, TaskNo]
+  where: ContractStatus = 'A' AND CompanyCode IN ('01', '15') AND Inactive = 0 AND NULLIF(LTRIM(RTRIM(Name)), '') IS NOT NULL
+missing:
+  in_bc: error
+  in_ss4: info
+fields:
+  - {bc: Description, ss4: Description, type: text}
+  - {bc: Job_Task_Type, ss4: TaskType, type: enum}
+  - {bc: Job_Posting_Group, ss4: PostingGroup, type: text}
+  - {bc: Global_Dimension_1_Code, ss4: District, type: text}
+  - {bc: Global_Dimension_2_Code, ss4: ProjectDimension, type: text}
+ignored:
+  - {bc: WIP_Method, reason: "blank on every UAT task"}
+  - {bc: Totaling, reason: "blank on every UAT task (all tasks are Posting)"}

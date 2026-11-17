@@ -1,0 +1,2360 @@
+=== task
+Map the BC table `Project_Card_Excel` to SS4.
+
+It has 683 rows, all staged in #bc_raw.
+
+BC field profile ("real values" excludes blanks, zeros and false):
+field | status | real values | distinct | most common values
+No | used | 100.0% | 683 | '012026' x1, '15578' x1, '16498' x1
+Description | used | 99.1% | 446 | 'CUSTOMER OWNED' x22, 'SALE' x18, 'MIRAMAR COVE' x6
+Sell_to_Customer_No | used | 74.1% | 502 | '012026' x3, 'RENTMO' x3, '15578' x1
+Sell_to_Customer_Name | used | 73.9% | 207 | 'BREWER CRANE, LLC' x46, 'HI-RISE CRANE, INC.' x18, 'JGR CONSTRUCTION, INC.' x18
+Sell_to_Customer_Name_2 | used | 5.3% | 32 | '30 VAN NESS (HAYES POINT)' x2, 'RED MCCOMBS SCHOOL OF BUSINESS' x2, 'FOURTH AND BROOKS' x2
+Sell_to_Address | used | 99.3% | 291 | '12570 HIGHWAY 67' x43, '6495 BIRD ROAD' x28, 'P. O. BOX 5705' x22
+Sell_to_Address_2 | used | 96.6% | 235 | 'LAKESIDE, CA  92040' x40, 'MEDLEY, FL  33178' x31, 'MIAMI, FL  33155' x30
+Sell_to_City | used | 98.1% | 163 | 'MIAMI' x46, 'LAKESIDE' x44, 'Miami' x42
+Sell_to_County | used | 97.8% | 41 | 'FL' x205, 'CA' x123, 'TX' x52
+Sell_to_Post_Code | used | 97.8% | 215 | '92040' x41, '33178' x31, '33155' x30
+Sell_to_Country_Region_Code | used | 98.8% | 3 | 'US' x652, 'CA' x20, 'MX' x3
+Sell_to_Contact_No | used | 74.1% | 327 | 'CT014230' x27, 'CT014245' x12, 'CT014284' x12
+SellToPhoneNo | used | 67.2% | 163 | '(619) 390-8252' x48, '(305) 262-7306' x20, '(954) 735-4424' x18
+SellToMobilePhoneNo | sparse | 0.1% | 1 | '12.01.26' x1
+SellToEmail | used | 20.1% | 77 | 'heather@brewercrane.com' x17, 'cranes@hi-risecrane.com' x7, 'nsmitz@rsiconcrete.com' x4
+Sell_to_Contact | used | 89.5% | 265 | 'BRENT GARCIA' x50, 'RICHARD MARQUEZ' x27, 'USAMA AHMED' x17
+Search_Description | used | 99.1% | 351 | 'HAMMERHEAD 316 EC-H 12 LITRONIC' x70, 'HOIST FC 7100-12 32/39' x56, 'HAMMERHEAD 550 EC-H 20 LITRONIC' x28
+External_Document_No | used | 24.3% | 128 | '06-5123' x4, '1109' x3, 'SC25009-S1' x3
+Your_Reference | used | 96.5% | 482 | '316 EC-H 12 S/N Accessories' x4, '316 EC-H 12 Litronic' x4, '340 EC-B 12 Litronic S/N 57.897' x3
+Person_Responsible | used | 44.4% | 4 | 'SCHILDS' x145, 'ASTUDEBAKER' x103, 'XMAYNARD' x28
+Blocked | empty | 0.0% | 0 | 
+Last_Date_Modified | used | 100.0% | 31 | '2026-06-16' x259, '2026-10-19' x150, '2026-11-10' x52
+Project_Manager | empty | 0.0% | 0 | 
+No_of_Archived_Versions | sparse | 2.6% | 3 | '1' x13, '2' x4, '4' x1
+Status | constant | 100.0% | 1 | 'Open' x683
+Job_Posting_Group | constant | 100.0% | 1 | 'SETTING UP' x683
+Location_Code | empty | 0.0% | 0 | 
+Bin_Code | empty | 0.0% | 0 | 
+WIP_Method | empty | 0.0% | 0 | 
+WIP_Posting_Method | constant | 100.0% | 1 | 'Per Project' x683
+Allow_Schedule_Contract_Lines | used | 54.2% | 1 | 'True' x370
+Apply_Usage_Link | used | 54.2% | 1 | 'True' x370
+Percent_Completed | sparse | 0.1% | 1 | '44.0597260273972603' x1
+Percent_Invoiced | sparse | 1.5% | 10 | '-50.8020986105021243' x1, '0.289966893783816157' x1, '0.0813647582110601828' x1
+Percent_of_Overdue_Planning_Lines | sparse | 0.9% | 4 | '100' x3, '5.88235294117647059' x1, '15.1702786377708978' x1
+Task_Billing_Method | used | 100.0% | 2 | 'One customer' x682, 'Multiple customers' x1
+BillToOptions | used | 100.0% | 2 | 'Custom Address' x345, 'Default (Customer)' x338
+Bill_to_Customer_No | used | 74.1% | 502 | '012026' x3, 'RENTMO' x3, '15578' x1
+Bill_to_Name | used | 73.9% | 207 | 'BREWER CRANE, LLC' x46, 'HI-RISE CRANE, INC.' x18, 'JGR CONSTRUCTION, INC.' x18
+Bill_to_Name_2 | used | 5.3% | 32 | '30 VAN NESS (HAYES POINT)' x2, 'RED MCCOMBS SCHOOL OF BUSINESS' x2, 'FOURTH AND BROOKS' x2
+Bill_to_Address | used | 73.5% | 203 | '12570 HIGHWAY 67' x42, 'P. O. BOX 5705' x18, '6495 BIRD ROAD' x17
+Bill_to_Address_2 | used | 69.3% | 166 | 'LAKESIDE, CA  92040' x39, 'MEDLEY, FL  33178' x19, 'FT LAUDERDALE, FL  33310' x18
+Bill_to_City | used | 70.9% | 126 | 'Miami' x49, 'LAKESIDE' x42, 'FT LAUDERDALE' x25
+Bill_to_County | used | 70.4% | 35 | 'FL' x146, 'CA' x101, 'TX' x38
+Bill_to_Post_Code | used | 70.9% | 161 | '92040' x39, '33178' x19, '33310' x18
+Bill_to_Country_Region_Code | used | 73.1% | 3 | 'US' x493, 'CA' x5, 'MX' x1
+Bill_to_Contact_No | used | 74.1% | 327 | 'CT014230' x27, 'CT014245' x12, 'CT014284' x12
+ContactPhoneNo | used | 67.2% | 163 | '(619) 390-8252' x48, '(305) 262-7306' x20, '(954) 735-4424' x18
+ContactMobilePhoneNo | sparse | 0.1% | 1 | '12.01.26' x1
+ContactEmail | used | 20.1% | 77 | 'heather@brewercrane.com' x17, 'cranes@hi-risecrane.com' x7, 'nsmitz@rsiconcrete.com' x4
+Bill_to_Contact | used | 45.2% | 130 | 'BRENT GARCIA' x29, 'LEO LOPEZ' x12, 'RICHARD MARQUEZ' x12
+Payment_Terms_Code | used | 94.7% | 1 | 'NET30' x647
+Payment_Method_Code | used | 68.4% | 1 | 'CHECK' x467
+ShippingOptions | used | 100.0% | 2 | 'Custom Address' x372, 'Default (Sell-to Address)' x311
+Ship_to_Code | empty | 0.0% | 0 | 
+Ship_to_Name | used | 55.3% | 159 | 'BREWER CRANE, LLC' x32, 'COASTAL CONSTRUCTION' x12, 'L&R STRUCTURAL CORP.' x12
+Ship_to_Name_2 | used | 5.1% | 31 | '30 VAN NESS (HAYES POINT)' x2, 'RED MCCOMBS SCHOOL OF BUSINESS' x2, 'FOURTH AND BROOKS' x2
+Ship_to_Address | used | 54.9% | 153 | '12570 HIGHWAY 67' x33, ',' x15, '6495 BIRD ROAD' x13
+Ship_to_Address_2 | used | 50.7% | 139 | 'LAKESIDE, CA  92040' x30, 'MIAMI, FL  33155' x13, 'MEDLEY, FL  33178' x13
+Ship_to_City | used | 52.3% | 105 | 'Miami' x49, 'LAKESIDE' x32, 'FT LAUDERDALE' x17
+Ship_to_County | used | 52.0% | 35 | 'FL' x110, 'CA' x73, 'TX' x29
+Ship_to_Post_Code | used | 52.3% | 138 | '92040' x30, '33155' x13, '33178' x13
+Ship_to_Country_Region_Code | used | 54.5% | 3 | 'US' x366, 'CA' x5, 'MX' x1
+Ship_to_Phone_No | used | 72.9% | 217 | '(619) 390-8252' x51, '(954) 735-4424' x22, '(305) 559-4900' x14
+Ship_to_Contact | used | 70.9% | 225 | 'ANDRE TEIXEIRA' x25, 'BRENT GARCIA' x19, 'RICHARD MARQUEZ' x14
+Starting_Date | used | 98.2% | 398 | '1900-01-01' x40, '2026-11-01' x18, '2026-12-01' x13
+Ending_Date | used | 98.2% | 97 | '2099-12-31' x40, '2027-04-30' x33, '2027-06-30' x31
+Creation_Date | used | 54.2% | 25 | '2026-10-14' x297, '2026-10-28' x23, '2026-11-10' x7
+Currency_Code | empty | 0.0% | 0 | 
+Invoice_Currency_Code | empty | 0.0% | 0 | 
+Price_Calculation_Method | empty | 0.0% | 0 | 
+Cost_Calculation_Method | empty | 0.0% | 0 | 
+Exch_Calculation_Cost | constant | 100.0% | 1 | 'Fixed FCY' x683
+Exch_Calculation_Price | constant | 100.0% | 1 | 'Fixed FCY' x683
+Language_Code | empty | 0.0% | 0 | 
+WIP_Posting_Date | empty | 0.0% | 0 | 
+Total_WIP_Sales_Amount | empty | 0.0% | 0 | 
+Applied_Sales_G_L_Amount | empty | 0.0% | 0 | 
+Total_WIP_Cost_Amount | empty | 0.0% | 0 | 
+Applied_Costs_G_L_Amount | empty | 0.0% | 0 | 
+Recog_Sales_Amount | empty | 0.0% | 0 | 
+Recog_Costs_Amount | empty | 0.0% | 0 | 
+Recog_Profit_Amount | empty | 0.0% | 0 | 
+Recog_Profit_Percent | empty | 0.0% | 0 | 
+Acc_WIP_Costs_Amount | empty | 0.0% | 0 | 
+Acc_WIP_Sales_Amount | empty | 0.0% | 0 | 
+Calc_Recog_Sales_Amount | empty | 0.0% | 0 | 
+Calc_Recog_Costs_Amount | empty | 0.0% | 0 | 
+WIP_G_L_Posting_Date | empty | 0.0% | 0 | 
+Total_WIP_Sales_G_L_Amount | empty | 0.0% | 0 | 
+Total_WIP_Cost_G_L_Amount | empty | 0.0% | 0 | 
+Recog_Sales_G_L_Amount | empty | 0.0% | 0 | 
+Recog_Costs_G_L_Amount | empty | 0.0% | 0 | 
+Recog_Profit_G_L_Amount | empty | 0.0% | 0 | 
+Recog_Profit_G_L_Percent | empty | 0.0% | 0 | 
+Calc_Recog_Sales_G_L_Amount | empty | 0.0% | 0 | 
+Calc_Recog_Costs_G_L_Amount | empty | 0.0% | 0 | 
+
+SS4 databases to search: SAPData, EQData, EQDataCor, ARData, IMData
+
+A pointer from the user: Projects are one-to-one with customers and share the customer number. Use the same scope as the customers spec: ContractStatus 'A' in EQData.dbo.Customer, SS4 companies 01 and 15 via ARData.dbo.customer.customer_company_code. Reuse the customers spec's address, country and payment terms rules for the sell-to fields, and follow the push job's BuildProjectFields for the project-specific fields.
+
+Source files from the user, showing how this import was built (see 'Source files' in your instructions):
+
+--- file: Bccustomerpushjob.cs (cs file, 50,998 characters) ---
+namespace MorrowApi.Sync;
+
+using System.Globalization;
+using System.Net;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
+using Dapper;
+using Hangfire;
+using Microsoft.Data.SqlClient;
+using MorrowApi.BusinessCentral;
+
+/// <summary>
+/// Pushes changes made in SQL Server up to Business Central: EQData.dbo.Customer
+/// drives both the BC customer and the BC project that share its number.
+///
+/// Customers are written through the standard v2.0 API. Projects are written through
+/// AlphaBOLD's custom projects API (table 167), because the standard projects entity
+/// exposes only number and displayName.
+///
+/// This is the first job in the codebase that WRITES to BC, so the safety model is
+/// different from the read-only syncs. A bad read is corrected on the next run; a bad
+/// write lands in the system of record and stays there.
+///
+/// Four consequences, all deliberate:
+///
+///   1. SCOPED BY CREATE DATE. EQData.dbo.Customer holds 15,453 rows and BC has 2,862
+///      customers, so without a filter roughly 12,500 rows would have no BC counterpart
+///      and every one would look like a create. BcSync:CustomerPushCreatedAfter bounds
+///      it -- 2026-01-01 gives ~348 rows, close to what BC already has. It is config so
+///      the scope can be widened without a deploy.
+///
+///   2. CREATES ARE GATED SEPARATELY. BcSync:CustomerPushAllowCreate defaults to false,
+///      so updates can run live while creates stay off. A bad update is corrected next
+///      run; a bad create leaves a duplicate nobody notices until an invoice goes to the
+///      wrong record.
+///
+///   3. DRY RUN BY DEFAULT. BcSync:CustomerPushDryRun defaults to true: the job does
+///      the full comparison and logs the exact payload it would send, but sends nothing.
+///      Set it to false only once the logged output looks right.
+///
+///   4. COMPARE BEFORE WRITING. The watermark picks the candidates; the value
+///      comparison decides what actually goes. Without that second step, a PATCH would
+///      bump BC's lastModifiedDateTime, the pull would see "changed", write it back to
+///      SQL, which bumps ModifiedDateTime, which re-queues the push -- a loop that
+///      never settles even though nothing ever changes. Comparing values breaks it:
+///      a record already in agreement produces no write however many timestamps moved.
+/// </summary>
+public sealed class BcCustomerPushJob
+{
+    public const string JobKey = "customerPush";
+
+    /// <summary>
+    /// The SQL source. Three-part named rather than given its own connection string:
+    /// the service connects to SAPData, the customer table lives in EQData on the same
+    /// server, and BcDistrictPartsMatrixJob already crosses databases this way.
+    /// </summary>
+    private const string SourceTable = "EQData.dbo.Customer";
+
+    // BC field lengths. Longer values are truncated with a warning rather than letting
+    // BC reject the whole PATCH for one over-long field.
+    private const int MaxDisplayName = 100;
+    private const int MaxAddressLine = 100;
+    private const int MaxPhone = 30;
+
+    private readonly BCSettings _bc;
+    private readonly IBCTokenProvider _tokens;
+    private readonly IHttpClientFactory _httpFactory;
+    private readonly IConfiguration _config;
+    private readonly ISyncRunLog _runLog;
+    private readonly ISyncWatermarkStoreTimer _watermarks;
+    private readonly ILogger<BcCustomerPushJob> _logger;
+    private readonly IBcCustomApiClient _customApi;
+    private readonly string _connectionString;
+
+    /// <summary>
+    /// One BC field, where its value comes from, and BC's length limit.
+    ///
+    /// Read is a function rather than a column name because the push is not a straight
+    /// copy: addressLine1 and addressLine2 both come out of the single MailingAddress
+    /// column, and the customer and project take their displayName from different
+    /// columns of the same row.
+    ///
+    /// SkipWhenEmpty: when EQData has no value, leave BC's value alone rather than
+    /// clearing it.
+    ///
+    /// Placeholder: when EQData has no value AND BC has none either, send this instead.
+    /// A real value already in BC is never replaced by a placeholder.
+    /// </summary>
+    private sealed record PushField(
+        string BcField, Func<Candidate, string?> Read, int MaxLength,
+        bool SkipWhenEmpty = false, string? Placeholder = null);
+
+    /// <summary>
+    /// SalesmanOne holds surnames that mostly match BC's salesperson codes directly --
+    /// 14 of the 16 distinct values do. These three do not: two are typos of EXECUTIVE,
+    /// and POBANZ exists in BC only under the variant POBANZ-J.
+    ///
+    /// salespersonCode is a REFERENCE: BC validates it against its Salesperson/Purchaser
+    /// list and rejects the whole write if it does not resolve. Anything not fixed up
+    /// here is still sent as-is and will fail loudly for that one record rather than
+    /// being silently dropped, which is the behaviour that surfaces a new salesperson.
+    /// </summary>
+    private static readonly Dictionary<string, string> SalespersonFixups =
+        new(StringComparer.OrdinalIgnoreCase)
+        {
+            ["EXCECUTIVE"] = "EXECUTIVE",
+            ["EXEUTIVE"] = "EXECUTIVE",
+            ["POBANZ"] = "POBANZ-J",
+        };
+
+    private static string? MapSalesperson(string? raw)
+    {
+        var s = raw?.Trim();
+        if (string.IsNullOrEmpty(s)) return null;
+        return SalespersonFixups.TryGetValue(s, out var fixedUp) ? fixedUp : s;
+    }
+
+    /// <summary>
+    /// ProjectEmail1 sometimes holds several addresses separated by commas, and BC's
+    /// email field takes one. Takes the first and leaves the rest -- which is lossy, but
+    /// the alternative is BC rejecting the value outright.
+    ///
+    /// Worth knowing this is the PROJECT contact, not the customer's own address: two
+    /// different companies on the same job can share it.
+    /// </summary>
+    private static string? FirstEmail(string? raw)
+    {
+        var s = raw?.Trim();
+        if (string.IsNullOrEmpty(s)) return null;
+        var first = s.Split(',', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault()?.Trim();
+        return string.IsNullOrEmpty(first) ? null : first;
+    }
+
+    // Customer fields. Address splitting happens here so the map stays declarative:
+    // SplitAddress and ParseCityStateZip are called per entry, which is cheap and keeps
+    // each one independent.
+    private static readonly PushField[] CustomerFields =
+    [
+        new("displayName",     r => r.Name,                                    100),
+        new("addressLine1",    r => SplitAddress(r.MailingAddress).Line1,      100),
+        new("addressLine2",    r => SplitAddress(r.MailingAddress).Line2,      100),
+        new("city",            r => ParseCityStateZip(r.MailingAddress).City,   30),
+        new("state",           r => ParseCityStateZip(r.MailingAddress).State,  20),
+        new("postalCode",      r => ParseCityStateZip(r.MailingAddress).Zip,    20),
+        new("country",         r => MapCountry(r.TaxingCountry),               10),
+        new("phoneNumber",     r => r.MailingTelephone,                         30),
+        new("email",           r => FirstEmail(r.ProjectEmail1),                80),
+        new("salespersonCode", r => MapSalesperson(r.SalesmanOne),              20),
+    ];
+
+    // Sent when a project has no erection or dismantle date anywhere. Deliberately absurd
+    // so nobody mistakes them for real dates, and far enough apart that BC's check that
+    // the starting date is not after the ending date can never trip on them.
+    private static readonly string PlaceholderStartingDate = BcDate(new DateTime(1900, 1, 1));
+    private static readonly string PlaceholderEndingDate = BcDate(new DateTime(2099, 12, 31));
+
+    // BC sends and expects enum values with spaces XML-encoded.
+    private const string TaskBillingOneCustomer = "One_x0020_customer";
+
+    // How BC represents "no date".
+    private const string BcEmptyDate = "0001-01-01";
+
+    /// <summary>
+    /// Project fields, written through the custom projects API.
+    ///
+    /// Built per run rather than static because paymentTermsCode is checked against the
+    /// codes BC actually has, which are fetched at the start of each run.
+    ///
+    /// The sell-to address uses the same readers as CustomerFields. BC copies the
+    /// customer's address onto the project once, when the project is created, and never
+    /// again; without these the project keeps the old address after the customer moves.
+    /// Sharing the readers means the customer and project can never disagree.
+    ///
+    /// sellToCustomerNo is deliberately NOT here. Changing it makes BC re-copy every
+    /// sell-to, bill-to and ship-to field from the customer, so it is only sent on create.
+    /// Sell-to phone is also left out: BC fills it from the contact and does not let it
+    /// be edited.
+    ///
+    /// The ship-to pair skips when empty because BC holds the sell-to contact and phone
+    /// there by default, which is a better value than blank.
+    /// </summary>
+    private PushField[] BuildProjectFields(IReadOnlySet<string> paymentTermCodes, HashSet<string> warned) =>
+    [
+        new("displayName",             r => r.ProjectName,                            100),
+        new("sellToAddressLine1",      r => SplitAddress(r.MailingAddress).Line1,     100),
+        new("sellToAddressLine2",      r => SplitAddress(r.MailingAddress).Line2,      50),
+        new("sellToCity",              r => ParseCityStateZip(r.MailingAddress).City,  30),
+        new("sellToState",             r => ParseCityStateZip(r.MailingAddress).State, 30),
+        new("sellToPostCode",          r => ParseCityStateZip(r.MailingAddress).Zip,   20),
+        new("sellToCountryRegionCode", r => MapCountry(r.TaxingCountry),               10),
+        new("sellToContact",           r => r.MailingContact,                         100, SkipWhenEmpty: true),
+        new("searchDescription",       r => SearchDescription(r.Class, r.Model),      100, SkipWhenEmpty: true),
+        new("yourReference",           r => YourReference(r.Model, r.SerialNumber),    35, SkipWhenEmpty: true),
+        new("paymentTermsCode",        r => MapPaymentTerms(r.PMTTerms, paymentTermCodes, warned), 10, SkipWhenEmpty: true),
+        new("shipToContact",           r => r.ShippingContact,                        100, SkipWhenEmpty: true),
+        new("shipToPhoneNo",           r => r.ShippingTelephone,                       30, SkipWhenEmpty: true),
+        new("taskBillingMethod",       _ => TaskBillingOneCustomer,                    50),
+        new("startingDate",            r => r.ErectionDate is { } d ? BcDate(d) : null, 10,
+            SkipWhenEmpty: true, Placeholder: PlaceholderStartingDate),
+        new("endingDate",              r => r.DismantleDate is { } d ? BcDate(d) : null, 10,
+            SkipWhenEmpty: true, Placeholder: PlaceholderEndingDate),
+    ];
+
+    private static string BcDate(DateTime d) => d.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+    private static bool IsBcEmpty(string? value) =>
+        string.IsNullOrWhiteSpace(value) || value == BcEmptyDate;
+
+    /// <summary>
+    /// Class and model, e.g. "HAMMERHEAD 550 EC-H 20 LITRONIC". Uppercased because BC
+    /// stores Search Description uppercased; a mixed-case value would compare as
+    /// different on every run.
+    /// </summary>
+    private static string? SearchDescription(string? cls, string? model)
+    {
+        var s = string.Join(" ", new[] { cls?.Trim(), model?.Trim() }.Where(p => !string.IsNullOrEmpty(p)));
+        return s.Length == 0 ? null : s.ToUpperInvariant();
+    }
+
+    /// <summary>
+    /// "550 EC-H 20 Litronic S/N 55.278". Just the model when there is no serial, and
+    /// nothing when there is no model.
+    /// </summary>
+    private static string? YourReference(string? model, string? serial)
+    {
+        var m = model?.Trim();
+        if (string.IsNullOrEmpty(m)) return null;
+        var s = serial?.Trim();
+        return string.IsNullOrEmpty(s) ? m : $"{m} S/N {s}";
+    }
+
+    /// <summary>
+    /// "NET 30" becomes "NET30". Only returns a code BC actually has: paymentTermsCode
+    /// is a reference, and BC rejects the whole PATCH for a code it does not know. An
+    /// unknown value is logged once per run and BC's value is left alone.
+    /// </summary>
+    private string? MapPaymentTerms(string? raw, IReadOnlySet<string> codes, HashSet<string> warned)
+    {
+        var s = raw?.Trim();
+        if (string.IsNullOrEmpty(s)) return null;
+
+        var code = s.Replace(" ", "").ToUpperInvariant();
+        if (codes.Contains(code)) return code;
+
+        if (warned.Add(s))
+            _logger.LogWarning(
+                "Customer push: payment terms '{Terms}' has no BC payment terms code '{Code}'; left unchanged in BC.",
+                s, code);
+        return null;
+    }
+
+    public BcCustomerPushJob(
+        BCSettings bc,
+        IBCTokenProvider tokens,
+        IHttpClientFactory httpFactory,
+        IConfiguration config,
+        ISyncRunLog runLog,
+        ISyncWatermarkStoreTimer watermarks,
+        ILogger<BcCustomerPushJob> logger,
+        IBcCustomApiClient customApi)
+    {
+        _bc = bc; _tokens = tokens; _httpFactory = httpFactory; _config = config;
+        _runLog = runLog; _watermarks = watermarks; _logger = logger; _customApi = customApi;
+        _connectionString = config.GetConnectionString("SAPData")
+            ?? throw new InvalidOperationException("Connection string 'SAPData' not configured.");
+    }
+
+    // 30 minutes: two runs with overlapping candidate sets would both PATCH the same
+    // records, and the second would fail on If-Match having read a now-stale etag.
+    [DisableConcurrentExecution(30 * 60)]
+    public async Task RunAsync(CancellationToken ct)
+    {
+        var target = BcTarget.Resolve(_bc, _config, JobKey);
+        var dryRun = _config.GetValue<bool?>("BcSync:CustomerPushDryRun") ?? true;
+        var allowCreate = _config.GetValue<bool?>("BcSync:CustomerPushAllowCreate") ?? false;
+
+        // Scope bound. Config rather than hardcoded so it can be widened without a
+        // deploy: 2026-01-01 gives ~348 rows, 2025 gives 754, 2024 gives 1,046.
+        var createdAfter = _config.GetValue<DateTime?>("BcSync:CustomerPushCreatedAfter")
+            ?? new DateTime(2026, 1, 1);
+
+        _logger.LogInformation(
+            "Customer push: targeting environment {Environment}, company {CompanyId}. " +
+            "DryRun={DryRun}, AllowCreate={AllowCreate}, CreatedAfter={CreatedAfter:yyyy-MM-dd}.",
+            target.Environment, target.CompanyId, dryRun, allowCreate, createdAfter);
+
+        var runId = await _runLog.StartAsync(JobKey, target, ct);
+        try
+        {
+            EnsureCustomApiMatches(target);
+
+            var since = await _watermarks.GetAsync(JobKey, ct);
+
+            // --- Candidates: rows a user (or anything else) touched since last run,
+            // bounded by create date. The trigger on EQData.dbo.Customer stamps
+            // ModifiedDateTime on every write path, so this catches app edits, stored
+            // procedures and ad-hoc SQL alike.
+            var candidates = (await ReadCandidatesAsync(since, createdAfter, ct)).ToList();
+
+            if (candidates.Count == 0)
+            {
+                _logger.LogInformation("Customer push: nothing changed since {Since:o}.", since);
+                await _runLog.FinishAsync(runId, new SyncRunCounts
+                {
+                    WatermarkFrom = since,
+                    Fetched = 0,
+                    HeadersChanged = 0,
+                    LinesChanged = 0
+                }, null, ct);
+                return;
+            }
+
+            // Captured BEFORE any write-back. Writing BC's id back into the source table
+            // bumps ModifiedDateTime via the trigger, so anchoring the new watermark to
+            // what we READ means those rows come round once more, find no difference and
+            // settle. One wasted comparison per written row; the alternative (anchoring
+            // after the write-back) would silently skip a user edit made during the run.
+            var newWatermark = new DateTimeOffset(
+                candidates.Max(c => c.ModifiedDateTime), TimeSpan.Zero);
+
+            // --- Fetch BC's current state for just these numbers, in batches.
+            var numbers = candidates.Select(c => c.CustomerID).ToList();
+            var bcCustomers = await FetchByNumberAsync(target, "customers", numbers, ct);
+            var paymentTermCodes = await FetchPaymentTermCodesAsync(target, ct);
+            var projectFields = BuildProjectFields(
+                paymentTermCodes, new HashSet<string>(StringComparer.OrdinalIgnoreCase));
+            var bcProjects = await FetchProjectsAsync(numbers, projectFields, ct);
+
+            _logger.LogInformation(
+                "Customer push: {Candidates} changed rows; BC returned {Customers} customers, {Projects} projects.",
+                candidates.Count, bcCustomers.Count, bcProjects.Count);
+
+            var customersCreated = 0;
+            var projectsCreated = 0;
+            var createFailed = 0;
+            var customersPatched = 0;
+            var projectsPatched = 0;
+            var skippedMissing = 0;
+            var conflicts = 0;
+            var projectsFailed = 0;
+
+            foreach (var row in candidates)
+            {
+                // --- Customer
+                var customerExists = bcCustomers.TryGetValue(row.CustomerID, out var cust);
+
+                if (!customerExists)
+                {
+                    if (!allowCreate)
+                    {
+                        _logger.LogWarning(
+                            "Customer push: {Number} has no BC customer; creates are disabled.", row.CustomerID);
+                        skippedMissing++;
+                    }
+                    else
+                    {
+                        // number is supplied rather than left to a BC number series. That is
+                        // load-bearing: it means a retry after a lost response hits BC's
+                        // uniqueness check and fails, instead of silently creating a second
+                        // customer. Never let BC assign the number here.
+                        var body = BuildCreate(CustomerFields, row);
+                        body["number"] = row.CustomerID;
+
+                        var newId = await PostAsync(target, "customers", body, dryRun, row.CustomerID, ct);
+                        if (newId is not null)
+                        {
+                            customersCreated++;
+                            customerExists = true;
+                            await StoreBcIdAsync(row.CustomerID, newId.Value, ct);
+                        }
+                        else if (dryRun)
+                        {
+                            // Nothing was created, so there is no id -- but the point of a dry
+                            // run is to see every payload, so carry on to the project below as
+                            // though the customer were present.
+                            customersCreated++;
+                            customerExists = true;
+                        }
+                        else
+                        {
+                            // Live run: the project would fail anyway if it needs the customer.
+                            createFailed++;
+                            continue;
+                        }
+                    }
+                }
+                else
+                {
+                    var patch = BuildPatch(CustomerFields, row, f => f.BcField switch
+                    {
+                        "displayName" => cust.DisplayName,
+                        "addressLine1" => cust.AddressLine1,
+                        "addressLine2" => cust.AddressLine2,
+                        "city" => cust.City,
+                        "state" => cust.State,
+                        "postalCode" => cust.PostalCode,
+                        "country" => cust.Country,
+                        "phoneNumber" => cust.PhoneNumber,
+                        "email" => cust.Email,
+                        "salespersonCode" => cust.SalespersonCode,
+                        _ => throw new InvalidOperationException($"No BC reader for customer field '{f.BcField}'.")
+                    });
+
+                    if (patch.Count > 0)
+                    {
+                        var ok = await PatchAsync(target, "customers", cust.Id, cust.Etag, patch, dryRun, row.CustomerID, ct);
+                        if (ok is PatchResult.Written or PatchResult.DryRun) customersPatched++;
+                        else if (ok == PatchResult.Conflict) conflicts++;
+                    }
+                }
+
+                // --- Project, through the custom API. Deliberately after the customer: on
+                // a create run the customer above may have only just been made, and the
+                // project is linked to it.
+                if (!bcProjects.TryGetValue(row.CustomerID, out var proj))
+                {
+                    if (!allowCreate)
+                    {
+                        _logger.LogWarning(
+                            "Customer push: {Number} has no BC project; creates are disabled.", row.CustomerID);
+                    }
+                    else if (customerExists)
+                    {
+                        var body = BuildCreate(projectFields, row);
+                        body["number"] = row.CustomerID;
+
+                        // Links the project to its customer. BC copies the customer's
+                        // details onto the project when this is set; if it applies that
+                        // after the fields above, any difference is corrected the next
+                        // time this row is compared.
+                        body["sellToCustomerNo"] = row.CustomerID;
+
+                        if (await CreateProjectAsync(body, dryRun, row.CustomerID, ct)) projectsCreated++;
+                        else createFailed++;
+                    }
+                }
+                else
+                {
+                    var patch = BuildPatch(projectFields, row, f => proj.Values.GetValueOrDefault(f.BcField));
+
+                    if (patch.Count > 0)
+                    {
+                        var ok = await PatchProjectAsync(proj, patch, dryRun, row.CustomerID, ct);
+                        if (ok is PatchResult.Written or PatchResult.DryRun) projectsPatched++;
+                        else if (ok == PatchResult.Conflict) conflicts++;
+                        else projectsFailed++;
+                    }
+                }
+            }
+
+            // Only advance the watermark on a real run. A dry run that moved it would
+            // mean the first live run had nothing left to send.
+            if (!dryRun)
+                await _watermarks.SetAsync(JobKey, newWatermark, ct);
+
+            await _runLog.FinishAsync(runId, new SyncRunCounts
+            {
+                WatermarkFrom = since,
+                WatermarkTo = dryRun ? null : newWatermark,
+                Fetched = candidates.Count,
+                HeadersChanged = customersPatched + customersCreated,
+                LinesChanged = projectsPatched + projectsCreated,
+                // Per-record write failures of either kind: a create BC refused, or a
+                // project PATCH BC rejected as invalid.
+                CreateFailed = createFailed + projectsFailed,
+                Conflicts = conflicts,
+                SkippedMissing = skippedMissing
+            }, null, ct);
+
+            _logger.LogInformation(
+                "Customer push{DryRun}: {Candidates} candidates. Customers {CustUpd} updated, {CustNew} created. " +
+                "Projects {ProjUpd} updated, {ProjNew} created, {ProjFailed} rejected. {Missing} skipped, {Failed} create failures, {Conflicts} conflicts.",
+                dryRun ? " (DRY RUN)" : "", candidates.Count,
+                customersPatched, customersCreated, projectsPatched, projectsCreated, projectsFailed,
+                skippedMissing, createFailed, conflicts);
+        }
+        catch (Exception ex)
+        {
+            await _runLog.FinishAsync(runId, new SyncRunCounts(), ex.ToString(), CancellationToken.None);
+            throw;
+        }
+    }
+
+    // ---------------------------------------------------------------- SQL
+
+    // Column order must match the SELECT below: Dapper maps rows onto this constructor
+    // by position as well as name.
+    private sealed record Candidate(
+        string CustomerID, string? Name, string? ProjectName,
+        string? MailingAddress, string? MailingTelephone, string? TaxingCountry,
+        string? ProjectEmail1, string? SalesmanOne,
+        string? MailingContact, string? Class, string? Model, string? SerialNumber,
+        string? ShippingContact, string? ShippingTelephone,
+        DateTime? ErectionDate, DateTime? DismantleDate, string? PMTTerms,
+        DateTime ModifiedDateTime);
+
+    private async Task<IEnumerable<Candidate>> ReadCandidatesAsync(
+        DateTimeOffset since, DateTime createdAfter, CancellationToken ct)
+    {
+        // CreateDate bounds the scope: without it, the ~12,500 source rows with no BC
+        // counterpart would every one look like a create. ModifiedDateTime is maintained
+        // by trgCustomer_ModifiedDateTime on the source table, so this catches edits made
+        // through the Alpha dialog, the helper functions, the stored procedures and
+        // ad-hoc SQL alike -- RevisionDate does not, which is why that column is not used.
+        //
+        // Email, salesperson and payment terms live in two other tables, joined the same way
+        // v_eqcCustomerEdit does. Both are LEFT joins: a customer with no billing
+        // instructions or supplementary record still syncs, just without those fields.
+        //
+        // NOTE the watermark only tracks EQData.dbo.Customer. An edit to CustSupp or
+        // BillingInstructions alone will not re-queue the customer, because neither
+        // carries the trigger. Those changes reach BC when the customer row is next
+        // touched for any reason.
+        var sql = $@"
+SELECT c.[CustomerID], c.[Name], c.[ProjectName], c.[MailingAddress], c.[MailingTelephone],
+       c.[TaxingCountry], s.[ProjectEmail1], b.[SalesmanOne],
+       c.[MailingContact], c.[Class], c.[Model], c.[SerialNumber],
+       c.[ShippingContact], c.[ShippingTelephone],
+       c.[ErectionDate], c.[DismantleDate], b.[PMTTerms],
+       c.[ModifiedDateTime]
+  FROM {SourceTable} c
+  LEFT JOIN EQData.dbo.CustSupp s ON s.[CustomerID] = c.[CustomerID]
+  LEFT JOIN EQDataCor.dbo.BillingInstructions b ON b.[CustomerID] = c.[CustomerID]
+ WHERE ISNULL(c.[Inactive], 0) = 0
+   -- A row with no number or no name cannot be pushed: BC rejects it with a
+   -- displayName-must-be-provided error. Three such rows exist and would otherwise
+   -- fail on every single run, which trains people to ignore the failure count.
+   AND NULLIF(LTRIM(RTRIM(c.[CustomerID])), '') IS NOT NULL
+   AND NULLIF(LTRIM(RTRIM(c.[Name])), '') IS NOT NULL
+   AND c.[CreateDate] >= @CreatedAfter
+   AND c.[ModifiedDateTime] > @Since
+ ORDER BY c.[ModifiedDateTime];";
+
+        using var conn = new SqlConnection(_connectionString);
+        return await conn.QueryAsync<Candidate>(
+            new CommandDefinition(sql, new { Since = since, CreatedAfter = createdAfter }, cancellationToken: ct));
+    }
+
+    // ---------------------------------------------------------------- BC reads
+
+    private sealed record BcRecord(Guid Id, string Number, string? DisplayName,
+        string? AddressLine1, string? AddressLine2, string? City, string? State,
+        string? PostalCode, string? Country, string? PhoneNumber, string? Email,
+        string? SalespersonCode, string Etag);
+
+    /// <summary>
+    /// Fetches only the records we might write, keyed by number. Batched because a
+    /// filter is a URL and a few hundred "number eq 'x' or ..." clauses would exceed
+    /// what BC accepts.
+    /// </summary>
+    private async Task<Dictionary<string, BcRecord>> FetchByNumberAsync(
+        BcTarget target, string entity, IReadOnlyList<string> numbers, CancellationToken ct)
+    {
+        const int batchSize = 20;
+        var result = new Dictionary<string, BcRecord>(StringComparer.OrdinalIgnoreCase);
+        var http = _httpFactory.CreateClient();
+
+        for (var i = 0; i < numbers.Count; i += batchSize)
+        {
+            var batch = numbers.Skip(i).Take(batchSize).ToList();
+            var filter = string.Join(" or ", batch.Select(n => $"number eq '{n.Replace("'", "''")}'"));
+            var url = $"{target.ApiBase}/{entity}?$filter={Uri.EscapeDataString(filter)}";
+
+            var token = await _tokens.GetTokenAsync(ct);
+            using var req = new HttpRequestMessage(HttpMethod.Get, url);
+            req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            using var res = await http.SendAsync(req, ct);
+            var body = await res.Content.ReadAsStringAsync(ct);
+            if (!res.IsSuccessStatusCode)
+                throw new HttpRequestException($"BC {entity} fetch failed ({(int)res.StatusCode}): {body}");
+
+            using var doc = JsonDocument.Parse(body);
+            if (!doc.RootElement.TryGetProperty("value", out var arr)) continue;
+
+            foreach (var el in arr.EnumerateArray())
+            {
+                var number = Str(el, "number");
+                var id = Str(el, "id");
+                if (number is null || id is null || !Guid.TryParse(id, out var guid)) continue;
+
+                result[number] = new BcRecord(
+                    guid, number,
+                    Str(el, "displayName"),
+                    Str(el, "addressLine1"),
+                    Str(el, "addressLine2"),
+                    Str(el, "city"),
+                    Str(el, "state"),
+                    Str(el, "postalCode"),
+                    Str(el, "country"),
+                    Str(el, "phoneNumber"),
+                    Str(el, "email"),
+                    Str(el, "salespersonCode"),
+                    Str(el, "@odata.etag") ?? "*");
+            }
+        }
+
+        return result;
+    }
+
+    // ---------------------------------------------------------------- custom API (projects)
+
+    /// <summary>
+    /// Projects are written through the custom API and customers through the standard
+    /// one, which are configured separately. If they pointed at different companies, a
+    /// run would update a customer in one place and its project in another, so the run
+    /// refuses to start instead.
+    /// </summary>
+    private void EnsureCustomApiMatches(BcTarget target)
+    {
+        if (!_customApi.IsConfigured)
+            throw new InvalidOperationException(
+                "Customer push writes projects through the custom API, but the BcCustomApi section " +
+                "is not fully configured. Check TenantId, Environment, CompanyId and PathSegment.");
+
+        var s = _customApi.Settings;
+        var sameCompany =
+            string.Equals(s.TenantId, target.TenantId, StringComparison.OrdinalIgnoreCase) &&
+            string.Equals(s.Environment, target.Environment, StringComparison.OrdinalIgnoreCase) &&
+            Guid.TryParse(s.CompanyId, out var customCompany) &&
+            Guid.TryParse(target.CompanyId, out var targetCompany) &&
+            customCompany == targetCompany;
+
+        if (!sameCompany)
+            throw new InvalidOperationException(
+                $"Customer push targets {target.Environment}/{target.CompanyId}, but BcCustomApi points at " +
+                $"{s.Environment}/{s.CompanyId}. Customers and projects must be written to the same company.");
+    }
+
+    /// <summary>A project as BC holds it: its etag plus the current value of every
+    /// field in the project field map, keyed by BC field name.</summary>
+    private sealed record BcProject(string Number, string Etag, Dictionary<string, string?> Values);
+
+    private async Task<Dictionary<string, BcProject>> FetchProjectsAsync(
+        IReadOnlyList<string> numbers, PushField[] fields, CancellationToken ct)
+    {
+        const int batchSize = 20;
+        var result = new Dictionary<string, BcProject>(StringComparer.OrdinalIgnoreCase);
+
+        for (var i = 0; i < numbers.Count; i += batchSize)
+        {
+            var filter = string.Join(" or ", numbers.Skip(i).Take(batchSize)
+                .Select(n => $"number eq '{n.Replace("'", "''")}'"));
+
+            foreach (var el in await _customApi.FetchAllAsync("projects", filter, ct))
+            {
+                var number = Str(el, "number");
+                if (number is null) continue;
+
+                // Every mapped field comes back as a JSON string, dates and enums included.
+                var values = fields.ToDictionary(f => f.BcField, f => Str(el, f.BcField));
+                result[number] = new BcProject(number, Str(el, "@odata.etag") ?? "*", values);
+            }
+        }
+
+        return result;
+    }
+
+    /// <summary>The payment terms codes BC has, so the push never sends one it would
+    /// reject. Read through the standard API, which our own app can reach.</summary>
+    private async Task<IReadOnlySet<string>> FetchPaymentTermCodesAsync(BcTarget target, CancellationToken ct)
+    {
+        var http = _httpFactory.CreateClient();
+        var token = await _tokens.GetTokenAsync(ct);
+
+        using var req = new HttpRequestMessage(HttpMethod.Get, $"{target.ApiBase}/paymentTerms");
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+        using var res = await http.SendAsync(req, ct);
+        var body = await res.Content.ReadAsStringAsync(ct);
+        if (!res.IsSuccessStatusCode)
+            throw new HttpRequestException($"BC paymentTerms fetch failed ({(int)res.StatusCode}): {body}");
+
+        var codes = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using var doc = JsonDocument.Parse(body);
+        if (doc.RootElement.TryGetProperty("value", out var arr))
+            foreach (var el in arr.EnumerateArray())
+                if (Str(el, "code") is { Length: > 0 } code)
+                    codes.Add(code);
+
+        return codes;
+    }
+
+    private static bool IsSuccess(HttpStatusCode status) => (int)status is >= 200 and < 300;
+
+    private async Task<bool> CreateProjectAsync(
+        Dictionary<string, object?> body, bool dryRun, string number, CancellationToken ct)
+    {
+        var json = JsonSerializer.Serialize(body);
+
+        if (dryRun)
+        {
+            _logger.LogInformation("DRY RUN would POST projects {Number}: {Payload}", number, json);
+            return true;
+        }
+
+        var (status, responseBody) = await _customApi.SendAsync(HttpMethod.Post, "projects", json, null, ct);
+        if (!IsSuccess(status))
+        {
+            // Not fatal to the run, same as a customer create.
+            _logger.LogError(
+                "POST projects {Number} failed ({Status}): {Body}", number, (int)status, responseBody);
+            return false;
+        }
+
+        _logger.LogInformation("Created projects {Number}: {Payload}", number, json);
+        return true;
+    }
+
+    /// <summary>
+    /// PATCHes a project. The custom API's key is the project number, so the URL is
+    /// projects('17065') rather than the standard API's projects(guid).
+    ///
+    /// Dates are the one ordering hazard. BC rejects a starting date later than the
+    /// ending date, checking each field against the value already stored. If both dates
+    /// move forward past the current ending date, applying the starting date first
+    /// would fail, so in that case the ending date goes in its own PATCH first.
+    /// </summary>
+    private async Task<PatchResult> PatchProjectAsync(
+        BcProject proj, Dictionary<string, object?> patch, bool dryRun, string number, CancellationToken ct)
+    {
+        if (dryRun)
+        {
+            _logger.LogInformation(
+                "DRY RUN would PATCH projects {Number}: {Payload}", number, JsonSerializer.Serialize(patch));
+            return PatchResult.DryRun;
+        }
+
+        var path = $"projects('{Uri.EscapeDataString(number.Replace("'", "''"))}')";
+        var etag = proj.Etag;
+
+        if (EndingDateMustGoFirst(proj, patch))
+        {
+            var first = new Dictionary<string, object?> { ["endingDate"] = patch["endingDate"] };
+            patch.Remove("endingDate");
+
+            var (firstResult, newEtag) = await SendProjectPatchAsync(path, etag, first, number, ct);
+            if (firstResult != PatchResult.Written) return firstResult;
+
+            // We wrote this record a moment ago, so if BC returned no etag "*" is safe.
+            etag = newEtag ?? "*";
+        }
+
+        var (result, _) = await SendProjectPatchAsync(path, etag, patch, number, ct);
+        return result;
+    }
+
+    private static bool EndingDateMustGoFirst(BcProject proj, Dictionary<string, object?> patch)
+    {
+        if (!patch.TryGetValue("startingDate", out var newStart) || !patch.ContainsKey("endingDate"))
+            return false;
+
+        var currentEnd = proj.Values.GetValueOrDefault("endingDate");
+        if (IsBcEmpty(currentEnd)) return false;   // BC skips the check when there is no ending date
+
+        // yyyy-MM-dd strings compare correctly as text.
+        return string.CompareOrdinal(newStart as string, currentEnd) > 0;
+    }
+
+    /// <summary>
+    /// One PATCH. A 412 is a conflict, as for customers. A 400 is BC rejecting this
+    /// record's data (a validation error): logged and counted, and the run carries on,
+    /// so one bad record cannot block every other push. Anything else non-successful
+    /// (auth, throttling, BC down) throws, so the watermark is not advanced and Hangfire
+    /// retries the run.
+    /// </summary>
+    private async Task<(PatchResult Result, string? NewEtag)> SendProjectPatchAsync(
+        string path, string etag, Dictionary<string, object?> patch, string number, CancellationToken ct)
+    {
+        var json = JsonSerializer.Serialize(patch);
+        var (status, body) = await _customApi.SendAsync(HttpMethod.Patch, path, json, etag, ct);
+
+        if (status == HttpStatusCode.PreconditionFailed)
+        {
+            _logger.LogWarning(
+                "Customer push: projects {Number} changed in BC since we read it (412); skipped this run.", number);
+            return (PatchResult.Conflict, null);
+        }
+
+        if (status == HttpStatusCode.BadRequest)
+        {
+            _logger.LogError(
+                "PATCH projects {Number} rejected by BC (400). Sent {Payload}; BC said {Body}", number, json, body);
+            return (PatchResult.Failed, null);
+        }
+
+        if (!IsSuccess(status))
+            throw new HttpRequestException($"PATCH projects {number} failed ({(int)status}): {body}");
+
+        _logger.LogInformation("Patched projects {Number}: {Payload}", number, json);
+
+        string? newEtag = null;
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(body))
+            {
+                using var doc = JsonDocument.Parse(body);
+                newEtag = Str(doc.RootElement, "@odata.etag");
+            }
+        }
+        catch (JsonException) { /* no usable body; the caller falls back to "*" */ }
+
+        return (PatchResult.Written, newEtag);
+    }
+
+    // ---------------------------------------------------------------- BC writes
+
+    private enum PatchResult { Written, DryRun, Conflict, Failed }
+
+    private async Task<PatchResult> PatchAsync(
+        BcTarget target, string entity, Guid id, string etag,
+        Dictionary<string, object?> patch, bool dryRun, string number, CancellationToken ct)
+    {
+        var json = JsonSerializer.Serialize(patch);
+
+        if (dryRun)
+        {
+            _logger.LogInformation("DRY RUN would PATCH {Entity} {Number}: {Payload}", entity, number, json);
+            return PatchResult.DryRun;
+        }
+
+        var http = _httpFactory.CreateClient();
+        var token = await _tokens.GetTokenAsync(ct);
+
+        using var req = new HttpRequestMessage(HttpMethod.Patch, $"{target.ApiBase}/{entity}({id})");
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        // BC requires If-Match on PATCH. A 412 back means someone edited this record in
+        // BC between our read and our write -- the conflict signal. We log and move on
+        // rather than overwriting: the next run re-reads and re-compares.
+        req.Headers.TryAddWithoutValidation("If-Match", etag);
+        req.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        using var res = await http.SendAsync(req, ct);
+        var body = await res.Content.ReadAsStringAsync(ct);
+
+        if (res.StatusCode == HttpStatusCode.PreconditionFailed)
+        {
+            _logger.LogWarning(
+                "Customer push: {Entity} {Number} changed in BC since we read it (412); skipped this run.",
+                entity, number);
+            return PatchResult.Conflict;
+        }
+
+        if (!res.IsSuccessStatusCode)
+            throw new HttpRequestException(
+                $"PATCH {entity} {number} failed ({(int)res.StatusCode}): {body}");
+
+        _logger.LogInformation("Patched {Entity} {Number}: {Payload}", entity, number, json);
+        return PatchResult.Written;
+    }
+
+    // ---------------------------------------------------------------- helpers
+
+    /// <summary>
+    /// Builds the PATCH body from a field map: one entry per field whose SQL value
+    /// genuinely differs from BC's. An empty result means no request at all, which is
+    /// what stops a write echoing back through the pull.
+    /// </summary>
+    private Dictionary<string, object?> BuildPatch(
+        PushField[] fields, Candidate row, Func<PushField, string?> readBc)
+    {
+        var patch = new Dictionary<string, object?>();
+
+        foreach (var f in fields)
+        {
+            var ours = Clip(f.Read(row), f.MaxLength, row.CustomerID, f.BcField);
+            var theirs = readBc(f);
+
+            if (string.IsNullOrWhiteSpace(ours))
+            {
+                // A placeholder only where BC has nothing either: a real value already
+                // in BC is better than a placeholder.
+                if (f.Placeholder is not null && IsBcEmpty(theirs)) ours = f.Placeholder;
+                else if (f.SkipWhenEmpty) continue;
+            }
+
+            // "" rather than null: BC clears a text field with an empty string.
+            var a = (ours ?? string.Empty).Trim();
+            var b = (theirs ?? string.Empty).Trim();
+
+            if (!string.Equals(a, b, StringComparison.Ordinal))
+                patch[f.BcField] = a;
+        }
+
+        return patch;
+    }
+
+    private string? Clip(string? value, int max, string number, string field)
+    {
+        if (value is null || value.Length <= max) return value;
+        _logger.LogWarning(
+            "Customer push: {Number} {Field} is {Length} chars, truncated to {Max}.",
+            number, field, value.Length, max);
+        return value[..max];
+    }
+
+    private static string Normalize(string? s) => (s ?? string.Empty).Trim();
+
+    /// <summary>
+    /// Pulls city, state and post code out of the last line of MailingAddress, which is
+    /// free text in the shape "DALLAS, TX  75204".
+    ///
+    /// 341 of the 344 in-scope addresses match that shape, so parsing is worth doing --
+    /// but it IS parsing, and the three that do not match simply come back empty rather
+    /// than being guessed at. Leaving BC's fields untouched beats filling them wrongly.
+    ///
+    /// TaxingCity and TaxingState were considered as a cleaner source and rejected: they
+    /// hold the JOB SITE's tax jurisdiction, not the customer's mailing address. Customer
+    /// 80647 is Vancouver by post and Burnaby for tax.
+    ///
+    /// The post code pattern allows letters and an internal space so Canadian codes
+    /// (V5K 1Z6) survive alongside US ZIP+4.
+    /// </summary>
+    private static (string? City, string? State, string? Zip) ParseCityStateZip(string? address)
+    {
+        if (string.IsNullOrWhiteSpace(address)) return (null, null, null);
+
+        var parts = address.Replace("\r\n", "\n").Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                           .Select(p => p.Trim()).Where(p => p.Length > 0).ToList();
+        if (parts.Count < 2) return (null, null, null);
+
+        // The last line, not the second: a three-line address puts the suite on line 2.
+        var m = CityStateZip.Match(parts[^1]);
+        if (!m.Success) return (null, null, null);
+
+        var zip = m.Groups[3].Value.Trim();
+        return (m.Groups[1].Value.Trim(),
+                m.Groups[2].Value.Trim(),
+                zip.Length == 0 ? null : zip);
+    }
+
+    // CITY, ST [ZIP]. The zip is optional -- a few addresses stop at the state.
+    private static readonly Regex CityStateZip = new(
+        @"^(.+?),\s*([A-Za-z]{2})\s*([A-Za-z0-9][A-Za-z0-9\- ]*)?$",
+        RegexOptions.Compiled);
+
+    /// <summary>
+    /// BC wants a two-letter country code. TaxingCountry is null on most rows and
+    /// inconsistent where set ('USA' rather than 'US'), so it is normalised and anything
+    /// unrecognised falls back to US -- which is right for all but a handful of Canadian
+    /// customers, and those will be corrected by hand or by a later pull.
+    /// </summary>
+    private static string MapCountry(string? raw)
+    {
+        var s = raw?.Trim().ToUpperInvariant();
+        return s switch
+        {
+            "CA" or "CAN" or "CANADA" => "CA",
+            "MX" or "MEX" or "MEXICO" => "MX",
+            _ => "US"
+        };
+    }
+
+    /// <summary>
+    /// EQData stores one address field with the lines separated by CRLF; BC wants them
+    /// split. The baseline load built MailingAddress as addressLine1 + CRLF + addressLine2,
+    /// so splitting on the first CRLF reverses it exactly for the common two-line case.
+    ///
+    /// A few source addresses run to three lines (street / suite / city-state-zip). BC has
+    /// only two, so everything after the first line is joined into addressLine2. City,
+    /// state and postalCode are deliberately NOT touched: EQData has no separate columns
+    /// for them, and guessing them out of free text would be worse than leaving BC's.
+    /// </summary>
+    private static (string? Line1, string? Line2) SplitAddress(string? address)
+    {
+        if (string.IsNullOrWhiteSpace(address)) return (null, null);
+
+        var parts = address.Replace("\r\n", "\n").Split('\n', StringSplitOptions.RemoveEmptyEntries)
+                           .Select(p => p.Trim()).Where(p => p.Length > 0).ToList();
+
+        if (parts.Count == 0) return (null, null);
+        if (parts.Count == 1) return (parts[0], null);
+
+        // BC has only two address lines; a three-line source address (street / suite /
+        // city-state-zip) folds lines 2+ into addressLine2. City, state and postalCode
+        // are left alone — EQData has no separate columns for them.
+        return (parts[0], string.Join(", ", parts.Skip(1)));
+    }
+
+    private static string? Str(JsonElement el, string name) =>
+        el.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String
+            ? v.GetString()
+            : null;
+
+    /// <summary>Every mapped field, no comparison — there is nothing on the BC side to
+    /// compare against yet.</summary>
+    private Dictionary<string, object?> BuildCreate(PushField[] fields, Candidate row)
+    {
+        var body = new Dictionary<string, object?>();
+        foreach (var f in fields)
+        {
+            var v = Clip(f.Read(row), f.MaxLength, row.CustomerID, f.BcField);
+            if (string.IsNullOrWhiteSpace(v)) v = f.Placeholder;
+            if (!string.IsNullOrWhiteSpace(v)) body[f.BcField] = v.Trim();
+        }
+        return body;
+    }
+
+    /// <summary>
+    /// Creates a record and returns BC's assigned id, or null if nothing was written.
+    ///
+    /// The id is stored for convenience only. New-vs-existing is decided by whether BC
+    /// returned a record with this number, never by whether BcId is populated — so a
+    /// lost id costs a wasted lookup next run, not a duplicate.
+    /// </summary>
+    private async Task<Guid?> PostAsync(
+        BcTarget target, string entity, Dictionary<string, object?> body,
+        bool dryRun, string number, CancellationToken ct)
+    {
+        var json = JsonSerializer.Serialize(body);
+
+        if (dryRun)
+        {
+            _logger.LogInformation("DRY RUN would POST {Entity} {Number}: {Payload}", entity, number, json);
+            return null;
+        }
+
+        var http = _httpFactory.CreateClient();
+        var token = await _tokens.GetTokenAsync(ct);
+
+        using var req = new HttpRequestMessage(HttpMethod.Post, $"{target.ApiBase}/{entity}");
+        req.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        req.Content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        using var res = await http.SendAsync(req, ct);
+        var responseBody = await res.Content.ReadAsStringAsync(ct);
+
+        if (!res.IsSuccessStatusCode)
+        {
+            // Not fatal to the run: one record failing to create should not stop the rest.
+            // Expect 400s here for required fields BC wants that we are not sending yet.
+            _logger.LogError(
+                "POST {Entity} {Number} failed ({Status}): {Body}",
+                entity, number, (int)res.StatusCode, responseBody);
+            return null;
+        }
+
+        using var doc = JsonDocument.Parse(responseBody);
+        var id = Str(doc.RootElement, "id");
+        if (id is null || !Guid.TryParse(id, out var guid))
+        {
+            _logger.LogWarning(
+                "Created {Entity} {Number} but BC returned no usable id; it will be matched by number next run.",
+                entity, number);
+            return null;
+        }
+
+        _logger.LogInformation("Created {Entity} {Number} ({Id}): {Payload}", entity, number, guid, json);
+        return guid;
+    }
+
+    private async Task StoreBcIdAsync(string customerId, Guid bcId, CancellationToken ct)
+    {
+        var sql = $@"
+UPDATE {SourceTable}
+   SET [BcId] = @BcId, [BcNumber] = @CustomerID, [LastSyncedAt] = sysutcdatetime()
+ WHERE [CustomerID] = @CustomerID;";
+
+        try
+        {
+            using var conn = new SqlConnection(_connectionString);
+            await conn.ExecuteAsync(new CommandDefinition(sql,
+                new { CustomerID = customerId, BcId = bcId }, cancellationToken: ct));
+        }
+        catch (Exception ex)
+        {
+            // Harmless: the next run matches on number and fills this in.
+            _logger.LogWarning(ex, "Could not store BcId for {Number}.", customerId);
+        }
+    }
+}
+--- end of Bccustomerpushjob.cs ---
+
+--- file: customers_card.yaml (yaml file, 21,706 characters) ---
+# PROPOSED by the mapping agent -- review before use.
+#
+# KEY / SCOPE
+# - In YAML, a bare No reads as boolean false, so the key is written as 'No' in quotes. BC No = EQData.dbo.Customer.CustomerID. CustomerID is unique in SS4, and No is unique in BC. 3,182 of 3,223 BC rows exist in SS4.
+# - where ContractStatus = 'A', as the user instructed. This pairs 2,921 rows.
+# - missing_in_ss4 = 302 (set to info). It has two parts:
+#   (a) 41 BC numbers that are not in SS4 at all: district/internal codes (ACW, AME, CAN, DAL… named "Morrow Equipment Company, L.L.C."), TEMPLATE-CRANE, TESTPUSH1, INVALID, RENTMO, C000xx, PR000xx, 012026, and 1000-1003/1224.
+#   (b) 261 BC customers whose SS4 row has ContractStatus 'C', blank or NULL. These fall outside the scope the user gave. A reviewer may want to confirm they should stay in BC.
+# - missing_in_bc = 10,478 (set to info). These are active SS4 rows not in BC. All were created before 2026 (10,260 active, 158 Inactive=1, 60 from 2024-25). Every active row created on or after 2026-01-01, the push job's CreatedAfter scope, is in BC. If BC is expected to hold all active contracts, raise this to error.
+# - source_of_truth: ss4. The push job writes SS4 values into BC. Customer.BcId and LastSyncedAt are filled on 297 of the 343 rows created in 2026.
+#
+# QUERY
+# The query follows the push job's ReadCandidatesAsync: Customer LEFT JOIN CustSupp LEFT JOIN BillingInstructions. Each side table is unique on CustomerID, so the joins do not multiply rows. I removed the job's Inactive, CreateDate and watermark filters and used the scope the user gave instead. I did not add a filter for blank Name.
+# The C# helpers are rewritten in SQL:
+# - SplitAddress: Line1 is the text before the first line break. Rest is the remaining lines joined with ", ".
+# - ParseCityStateZip: works on the last line. City is the text before the first comma, State is the next 2 letters (followed by a space or the end of the line), Zip is the rest. If the line does not have that shape, all three are NULL, as in the job's regex. This matches the regex closely but not exactly.
+# - MapCountry: CA and MX variants are recognised; anything else becomes US.
+# - Email: the first comma-separated address in ProjectEmail1.
+# - Salesperson: SalesmanOne, trimmed and uppercased. EXCECUTIVE and EXEUTIVE become EXECUTIVE; POBANZ and 'POBANZ, J.' become POBANZ-J. The 'POBANZ, J.' mapping is the user's addition. Uppercasing is my own inference: BC codes are uppercase and SS4 has 'Morrow' and 'Mader'.
+#
+# FIELD EVIDENCE (paired rows, 2,921)
+# - Address -> Line1: 98.1% agree. The 56 differences are mostly SS4 MailingAddress blank where BC has an address (15 rows), plus old 1xxx records.
+# - Address_2 -> Rest: 84.8% agree. About 200 rows are blank in BC where SS4 has a second line, mostly numbers 14468-14999 (178). In that same range BC City, County and Post_Code are also blank, which looks like an import gap.
+# - City: 90.7%. Post_Code: 88.6%. County vs parsed State: 79.9%.
+#   CONTRADICTION: BC County matches TaxingState better (87.7%). For example, 15013 has a St. Louis, MO mailing address but County IL. The user's rule and the push job both say to use the mailing address, so County differences from the tax state will show up as findings.
+# - Phone_No -> MailingTelephone: 88.8% agree. The alternative, BillingTelephone, matches only 1,433 rows.
+# - Country: 89.1% agree. 276 rows are blank in BC. BC also holds codes that MapCountry cannot produce (BR, BS, BZ, DE, KY…; about 20 rows), and 21 BC 'CA' rows map to US in SS4.
+# - Name: 68.1% overall, but 343/343 on rows created in 2026 (the push scope). On older rows, about 356 are BC truncated to 30 characters (they equal LEFT(Name,30)). The rest are wording changes on either side. Old 1xxx numbers (11 rows) hold entirely different companies in SS4, apparently reused numbers. I compared the full name, as the push does; truncation is not masked.
+# - Name_2 -> ProjectName: 84.8%. Most differences are BC blank (349 rows).
+# - E_Mail -> first ProjectEmail1: 31.4% overall, but 343/343 on 2026 rows. Older rows were evidently loaded from another source: BC holds ';'-separated lists and different addresses. I checked billingemail, ProjectEmail2 and ShippingEmail in vwCustomerInquiry and none fit better (102 / 2 / 278 matches). Mapped because the push job defines it and agreement is exact within its scope. Expect about 2,000 findings on older rows.
+# - ContactName -> MailingContact: 76.3% overall. Where both sides are filled, 1,869 of 1,870 agree. Most differences are BC blank where SS4 has a contact (311 of the 2026 rows and 324 older rows). The push job does not send a contact to the customer, so the BC blanks on 2026 rows are probably by design. I left them compared rather than setting bc_blank: ignore. Also, 43 BC rows hold the literal text 'NULL'.
+# - Salesperson_Code: 85.1%. Nearly all differences are BC blank where SS4 has a salesman (Morrow 73, Toner 50, Mairn 38…). About 15 are real disagreements. 'R.Benck', 'Regal', 'McGregor', 'Maurer' and 'Clayson' have no fix-up, so they will differ if BC lacks those codes.
+#
+# NOT MAPPED
+# Fax_No: no column agrees well. Search_Name: BC derives it from Name. Balances and statistics: computed by BC. Details for each are in the ignored list.
+#
+# ADDED AFTER REVIEW
+# Country_Region_Code: the push job's rule recognises only Canada and Mexico and turns every other
+# country into US, which put about 114 foreign customers of the US company (Brazil, Dominican Republic,
+# Bahamas...) under US. Each SS4 country, misspellings included, now maps to its two-letter code; blank
+# or US variants stay US. Netherlands Antilles and West Indies (2 customers each) have no clean code
+# and are left blank rather than given a wrong one.
+#
+# Scope: active customers of SS4 companies 01 (US) and 15 (Canada) only, via ARData.dbo.customer's
+# customer_company_code. Canada is a posting group in this BC company, not a separate company.
+# Australia (70), Mexico (90) and New Zealand (60) customers belong to other BC companies.
+#
+# Customer_Posting_Group, by company and currency:
+#   15 + EUR -> CAN-EURO, 15 -> CANADA, 01 + EUR -> EURO, 01 -> DOMESTIC.
+# By company, not by address: company 01 bills some Canadian-located customers in USD, and those
+# stay DOMESTIC.
+#
+# Currency_Code: blank for USD (the company's own currency), otherwise CustSupp.CurrencyType (CAD, EUR).
+#
+# Address_2 (the query's Rest column): a two-line address keeps line 2, as before. A three-or-more-line
+# address now takes only the MIDDLE lines, leaving out the last city/state/ZIP line, which City, County
+# and Post_Code already hold. Joining every line after the first (the push job's rule) overflowed BC's
+# 50-character Address 2 on 333 customers; UAT itself holds only the middle line for those addresses.
+#
+# Payment_Terms_Code <- BillingInstructions.PMTTerms, spaces removed and uppercased ('NET 30' -> 'NET30'), the
+# push job's MapPaymentTerms rule. Claude had left it unmapped because UAT holds NET30 on 94% of customers, but
+# SS4 also has NET 45/60/90 terms, and those should carry into prod. Expect differences against UAT's NET30 values.
+# ARData.dbo.BC_Customers looks like a replica pulled from BC. It was not used as the SS4 side.
+
+name: customers_card
+description: BC Customer Card (Excel page) vs EQData.dbo.Customer (active contracts), with email from CustSupp and salesperson from BillingInstructions, per BcCustomerPushJob
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Customer_Card_Excel
+  key: ['No']
+ss4:
+  query: >-
+    SELECT x.CustomerID, x.ContractStatus, x.CreateDate, x.Name, x.ProjectName,
+           x.Line1, x.Rest, x.MailingTelephone, x.MailingContact,
+           x.Email, x.Salesperson, x.Country, x.PaymentTerms,
+           x.CompanyCode, x.CustomerPostingGroup, x.CurrencyCode,
+           CASE WHEN x.Ok = 1 THEN LTRIM(RTRIM(LEFT(x.LastLine, CHARINDEX(',', x.LastLine) - 1))) END AS City,
+           CASE WHEN x.Ok = 1 THEN LEFT(x.AfterComma, 2) END AS State,
+           CASE WHEN x.Ok = 1 THEN NULLIF(LTRIM(RTRIM(SUBSTRING(x.AfterComma, 3, 400))), '') END AS Zip
+      FROM (
+        SELECT y.*,
+               CASE WHEN CHARINDEX(',', y.LastLine) > 1
+                     AND (y.AfterComma LIKE '[A-Za-z][A-Za-z]' OR y.AfterComma LIKE '[A-Za-z][A-Za-z] %')
+                    THEN 1 ELSE 0 END AS Ok
+          FROM (
+            SELECT z.*,
+                   LTRIM(SUBSTRING(z.LastLine, CHARINDEX(',', z.LastLine) + 1, 400)) AS AfterComma
+              FROM (
+                SELECT c.CustomerID, c.ContractStatus, c.CreateDate, c.Name, c.ProjectName,
+                       c.MailingTelephone, c.MailingContact,
+                       NULLIF(LTRIM(RTRIM(LEFT(s.ProjectEmail1, CHARINDEX(',', s.ProjectEmail1 + ',') - 1))), '') AS Email,
+                       CASE UPPER(LTRIM(RTRIM(ISNULL(c.TaxingCountry, ''))))
+                            WHEN '' THEN 'US' WHEN 'US' THEN 'US' WHEN 'USA' THEN 'US' WHEN 'UNITED STATES' THEN 'US'
+                            WHEN 'CA' THEN 'CA' WHEN 'CAN' THEN 'CA' WHEN 'CANADA' THEN 'CA'
+                            WHEN 'MX' THEN 'MX' WHEN 'MEX' THEN 'MX' WHEN 'MEXICO' THEN 'MX'
+                            WHEN 'BRAZIL' THEN 'BR' WHEN 'DOMINICAN REPUBLIC' THEN 'DO'
+                            WHEN 'VENEZUELA' THEN 'VE' WHEN 'VENUZUELA' THEN 'VE'
+                            WHEN 'BAHAMAS' THEN 'BS' WHEN 'GRAND BAHAMA' THEN 'BS'
+                            WHEN 'PERU' THEN 'PE' WHEN 'CHILE' THEN 'CL' WHEN 'COSTA RICA' THEN 'CR' WHEN 'ECUADOR' THEN 'EC'
+                            WHEN 'CAYMEN ISLANDS' THEN 'KY' WHEN 'CAYMAN ISLANDS' THEN 'KY' WHEN 'GRAND CAYMAN' THEN 'KY'
+                            WHEN 'THE NETHERLANDS' THEN 'NL' WHEN 'NETHERLANDS' THEN 'NL' WHEN 'THE NEATHERLANDS' THEN 'NL'
+                            WHEN 'PANAMA' THEN 'PA' WHEN 'GUAM' THEN 'GU' WHEN 'HONDURAS' THEN 'HN' WHEN 'BERMUDA' THEN 'BM'
+                            WHEN 'GUATEMALA' THEN 'GT' WHEN 'NEW ZEALAND' THEN 'NZ' WHEN 'PUERTO RICO' THEN 'PR'
+                            WHEN 'SOUTH KOREA' THEN 'KR' WHEN 'GERMANY' THEN 'DE' WHEN 'PHILIPPINES' THEN 'PH'
+                            WHEN 'BRITISH VIRGIN ISLANDS' THEN 'VG' WHEN 'NIGERIA' THEN 'NG' WHEN 'BELIZE' THEN 'BZ'
+                            ELSE NULL END AS Country,
+                       UPPER(CASE UPPER(LTRIM(RTRIM(b.SalesmanOne))) WHEN 'EXCECUTIVE' THEN 'EXECUTIVE' WHEN 'EXEUTIVE' THEN 'EXECUTIVE'
+                            WHEN 'POBANZ' THEN 'POBANZ-J' WHEN 'POBANZ, J.' THEN 'POBANZ-J' ELSE LTRIM(RTRIM(b.SalesmanOne)) END) AS Salesperson,
+                       NULLIF(UPPER(REPLACE(LTRIM(RTRIM(b.PMTTerms)), ' ', '')), '') AS PaymentTerms,
+                       a.customer_company_code AS CompanyCode,
+                       CASE WHEN a.customer_company_code = '15' AND UPPER(LTRIM(RTRIM(s.CurrencyType))) = 'EUR' THEN 'CAN-EURO'
+                            WHEN a.customer_company_code = '15' THEN 'CANADA'
+                            WHEN UPPER(LTRIM(RTRIM(s.CurrencyType))) = 'EUR' THEN 'EURO'
+                            ELSE 'DOMESTIC' END AS CustomerPostingGroup,
+                       CASE WHEN UPPER(LTRIM(RTRIM(ISNULL(s.CurrencyType, '')))) IN ('', 'USD') THEN NULL
+                            ELSE UPPER(LTRIM(RTRIM(s.CurrencyType))) END AS CurrencyCode,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(LEFT(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) - 1), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(c.MailingAddress)) END AS Line1,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) = 0 THEN NULL
+                            WHEN DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1 = CHARINDEX(CHAR(10), c.MailingAddress)
+                            THEN LTRIM(RTRIM(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1, 4000), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(REPLACE(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1,
+                                     (DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1) - CHARINDEX(CHAR(10), c.MailingAddress) - 1),
+                                     CHAR(13), ''), CHAR(10), ', ')))
+                            END AS Rest,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(RIGHT(c.MailingAddress, CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) - 1), CHAR(13), '')))
+                            END AS LastLine
+                  FROM EQData.dbo.Customer c
+                  LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.CustomerID
+                  LEFT JOIN EQDataCor.dbo.BillingInstructions b ON b.CustomerID = c.CustomerID
+                  LEFT JOIN ARData.dbo.customer a ON a.customer_number = c.CustomerID
+              ) z
+          ) y
+      ) x
+  key: [CustomerID]
+  where: ContractStatus = 'A' AND CompanyCode IN ('01', '15')
+missing:
+  in_bc: info
+  in_ss4: info
+fields:
+  - {bc: Name, ss4: Name, type: text}
+  - {bc: Name_2, ss4: ProjectName, type: text}
+  - {bc: Address, ss4: Line1, type: text}
+  - {bc: Address_2, ss4: Rest, type: text}
+  - {bc: City, ss4: City, type: text}
+  - {bc: County, ss4: State, type: text}
+  - {bc: Post_Code, ss4: Zip, type: text}
+  - {bc: Country_Region_Code, ss4: Country, type: text}
+  - {bc: Phone_No, ss4: MailingTelephone, type: text}
+  - {bc: ContactName, ss4: MailingContact, type: text}
+  - {bc: E_Mail, ss4: Email, type: text}
+  - {bc: Salesperson_Code, ss4: Salesperson, type: text}
+  - {bc: Payment_Terms_Code, ss4: PaymentTerms, type: text}
+  - {bc: Customer_Posting_Group, ss4: CustomerPostingGroup, type: text}
+  - {bc: Currency_Code, ss4: CurrencyCode, type: text}
+ignored:
+  - {bc: Search_Name, reason: "BC-derived from Name (2,706/2,921 equal a prefix of BC's own Name); SS4 Namekey agrees on only 17.7%"}
+  - {bc: Fax_No, reason: "no counterpart found: MailingFax agrees on 83 of 224 rows where both sides are filled, BillingFax 66, ShippingFax 5. BC also holds the literal text 'NULL' on 214 paired rows"}
+  - {bc: Primary_Contact_No, reason: "BC contact numbers (CT...), generated by BC"}
+  - {bc: Invoice_Disc_Code, reason: "BC default, equal to the customer number"}
+  - {bc: Balance_LCY, reason: "computed from BC ledger entries; not comparable to Customer.CustomerBalance"}
+  - {bc: Balance_LCY_2, reason: "computed from BC ledger entries"}
+  - {bc: Balance_Due_LCY, reason: "computed from BC ledger entries"}
+  - {bc: TotalSales2, reason: "BC FlowField statistic"}
+  - {bc: AdjCustProfit, reason: "BC FlowField statistic"}
+  - {bc: AdjProfitPct, reason: "BC FlowField statistic"}
+  - {bc: CustSalesLCY_CustProfit_AdjmtCostLCY, reason: "BC FlowField statistic"}
+  - {bc: Payments_LCY, reason: "BC FlowField statistic"}
+  - {bc: CustomerSince, reason: "BC statistic computed from posted entries"}
+  - {bc: Last_Statement_No, reason: "BC statement counter"}
+  - {bc: Last_Date_Modified, reason: "BC system timestamp"}
+  - {bc: Ava_Company_Code, reason: "Avalara setup in BC, single value"}
+  - {bc: Tax_Liable, reason: "BC tax setup, no SS4 counterpart, single value"}
+  - {bc: Tax_Area_Code, reason: "BC tax setup (AVATAX), single value"}
+  - {bc: Gen_Bus_Posting_Group, reason: "BC posting setup"}
+  - {bc: Payment_Method_Code, reason: "BC setup, single value CHECK"}
+  - {bc: Shipment_Method_Code, reason: "BC setup, single value GROUND"}
+  - {bc: Shipping_Agent_Code, reason: "BC setup, single value UPS"}
+  - {bc: CFDI_Customer_Name, reason: "sparse (6 rows), Mexican localization field, entered in BC"}
+  - {bc: IC_Partner_Code, reason: "sparse (2 rows), BC intercompany setup"}
+  - {bc: Blocked, reason: "sparse (11 rows 'All'); none of the 7 paired rows is Inactive or ARSrvRestrict in SS4, so no counterpart found"}
+  - {bc: Responsibility_Center, reason: "sparse (1 row), BC setup"}
+  - {bc: AVA_Address_is_validated, reason: "sparse, Avalara flag in BC"}
+  - {bc: MobilePhoneNo, reason: "sparse (1 row, '12.01.26')"}
+  - {bc: Tax_Exemption_No, reason: "sparse (1 row)"}
+  - {bc: Allow_Multiple_Posting_Groups, reason: "sparse (1 row), BC setup"}
+  - {bc: Customer_Disc_Group, reason: "sparse (7 rows), BC setup"}
+  - {bc: Prepayment_Percent, reason: "sparse (1 row)"}
+  - {bc: Fin_Charge_Terms_Code, reason: "sparse (1 row)"}
+  - {bc: Ship_to_Code, reason: "sparse (2 test rows)"}
+  - {bc: CFDI_Period, reason: constant in BC}
+  - {bc: ShowMap, reason: constant in BC}
+  - {bc: Copy_Sell_to_Addr_to_Qte_From, reason: constant in BC}
+  - {bc: Tax_Identification_Type, reason: constant in BC}
+  - {bc: Allow_Line_Disc, reason: constant in BC}
+  - {bc: Application_Method, reason: constant in BC}
+  - {bc: Bank_Communication, reason: constant in BC}
+  - {bc: Reserve, reason: constant in BC}
+  - {bc: Shipping_Advice, reason: constant in BC}
+  - {bc: Customized_Calendar, reason: constant in BC}
+  - {bc: Date_Filter, reason: constant in BC}
+  - {bc: BalanceAsVendor, reason: empty in BC}
+  - {bc: Credit_Limit_LCY, reason: empty in BC}
+  - {bc: Privacy_Blocked, reason: empty in BC}
+  - {bc: Service_Zone_Code, reason: empty in BC}
+  - {bc: Document_Sending_Profile, reason: empty in BC}
+  - {bc: CFDI_Purpose, reason: empty in BC}
+  - {bc: CFDI_Relation, reason: empty in BC}
+  - {bc: CFDI_Export_Code, reason: empty in BC}
+  - {bc: SAT_Tax_Regime_Classification, reason: empty in BC}
+  - {bc: CFDI_General_Public, reason: empty in BC}
+  - {bc: Disable_Search_by_Name, reason: empty in BC}
+  - {bc: Priority, reason: empty in BC}
+  - {bc: Statistics_Group, reason: empty in BC}
+  - {bc: AVA_AFC_Customer_Type, reason: empty in BC}
+  - {bc: AVA_AFC_Lifeline, reason: empty in BC}
+  - {bc: AVA_Latitude, reason: empty in BC}
+  - {bc: AVA_longitude, reason: empty in BC}
+  - {bc: AVA_AFC_PCode, reason: empty in BC}
+  - {bc: AVA_AFC_FIPS_Code, reason: empty in BC}
+  - {bc: Home_Page, reason: empty in BC}
+  - {bc: Language_Code, reason: empty in BC}
+  - {bc: Format_Region, reason: empty in BC}
+  - {bc: Bill_to_Customer_No, reason: empty in BC}
+  - {bc: VAT_Registration_No, reason: empty in BC}
+  - {bc: EORI_Number, reason: empty in BC}
+  - {bc: GLN, reason: empty in BC}
+  - {bc: Use_GLN_in_Electronic_Document, reason: empty in BC}
+  - {bc: RFC_No, reason: empty in BC}
+  - {bc: CURP_No, reason: empty in BC}
+  - {bc: State_Inscription, reason: empty in BC}
+  - {bc: Registration_Number, reason: empty in BC}
+  - {bc: VAT_Bus_Posting_Group, reason: empty in BC}
+  - {bc: Price_Calculation_Method, reason: empty in BC}
+  - {bc: Customer_Price_Group, reason: empty in BC}
+  - {bc: Prices_Including_VAT, reason: empty in BC}
+  - {bc: E_Document_Service_Participation_Ids, reason: empty in BC}
+  - {bc: Partner_Type, reason: empty in BC}
+  - {bc: Intrastat_Partner_Type, reason: empty in BC}
+  - {bc: Reminder_Terms_Code, reason: empty in BC}
+  - {bc: Cash_Flow_Payment_Terms_Code, reason: empty in BC}
+  - {bc: Print_Statements, reason: empty in BC}
+  - {bc: Block_Payment_Tolerance, reason: empty in BC}
+  - {bc: Preferred_Bank_Account_Code, reason: empty in BC}
+  - {bc: Check_Date_Format, reason: empty in BC}
+  - {bc: Check_Date_Separator, reason: empty in BC}
+  - {bc: Exclude_from_Pmt_Practices, reason: empty in BC}
+  - {bc: Location_Code, reason: empty in BC}
+  - {bc: Combine_Shipments, reason: empty in BC}
+  - {bc: Combine_Service_Shipments, reason: empty in BC}
+  - {bc: Shipping_Agent_Service_Code, reason: empty in BC}
+  - {bc: Shipping_Time, reason: empty in BC}
+  - {bc: Base_Calendar_Code, reason: empty in BC}
+  - {bc: DaysSinceLastSale, reason: empty in BC}
+  - {bc: DistinctItemsSold, reason: empty in BC}
+  - {bc: ExpectedCustMoneyOwed, reason: empty in BC}
+  - {bc: TotalMoneyOwed, reason: empty in BC}
+  - {bc: CreditLimit, reason: empty in BC}
+  - {bc: CalcCreditLimitLCYExpendedPct, reason: empty in BC}
+  - {bc: Balance_Due, reason: empty in BC}
+  - {bc: CustomerMgt_AvgDaysToPay_No, reason: empty in BC}
+  - {bc: DaysPaidPastDueDate, reason: empty in BC}
+  - {bc: PaidLateCount, reason: empty in BC}
+  - {bc: PaidOnTimeCount, reason: empty in BC}
+  - {bc: PercentPaidLate, reason: empty in BC}
+  - {bc: OverdueCount, reason: empty in BC}
+  - {bc: LastPaymentDate, reason: empty in BC}
+  - {bc: LastPaymentAmount, reason: empty in BC}
+  - {bc: LastPaymentOnTime, reason: empty in BC}
+  - {bc: AmountOnPostedInvoices, reason: empty in BC}
+  - {bc: AmountOnCrMemo, reason: empty in BC}
+  - {bc: AmountOnOutstandingInvoices, reason: empty in BC}
+  - {bc: AmountOnOutstandingCrMemos, reason: empty in BC}
+  - {bc: Totals, reason: empty in BC}
+  - {bc: CustInvDiscAmountLCY, reason: empty in BC}
+  - {bc: InteractionCount, reason: empty in BC}
+  - {bc: LastInteractionDate, reason: empty in BC}
+  - {bc: LastInteractionType, reason: empty in BC}
+  - {bc: MostFrequentInteractionType, reason: empty in BC}
+  - {bc: Global_Dimension_1_Filter, reason: empty in BC}
+  - {bc: Global_Dimension_2_Filter, reason: empty in BC}
+  - {bc: Currency_Filter, reason: empty in BC}
+  - {ss4: TaxingState, reason: "BC County equals TaxingState on 2,563/2,921 paired rows (87.7%), better than the parsed mailing state (79.9%). Per the push job and the user's instruction, County is compared to the state parsed from MailingAddress instead"}
+
+--- end of customers_card.yaml ---
+
+In the spec use: name: projects_card, and in the bc section target: BC,
+api: odata, entity: Project_Card_Excel. When you are confident, call submit_spec.
+
+
+=== run_sql
+SELECT COUNT(*) n, SUM(CASE WHEN c.CustomerID IS NOT NULL THEN 1 ELSE 0 END) in_ss4,
+SUM(CASE WHEN c.ContractStatus='A' AND a.customer_company_code IN ('01','15') THEN 1 ELSE 0 END) in_scope,
+SUM(CASE WHEN LTRIM(RTRIM(b.Description))=LTRIM(RTRIM(c.ProjectName)) THEN 1 ELSE 0 END) desc_proj,
+SUM(CASE WHEN LTRIM(RTRIM(b.Description))=LTRIM(RTRIM(c.Name)) THEN 1 ELSE 0 END) desc_name
+FROM #bc_raw b LEFT JOIN EQData.dbo.Customer c ON c.CustomerID=b.No
+LEFT JOIN ARData.dbo.customer a ON a.customer_number=c.CustomerID
+--- result
+n | in_ss4 | in_scope | desc_proj | desc_name
+683 | 672 | 616 | 667 | 0
+
+=== run_sql
+SELECT COLUMN_NAME, DATA_TYPE FROM EQData.INFORMATION_SCHEMA.COLUMNS WHERE TABLE_NAME='Customer' AND (COLUMN_NAME LIKE '%Ship%' OR COLUMN_NAME LIKE '%Bill%' OR COLUMN_NAME LIKE '%Date%' OR COLUMN_NAME LIKE '%Contact%' OR COLUMN_NAME LIKE '%PO%' OR COLUMN_NAME LIKE '%Order%' OR COLUMN_NAME LIKE '%Salesman%' OR COLUMN_NAME LIKE '%Bc%' OR COLUMN_NAME IN ('Class','Model','SerialNumber'))
+--- result
+COLUMN_NAME | DATA_TYPE
+SerialNumber | nvarchar
+Model | nvarchar
+Class | nvarchar
+CustomerPO | nvarchar
+MailingContact | nvarchar
+BillingAddress | nvarchar
+BillingContact | nvarchar
+BillingTelephone | nvarchar
+BillingFax | nvarchar
+ShippingAddress | nvarchar
+ShippingContact | nvarchar
+ShippingTelephone | nvarchar
+ShippingFax | nvarchar
+EntryDate | datetime
+RevisionDate | datetime
+ErectionDate | datetime
+MinimumStartDate | datetime
+DismantleDate | datetime
+ReviewDate | datetime
+PowerCable | float
+PowerCableMetric | float
+InsuranceExpirationDate | datetime
+CustProjInfRcvdDate | datetime
+CreateDate | datetime
+BcId | uniqueidentifier
+BcNumber | nvarchar
+BcEtag | nvarchar
+ModifiedDateTime | datetime2
+
+=== check_spec
+name: projects_card
+description: test
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Project_Card_Excel
+  key: ['No']
+ss4:
+  query: >-
+    SELECT x.CustomerID, x.ContractStatus, x.CompanyCode, x.Name, x.ProjectName,
+           x.Line1, x.Rest, x.Country, x.PaymentTerms, x.MailingTelephone, x.MailingContact, x.Email,
+           x.SearchDescription, x.YourReference, x.ShippingContact, x.ShippingTelephone,
+           x.ErectionDate, x.DismantleDate, x.CustomerPO, x.BillingContact, x.CreateDate,
+           CASE WHEN x.Ok = 1 THEN LTRIM(RTRIM(LEFT(x.LastLine, CHARINDEX(',', x.LastLine) - 1))) END AS City,
+           CASE WHEN x.Ok = 1 THEN LEFT(x.AfterComma, 2) END AS State,
+           CASE WHEN x.Ok = 1 THEN NULLIF(LTRIM(RTRIM(SUBSTRING(x.AfterComma, 3, 400))), '') END AS Zip
+      FROM (
+        SELECT y.*,
+               CASE WHEN CHARINDEX(',', y.LastLine) > 1
+                     AND (y.AfterComma LIKE '[A-Za-z][A-Za-z]' OR y.AfterComma LIKE '[A-Za-z][A-Za-z] %')
+                    THEN 1 ELSE 0 END AS Ok
+          FROM (
+            SELECT z.*,
+                   LTRIM(SUBSTRING(z.LastLine, CHARINDEX(',', z.LastLine) + 1, 400)) AS AfterComma
+              FROM (
+                SELECT c.CustomerID, c.ContractStatus, c.CreateDate, c.Name, c.ProjectName,
+                       c.MailingTelephone, c.MailingContact, c.ShippingContact, c.ShippingTelephone,
+                       c.CustomerPO, c.BillingContact,
+                       NULLIF(LTRIM(RTRIM(LEFT(s.ProjectEmail1, CHARINDEX(',', s.ProjectEmail1 + ',') - 1))), '') AS Email,
+                       CAST(ISNULL(c.ErectionDate, '1900-01-01') AS date) AS ErectionDate,
+                       CAST(ISNULL(c.DismantleDate, '2099-12-31') AS date) AS DismantleDate,
+                       NULLIF(UPPER(LTRIM(RTRIM(LTRIM(RTRIM(ISNULL(c.Class, ''))) + ' ' + LTRIM(RTRIM(ISNULL(c.Model, '')))))), '') AS SearchDescription,
+                       CASE WHEN NULLIF(LTRIM(RTRIM(c.Model)), '') IS NULL THEN NULL
+                            WHEN NULLIF(LTRIM(RTRIM(c.SerialNumber)), '') IS NULL THEN LEFT(LTRIM(RTRIM(c.Model)), 35)
+                            ELSE LEFT(LTRIM(RTRIM(c.Model)) + ' S/N ' + LTRIM(RTRIM(c.SerialNumber)), 35) END AS YourReference,
+                       CASE UPPER(LTRIM(RTRIM(ISNULL(c.TaxingCountry, ''))))
+                            WHEN 'CA' THEN 'CA' WHEN 'CAN' THEN 'CA' WHEN 'CANADA' THEN 'CA'
+                            WHEN 'MX' THEN 'MX' WHEN 'MEX' THEN 'MX' WHEN 'MEXICO' THEN 'MX'
+                            ELSE 'US' END AS Country,
+                       NULLIF(UPPER(REPLACE(LTRIM(RTRIM(b.PMTTerms)), ' ', '')), '') AS PaymentTerms,
+                       a.customer_company_code AS CompanyCode,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(LEFT(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) - 1), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(c.MailingAddress)) END AS Line1,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) = 0 THEN NULL
+                            WHEN DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1 = CHARINDEX(CHAR(10), c.MailingAddress)
+                            THEN LTRIM(RTRIM(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1, 4000), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(REPLACE(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1,
+                                     (DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1) - CHARINDEX(CHAR(10), c.MailingAddress) - 1),
+                                     CHAR(13), ''), CHAR(10), ', ')))
+                            END AS Rest,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(RIGHT(c.MailingAddress, CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) - 1), CHAR(13), '')))
+                            END AS LastLine
+                  FROM EQData.dbo.Customer c
+                  LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.CustomerID
+                  LEFT JOIN EQDataCor.dbo.BillingInstructions b ON b.CustomerID = c.CustomerID
+                  LEFT JOIN ARData.dbo.customer a ON a.customer_number = c.CustomerID
+              ) z
+          ) y
+      ) x
+  key: [CustomerID]
+  where: ContractStatus = 'A' AND CompanyCode IN ('01', '15')
+missing:
+  in_bc: info
+  in_ss4: info
+fields:
+  - {bc: Description, ss4: ProjectName, type: text}
+  - {bc: Sell_to_Customer_No, ss4: CustomerID, type: text}
+  - {bc: Sell_to_Customer_Name, ss4: Name, type: text}
+  - {bc: Bill_to_Customer_No, ss4: CustomerID, type: text}
+  - {bc: Bill_to_Name, ss4: Name, type: text}
+  - {bc: Sell_to_Address, ss4: Line1, type: text}
+  - {bc: Sell_to_Address_2, ss4: Rest, type: text}
+  - {bc: Sell_to_City, ss4: City, type: text}
+  - {bc: Sell_to_County, ss4: State, type: text}
+  - {bc: Sell_to_Post_Code, ss4: Zip, type: text}
+  - {bc: Sell_to_Country_Region_Code, ss4: Country, type: text}
+  - {bc: Sell_to_Contact, ss4: MailingContact, type: text}
+  - {bc: SellToPhoneNo, ss4: MailingTelephone, type: text}
+  - {bc: SellToEmail, ss4: Email, type: text}
+  - {bc: Search_Description, ss4: SearchDescription, type: text}
+  - {bc: Your_Reference, ss4: YourReference, type: text}
+  - {bc: Payment_Terms_Code, ss4: PaymentTerms, type: text}
+  - {bc: Ship_to_Contact, ss4: ShippingContact, type: text}
+  - {bc: Ship_to_Phone_No, ss4: ShippingTelephone, type: text}
+  - {bc: Starting_Date, ss4: ErectionDate, type: date}
+  - {bc: Ending_Date, ss4: DismantleDate, type: date}
+  - {bc: External_Document_No, ss4: CustomerPO, type: text}
+  - {bc: Bill_to_Contact, ss4: BillingContact, type: text}
+  - {bc: Creation_Date, ss4: CreateDate, type: date}
+
+--- result
+Not valid:
+draft has 1 problem(s):
+  - fields: ss4 column(s) mapped more than once: ['customerid', 'name']
+
+=== check_spec
+name: projects_card
+description: test
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Project_Card_Excel
+  key: ['No']
+ss4:
+  query: >-
+    SELECT x.CustomerID, x.CustomerID AS SellToNo, x.CustomerID AS BillToNo, x.ContractStatus, x.CompanyCode, x.Name, x.Name AS BillToName, x.ProjectName,
+           x.Line1, x.Rest, x.Country, x.PaymentTerms, x.MailingTelephone, x.MailingContact, x.Email,
+           x.SearchDescription, x.YourReference, x.ShippingContact, x.ShippingTelephone,
+           x.ErectionDate, x.DismantleDate, x.CustomerPO, x.BillingContact, x.CreateDate,
+           CASE WHEN x.Ok = 1 THEN LTRIM(RTRIM(LEFT(x.LastLine, CHARINDEX(',', x.LastLine) - 1))) END AS City,
+           CASE WHEN x.Ok = 1 THEN LEFT(x.AfterComma, 2) END AS State,
+           CASE WHEN x.Ok = 1 THEN NULLIF(LTRIM(RTRIM(SUBSTRING(x.AfterComma, 3, 400))), '') END AS Zip
+      FROM (
+        SELECT y.*,
+               CASE WHEN CHARINDEX(',', y.LastLine) > 1
+                     AND (y.AfterComma LIKE '[A-Za-z][A-Za-z]' OR y.AfterComma LIKE '[A-Za-z][A-Za-z] %')
+                    THEN 1 ELSE 0 END AS Ok
+          FROM (
+            SELECT z.*,
+                   LTRIM(SUBSTRING(z.LastLine, CHARINDEX(',', z.LastLine) + 1, 400)) AS AfterComma
+              FROM (
+                SELECT c.CustomerID, c.ContractStatus, c.CreateDate, c.Name, c.ProjectName,
+                       c.MailingTelephone, c.MailingContact, c.ShippingContact, c.ShippingTelephone,
+                       c.CustomerPO, c.BillingContact,
+                       NULLIF(LTRIM(RTRIM(LEFT(s.ProjectEmail1, CHARINDEX(',', s.ProjectEmail1 + ',') - 1))), '') AS Email,
+                       CAST(ISNULL(c.ErectionDate, '1900-01-01') AS date) AS ErectionDate,
+                       CAST(ISNULL(c.DismantleDate, '2099-12-31') AS date) AS DismantleDate,
+                       NULLIF(UPPER(LTRIM(RTRIM(LTRIM(RTRIM(ISNULL(c.Class, ''))) + ' ' + LTRIM(RTRIM(ISNULL(c.Model, '')))))), '') AS SearchDescription,
+                       CASE WHEN NULLIF(LTRIM(RTRIM(c.Model)), '') IS NULL THEN NULL
+                            WHEN NULLIF(LTRIM(RTRIM(c.SerialNumber)), '') IS NULL THEN LEFT(LTRIM(RTRIM(c.Model)), 35)
+                            ELSE LEFT(LTRIM(RTRIM(c.Model)) + ' S/N ' + LTRIM(RTRIM(c.SerialNumber)), 35) END AS YourReference,
+                       CASE UPPER(LTRIM(RTRIM(ISNULL(c.TaxingCountry, ''))))
+                            WHEN 'CA' THEN 'CA' WHEN 'CAN' THEN 'CA' WHEN 'CANADA' THEN 'CA'
+                            WHEN 'MX' THEN 'MX' WHEN 'MEX' THEN 'MX' WHEN 'MEXICO' THEN 'MX'
+                            ELSE 'US' END AS Country,
+                       NULLIF(UPPER(REPLACE(LTRIM(RTRIM(b.PMTTerms)), ' ', '')), '') AS PaymentTerms,
+                       a.customer_company_code AS CompanyCode,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(LEFT(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) - 1), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(c.MailingAddress)) END AS Line1,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) = 0 THEN NULL
+                            WHEN DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1 = CHARINDEX(CHAR(10), c.MailingAddress)
+                            THEN LTRIM(RTRIM(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1, 4000), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(REPLACE(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1,
+                                     (DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1) - CHARINDEX(CHAR(10), c.MailingAddress) - 1),
+                                     CHAR(13), ''), CHAR(10), ', ')))
+                            END AS Rest,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(RIGHT(c.MailingAddress, CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) - 1), CHAR(13), '')))
+                            END AS LastLine
+                  FROM EQData.dbo.Customer c
+                  LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.CustomerID
+                  LEFT JOIN EQDataCor.dbo.BillingInstructions b ON b.CustomerID = c.CustomerID
+                  LEFT JOIN ARData.dbo.customer a ON a.customer_number = c.CustomerID
+              ) z
+          ) y
+      ) x
+  key: [CustomerID]
+  where: ContractStatus = 'A' AND CompanyCode IN ('01', '15')
+missing:
+  in_bc: info
+  in_ss4: info
+fields:
+  - {bc: Description, ss4: ProjectName, type: text}
+  - {bc: Sell_to_Customer_No, ss4: SellToNo, type: text}
+  - {bc: Sell_to_Customer_Name, ss4: Name, type: text}
+  - {bc: Bill_to_Customer_No, ss4: BillToNo, type: text}
+  - {bc: Bill_to_Name, ss4: BillToName, type: text}
+  - {bc: Sell_to_Address, ss4: Line1, type: text}
+  - {bc: Sell_to_Address_2, ss4: Rest, type: text}
+  - {bc: Sell_to_City, ss4: City, type: text}
+  - {bc: Sell_to_County, ss4: State, type: text}
+  - {bc: Sell_to_Post_Code, ss4: Zip, type: text}
+  - {bc: Sell_to_Country_Region_Code, ss4: Country, type: text}
+  - {bc: Sell_to_Contact, ss4: MailingContact, type: text}
+  - {bc: SellToPhoneNo, ss4: MailingTelephone, type: text}
+  - {bc: SellToEmail, ss4: Email, type: text}
+  - {bc: Search_Description, ss4: SearchDescription, type: text}
+  - {bc: Your_Reference, ss4: YourReference, type: text}
+  - {bc: Payment_Terms_Code, ss4: PaymentTerms, type: text}
+  - {bc: Ship_to_Contact, ss4: ShippingContact, type: text}
+  - {bc: Ship_to_Phone_No, ss4: ShippingTelephone, type: text}
+  - {bc: Starting_Date, ss4: ErectionDate, type: date}
+  - {bc: Ending_Date, ss4: DismantleDate, type: date}
+  - {bc: External_Document_No, ss4: CustomerPO, type: text}
+  - {bc: Bill_to_Contact, ss4: BillingContact, type: text}
+  - {bc: Creation_Date, ss4: CreateDate, type: date}
+
+--- result
+BC rows: 683   SS4 rows in scope: 11,748   paired by key: 616
+missing_in_ss4: 67   e.g. 80635, 80650, 80627, 80636, 80617
+missing_in_bc: 11,132   e.g. 01234, 10000, 10002, 10003, 10004
+field agreement on paired rows:
+  Description -> ProjectName: 2 differ of 616 compared (99.68% agree)
+      17418: BC='5470004  BUSTAMANTE WWTP EXPAN'  SS4='5470004 BUSTAMANTE WWTP EXPAN.'
+      17490: BC='7024205  TTUHSC EL PASO CCCSB'  SS4='7024205 TTUHSC EL PASO CCCSB'
+  Sell_to_Customer_No -> SellToNo: 142 differ of 616 compared (76.95% agree)
+      17610: BC=None  SS4='17610'
+      17630: BC=None  SS4='17630'
+      17633: BC=None  SS4='17633'
+  Sell_to_Customer_Name -> Name: 247 differ of 616 compared (59.90% agree)
+      16602: BC='J. T. VAUGHN CONSTRUCTION, LLC'  SS4='J.T. VAUGHN CONSTRUCTION CO., INC.'
+      16620: BC='BERLIN STEEL CONSTRUCTION'  SS4='THE BERLIN STEEL CONSTRUCTION COMPANY'
+      16621: BC='BERLIN STEEL CONSTRUCTION'  SS4='THE BERLIN STEEL CONSTRUCTION COMPANY'
+  Bill_to_Customer_No -> BillToNo: 142 differ of 616 compared (76.95% agree)
+      17610: BC=None  SS4='17610'
+      17630: BC=None  SS4='17630'
+      17633: BC=None  SS4='17633'
+  Bill_to_Name -> BillToName: 247 differ of 616 compared (59.90% agree)
+      16602: BC='J. T. VAUGHN CONSTRUCTION, LLC'  SS4='J.T. VAUGHN CONSTRUCTION CO., INC.'
+      16620: BC='BERLIN STEEL CONSTRUCTION'  SS4='THE BERLIN STEEL CONSTRUCTION COMPANY'
+      16621: BC='BERLIN STEEL CONSTRUCTION'  SS4='THE BERLIN STEEL CONSTRUCTION COMPANY'
+  Sell_to_Address -> Line1: 83 differ of 616 compared (86.53% agree)
+      16987: BC='P. O. BOX 4088'  SS4='605 KAPIOLANI BLVD.'
+      16988: BC='9954 EAST BROADWAY AVE.'  SS4='4181 NW 1ST AVE., STE 1'
+      16989: BC='9954 EAST BROADWAY AVE.'  SS4='4181 NW 1ST AVE., STE 1'
+  Sell_to_Address_2 -> Rest: 69 differ of 616 compared (88.80% agree)
+      16987: BC='HONOLULU, HI  96812-4088'  SS4='HONOLULU, HI  96813'
+      16988: BC='TAMPA, FL  33619'  SS4='BOCA RATON, FL  33619'
+      16989: BC='TAMPA, FL  33619'  SS4='BOCA RATON, FL  33619'
+  Sell_to_City -> City: 41 differ of 616 compared (93.34% agree)
+      16988: BC='TAMPA'  SS4='BOCA RATON'
+      16989: BC='TAMPA'  SS4='BOCA RATON'
+      17129: BC='MINNEAPOLIS'  SS4='KIRKLAND'
+  Sell_to_County -> State: 25 differ of 616 compared (95.94% agree)
+      17129: BC='MN'  SS4='WA'
+      17253: BC='TX'  SS4='FL'
+      17254: BC='TX'  SS4='FL'
+  Sell_to_Post_Code -> Zip: 56 differ of 616 compared (90.91% agree)
+      16987: BC='96812-4088'  SS4='96813'
+      17129: BC='55422'  SS4='98033'
+      17143: BC='75204'  SS4='77054'
+  Sell_to_Country_Region_Code -> Country: 2 differ of 616 compared (99.68% agree)
+      96.4% of compared rows hold 'US'; on the other 22: 2 differ (90.91% agree)
+      17270: BC=None  SS4='US'
+      17360: BC=None  SS4='US'
+  Sell_to_Contact -> MailingContact: 85 differ of 616 compared (86.20% agree)
+      16988: BC='SHAWN LEWIS'  SS4='TOM WOOD'
+      16989: BC='SHAWN LEWIS'  SS4='TOM WOOD'
+      17066: BC='DOUG THOMAS'  SS4=None
+  SellToPhoneNo -> MailingTelephone: 186 differ of 616 compared (69.81% agree)
+      16988: BC=None  SS4='(813) 622-8080'
+      16989: BC=None  SS4='(813) 622-8080'
+      17066: BC='(214) 443-5700'  SS4=None
+  SellToEmail -> Email: 413 differ of 616 compared (32.95% agree)
+      15578: BC=None  SS4='jgiacin@iuoe.org'
+      16498: BC=None  SS4='rphillips@robinsmorton.com'
+      16600: BC=None  SS4='george@fjmstructures.com'
+  Search_Description -> SearchDescription: 278 differ of 616 compared (54.87% agree)
+      15578: BC='HAMMERHEAD 550 HC 20 S/N ACCESSORIES'  SS4='HAMMERHEAD 550 HC 20'
+      16498: BC='HAMMERHEAD 550 EC-H 20 LITRONIC S/N 52.199'  SS4='HAMMERHEAD 550 EC-H 20 LITRONIC'
+      16600: BC='HAMMERHEAD 420 EC-H 16 S/N 41.555'  SS4='HAMMERHEAD 420 EC-H 16'
+  Your_Reference -> YourReference: 136 differ of 616 compared (77.92% agree)
+      15578: BC='316 EC-H 12 Litronic S/N 44.273'  SS4='550 HC 20 S/N Accessories'
+      16498: BC='420 EC-H 16 S/N 41.730'  SS4='550 EC-H 20 Litronic S/N 52.199'
+      16600: BC='172 EC-B 8 Litronic S/N 55.269'  SS4='420 EC-H 16 S/N 41.555'
+  Payment_Terms_Code -> PaymentTerms: 94 differ of 616 compared (84.74% agree)
+      95.6% of compared rows hold 'NET30'; on the other 27: 27 differ (0.00% agree)
+      16960: BC='NET30'  SS4='NET60'
+      16976: BC='NET30'  SS4='NET60'
+      16977: BC='NET30'  SS4='NET60'
+  Ship_to_Contact -> ShippingContact: 212 differ of 616 compared (65.58% agree)
+      16620: BC='DAVE HARVIE'  SS4=None
+      16621: BC='DAVE HARVIE'  SS4=None
+      16703: BC='KARA WHETSTONE'  SS4='VICTOR MONZON'
+  Ship_to_Phone_No -> ShippingTelephone: 223 differ of 616 compared (63.80% agree)
+      16498: BC='(205) 870-1000'  SS4='(615) 403-6266'
+      16620: BC='(610) 240-8953'  SS4=None
+      16621: BC='(610) 240-8953'  SS4=None
+  Starting_Date -> ErectionDate: 14 differ of 616 compared (97.73% agree)
+      17006: BC='2026-04-01'  SS4='2027-01-01'
+      17125: BC='2026-04-01'  SS4='2026-06-17'
+      17127: BC='2026-04-20'  SS4='2026-09-21'
+  Ending_Date -> DismantleDate: 186 differ of 616 compared (69.81% agree)
+      16498: BC='2026-06-26'  SS4='2026-08-01'
+      16600: BC='2026-09-30'  SS4='2027-12-31'
+      16602: BC='2026-05-04'  SS4='2026-05-26'
+  External_Document_No -> CustomerPO: 240 differ of 616 compared (61.04% agree)
+      16498: BC=None  SS4='47044'
+      16602: BC=None  SS4='2977-04 (2767-01)'
+      16703: BC=None  SS4='10824'
+  Bill_to_Contact -> BillingContact: 424 differ of 616 compared (31.17% agree)
+      16498: BC='PATRICK BARRETT'  SS4='RAVEN PHILLIPS'
+      16600: BC='ITALO DINUNZIO'  SS4='FRANK CASUCCI'
+      16602: BC='ANDREW THOMPSON'  SS4='LOUIS REGER'
+  Creation_Date -> CreateDate: 616 differ of 616 compared (0.00% agree)
+      15578: BC=None  SS4='Dec 20 2019  8:12AM'
+      16498: BC=None  SS4='Aug  5 2022 10:37AM'
+      16600: BC=None  SS4='Oct 25 2022  1:29PM'
+
+=== run_sql
+SELECT COUNT(*) n,
+SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.Search_Description)))=UPPER(LTRIM(RTRIM(ISNULL(c.Class,'')))+' '+LTRIM(RTRIM(ISNULL(c.Model,'')))) THEN 1 ELSE 0 END) sd_cm,
+SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.Search_Description)))=UPPER(LTRIM(RTRIM(ISNULL(c.Class,'')))+' '+LTRIM(RTRIM(ISNULL(c.Model,'')))+' S/N '+LTRIM(RTRIM(ISNULL(c.SerialNumber,'')))) THEN 1 ELSE 0 END) sd_cms,
+SUM(CASE WHEN LTRIM(RTRIM(b.Sell_to_Customer_Name))=LEFT(LTRIM(RTRIM(c.Name)),30) THEN 1 ELSE 0 END) nm30,
+SUM(CASE WHEN LTRIM(RTRIM(b.Sell_to_Customer_Name))=LTRIM(RTRIM(a.customer_name)) THEN 1 ELSE 0 END) arname,
+SUM(CASE WHEN LTRIM(RTRIM(b.Sell_to_Customer_Name))='' OR b.Sell_to_Customer_Name IS NULL THEN 1 ELSE 0 END) nmblank,
+SUM(CASE WHEN LTRIM(RTRIM(b.Sell_to_Customer_No))='' OR b.Sell_to_Customer_No IS NULL THEN 1 ELSE 0 END) noblank,
+SUM(CASE WHEN b.Sell_to_Customer_No=b.No THEN 1 ELSE 0 END) noeq,
+SUM(CASE WHEN b.Bill_to_Customer_No=b.Sell_to_Customer_No THEN 1 ELSE 0 END) billeq,
+SUM(CASE WHEN ISNULL(b.Bill_to_Name,'')=ISNULL(b.Sell_to_Customer_Name,'') THEN 1 ELSE 0 END) billnmeq
+FROM #bc_raw b JOIN EQData.dbo.Customer c ON c.CustomerID=b.No
+LEFT JOIN ARData.dbo.customer a ON a.customer_number=c.CustomerID
+WHERE c.ContractStatus='A' AND a.customer_company_code IN ('01','15')
+--- result
+n | sd_cm | sd_cms | nm30 | arname | nmblank | noblank | noeq | billeq | billnmeq
+616 | 337 | 232 | 381 | 381 | 142 | 141 | 474 | 475 | 616
+
+=== run_sql
+SELECT CASE WHEN c.CreateDate>='2026-01-01' THEN 'new' ELSE 'old' END grp, COUNT(*) n,
+SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.Search_Description)))=UPPER(LTRIM(RTRIM(ISNULL(c.Class,'')))+' '+LTRIM(RTRIM(ISNULL(c.Model,'')))) THEN 1 ELSE 0 END) sd_cm,
+SUM(CASE WHEN UPPER(LTRIM(RTRIM(b.Search_Description)))=UPPER(LTRIM(RTRIM(ISNULL(c.Class,'')))+' '+LTRIM(RTRIM(ISNULL(c.Model,'')))+' S/N '+LTRIM(RTRIM(ISNULL(c.SerialNumber,'')))) THEN 1 ELSE 0 END) sd_cms,
+SUM(CASE WHEN LTRIM(RTRIM(b.Your_Reference))=LEFT(LTRIM(RTRIM(c.Model))+CASE WHEN ISNULL(LTRIM(RTRIM(c.SerialNumber)),'')='' THEN '' ELSE ' S/N '+LTRIM(RTRIM(c.SerialNumber)) END,35) THEN 1 ELSE 0 END) yr,
+SUM(CASE WHEN LTRIM(RTRIM(b.Sell_to_Customer_Name))=LEFT(LTRIM(RTRIM(c.Name)),30) THEN 1 ELSE 0 END) nm30,
+SUM(CASE WHEN LTRIM(RTRIM(b.Sell_to_Customer_Name))=LTRIM(RTRIM(c.Name)) THEN 1 ELSE 0 END) nm,
+SUM(CASE WHEN ISNULL(b.Sell_to_Customer_No,'')='' THEN 1 ELSE 0 END) noblank,
+SUM(CASE WHEN b.Ending_Date=CONVERT(char(10),ISNULL(c.DismantleDate,'2099-12-31'),23) THEN 1 ELSE 0 END) endd,
+SUM(CASE WHEN ISNULL(b.Creation_Date,'')<>'' THEN 1 ELSE 0 END) crfilled,
+SUM(CASE WHEN ISNULL(b.External_Document_No,'')=ISNULL(c.CustomerPO,'') THEN 1 ELSE 0 END) po,
+SUM(CASE WHEN ISNULL(b.Ship_to_Contact,'')=ISNULL(c.ShippingContact,'') THEN 1 ELSE 0 END) shc,
+SUM(CASE WHEN ISNULL(b.Ship_to_Phone_No,'')=ISNULL(c.ShippingTelephone,'') THEN 1 ELSE 0 END) shp
+FROM #bc_raw b JOIN EQData.dbo.Customer c ON c.CustomerID=b.No
+LEFT JOIN ARData.dbo.customer a ON a.customer_number=c.CustomerID
+WHERE c.ContractStatus='A' AND a.customer_company_code IN ('01','15')
+GROUP BY CASE WHEN c.CreateDate>='2026-01-01' THEN 'new' ELSE 'old' END
+--- result
+grp | n | sd_cm | sd_cms | yr | nm30 | nm | noblank | endd | crfilled | po | shc | shp
+new | 339 | 337 | 0 | 337 | 165 | 180 | 141 | 339 | 293 | 217 | 327 | 322
+old | 277 | 0 | 232 | 141 | 216 | 189 | 0 | 91 | 23 | 159 | 77 | 71
+
+=== run_sql
+SELECT COUNT(*) n,
+SUM(CASE WHEN ISNULL(b.Bill_to_Address,'')<>'' THEN 1 ELSE 0 END) ba_f,
+SUM(CASE WHEN ISNULL(b.Bill_to_Address,'')<>'' AND b.Bill_to_Address=b.Sell_to_Address THEN 1 ELSE 0 END) ba_eq_sell,
+SUM(CASE WHEN ISNULL(b.Bill_to_Address,'')<>'' AND LTRIM(RTRIM(b.Bill_to_Address))=LTRIM(RTRIM(REPLACE(LEFT(c.BillingAddress, CHARINDEX(CHAR(10), c.BillingAddress+CHAR(10)) - 1),CHAR(13),''))) THEN 1 ELSE 0 END) ba_eq_billing,
+SUM(CASE WHEN ISNULL(b.Ship_to_Address,'')<>'' THEN 1 ELSE 0 END) sa_f,
+SUM(CASE WHEN ISNULL(b.Ship_to_Address,'')<>'' AND b.Ship_to_Address=b.Sell_to_Address THEN 1 ELSE 0 END) sa_eq_sell,
+SUM(CASE WHEN ISNULL(b.Ship_to_Address,'')<>'' AND LTRIM(RTRIM(b.Ship_to_Address))=LTRIM(RTRIM(REPLACE(LEFT(c.ShippingAddress, CHARINDEX(CHAR(10), c.ShippingAddress+CHAR(10)) - 1),CHAR(13),''))) THEN 1 ELSE 0 END) sa_eq_ship,
+SUM(CASE WHEN ISNULL(b.Ship_to_Name,'')<>'' THEN 1 ELSE 0 END) sn_f,
+SUM(CASE WHEN ISNULL(b.Ship_to_Name,'')<>'' AND b.Ship_to_Name=b.Sell_to_Customer_Name THEN 1 ELSE 0 END) sn_eq_sell,
+SUM(CASE WHEN ISNULL(b.Bill_to_Contact,'')<>'' THEN 1 ELSE 0 END) bc_f,
+SUM(CASE WHEN ISNULL(b.Bill_to_Contact,'')<>'' AND b.Bill_to_Contact=b.Sell_to_Contact THEN 1 ELSE 0 END) bc_eq_sell,
+SUM(CASE WHEN ISNULL(b.Bill_to_Contact,'')<>'' AND b.Bill_to_Contact=c.BillingContact THEN 1 ELSE 0 END) bc_eq_billing,
+SUM(CASE WHEN ISNULL(b.SellToPhoneNo,'')<>'' AND ISNULL(c.MailingTelephone,'')<>'' THEN 1 ELSE 0 END) ph_both,
+SUM(CASE WHEN ISNULL(b.SellToPhoneNo,'')<>'' AND b.SellToPhoneNo=c.MailingTelephone THEN 1 ELSE 0 END) ph_eq,
+SUM(CASE WHEN b.SellToPhoneNo=b.ContactPhoneNo OR (ISNULL(b.SellToPhoneNo,'')='' AND ISNULL(b.ContactPhoneNo,'')='') THEN 1 ELSE 0 END) ph_dup,
+SUM(CASE WHEN ISNULL(b.SellToEmail,'')<>'' THEN 1 ELSE 0 END) em_f,
+SUM(CASE WHEN ISNULL(b.SellToEmail,'')<>'' AND b.SellToEmail=LTRIM(RTRIM(LEFT(s.ProjectEmail1, CHARINDEX(',', s.ProjectEmail1 + ',') - 1))) THEN 1 ELSE 0 END) em_eq,
+SUM(CASE WHEN ISNULL(b.External_Document_No,'')<>'' THEN 1 ELSE 0 END) po_f,
+SUM(CASE WHEN ISNULL(b.External_Document_No,'')<>'' AND b.External_Document_No=c.CustomerPO THEN 1 ELSE 0 END) po_eq,
+SUM(CASE WHEN ISNULL(b.Creation_Date,'')<>'' AND b.Creation_Date=CONVERT(char(10),c.CreateDate,23) THEN 1 ELSE 0 END) cr_eq,
+SUM(CASE WHEN ISNULL(b.Creation_Date,'')<>'' AND b.Creation_Date=CONVERT(char(10),c.LastSyncedAt,23) THEN 1 ELSE 0 END) cr_sync
+FROM #bc_raw b JOIN EQData.dbo.Customer c ON c.CustomerID=b.No
+LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID=c.CustomerID
+LEFT JOIN ARData.dbo.customer a ON a.customer_number=c.CustomerID
+WHERE c.ContractStatus='A' AND a.customer_company_code IN ('01','15')
+--- result
+n | ba_f | ba_eq_sell | ba_eq_billing | sa_f | sa_eq_sell | sa_eq_ship | sn_f | sn_eq_sell | bc_f | bc_eq_sell | bc_eq_billing | ph_both | ph_eq | ph_dup | em_f | em_eq | po_f | po_eq | cr_eq | cr_sync
+616 | 474 | 454 | 388 | 348 | 328 | 2 | 348 | 348 | 294 | 286 | 39 | 434 | 397 | 616 | 131 | 130 | 161 | 81 | 28 | 292
+
+=== run_sql
+SELECT CASE WHEN c.CustomerID IS NULL THEN 'notinss4' ELSE ISNULL(c.ContractStatus,'NULL')+'/'+ISNULL(a.customer_company_code,'NULL') END k, COUNT(*) n, MIN(b.No) mn, MAX(b.No) mx,
+SUM(CASE WHEN ISNULL(b.Sell_to_Customer_No,'')='' THEN 1 ELSE 0 END) nocust,
+SUM(CASE WHEN b.ContactEmail=b.SellToEmail OR (ISNULL(b.ContactEmail,'')='' AND ISNULL(b.SellToEmail,'')='') THEN 1 ELSE 0 END) emdup
+FROM #bc_raw b LEFT JOIN EQData.dbo.Customer c ON c.CustomerID=b.No
+LEFT JOIN ARData.dbo.customer a ON a.customer_number=c.CustomerID
+GROUP BY CASE WHEN c.CustomerID IS NULL THEN 'notinss4' ELSE ISNULL(c.ContractStatus,'NULL')+'/'+ISNULL(a.customer_company_code,'NULL') END
+--- result
+k | n | mn | mx | nocust | emdup
+ /01 | 24 | 80612 | 80650 | 20 | 24
+ /15 | 5 | 80616 | 80647 | 5 | 5
+ /NU | 4 | 012026 | 80640 | 3 | 4
+A/01 | 602 | 15578 | 80643 | 130 | 602
+A/15 | 14 | 17645 | 17911 | 11 | 14
+A/90 | 3 | 17654 | 17924 | 2 | 3
+A/NU | 2 | 17927 | 17928 | 0 | 2
+C/01 | 18 | 16791 | 17847 | 5 | 18
+notinss4 | 11 | BT-2026 | TESTPUSH1 | 1 | 11
+
+=== check_spec
+name: projects_card
+description: BC Project Card (Excel page) vs EQData.dbo.Customer (active contracts, companies 01/15), one project per customer number, project fields per BcCustomerPushJob.BuildProjectFields
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Project_Card_Excel
+  key: ['No']
+ss4:
+  query: >-
+    SELECT x.CustomerID, x.CustomerID AS SellToNo, x.CustomerID AS BillToNo, x.ContractStatus, x.CompanyCode,
+           x.Name, x.Name AS BillToName, x.ProjectName,
+           x.Line1, x.Rest, x.Country, x.PaymentTerms, x.MailingTelephone, x.MailingContact, x.Email,
+           x.SearchDescription, x.YourReference, x.ShippingContact, x.ShippingTelephone,
+           x.ErectionDate, x.DismantleDate,
+           CASE WHEN x.Ok = 1 THEN LTRIM(RTRIM(LEFT(x.LastLine, CHARINDEX(',', x.LastLine) - 1))) END AS City,
+           CASE WHEN x.Ok = 1 THEN LEFT(x.AfterComma, 2) END AS State,
+           CASE WHEN x.Ok = 1 THEN NULLIF(LTRIM(RTRIM(SUBSTRING(x.AfterComma, 3, 400))), '') END AS Zip
+      FROM (
+        SELECT y.*,
+               CASE WHEN CHARINDEX(',', y.LastLine) > 1
+                     AND (y.AfterComma LIKE '[A-Za-z][A-Za-z]' OR y.AfterComma LIKE '[A-Za-z][A-Za-z] %')
+                    THEN 1 ELSE 0 END AS Ok
+          FROM (
+            SELECT z.*,
+                   LTRIM(SUBSTRING(z.LastLine, CHARINDEX(',', z.LastLine) + 1, 400)) AS AfterComma
+              FROM (
+                SELECT c.CustomerID, c.ContractStatus, c.Name, c.ProjectName,
+                       c.MailingTelephone, c.MailingContact, c.ShippingContact, c.ShippingTelephone,
+                       NULLIF(LTRIM(RTRIM(LEFT(s.ProjectEmail1, CHARINDEX(',', s.ProjectEmail1 + ',') - 1))), '') AS Email,
+                       CAST(ISNULL(c.ErectionDate, '1900-01-01') AS date) AS ErectionDate,
+                       CAST(ISNULL(c.DismantleDate, '2099-12-31') AS date) AS DismantleDate,
+                       NULLIF(UPPER(LTRIM(RTRIM(LTRIM(RTRIM(ISNULL(c.Class, ''))) + ' ' + LTRIM(RTRIM(ISNULL(c.Model, '')))))), '') AS SearchDescription,
+                       CASE WHEN NULLIF(LTRIM(RTRIM(c.Model)), '') IS NULL THEN NULL
+                            WHEN NULLIF(LTRIM(RTRIM(c.SerialNumber)), '') IS NULL THEN LEFT(LTRIM(RTRIM(c.Model)), 35)
+                            ELSE LEFT(LTRIM(RTRIM(c.Model)) + ' S/N ' + LTRIM(RTRIM(c.SerialNumber)), 35) END AS YourReference,
+                       CASE UPPER(LTRIM(RTRIM(ISNULL(c.TaxingCountry, ''))))
+                            WHEN 'CA' THEN 'CA' WHEN 'CAN' THEN 'CA' WHEN 'CANADA' THEN 'CA'
+                            WHEN 'MX' THEN 'MX' WHEN 'MEX' THEN 'MX' WHEN 'MEXICO' THEN 'MX'
+                            ELSE 'US' END AS Country,
+                       NULLIF(UPPER(REPLACE(LTRIM(RTRIM(b.PMTTerms)), ' ', '')), '') AS PaymentTerms,
+                       a.customer_company_code AS CompanyCode,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(LEFT(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) - 1), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(c.MailingAddress)) END AS Line1,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) = 0 THEN NULL
+                            WHEN DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1 = CHARINDEX(CHAR(10), c.MailingAddress)
+                            THEN LTRIM(RTRIM(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1, 4000), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(REPLACE(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1,
+                                     (DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1) - CHARINDEX(CHAR(10), c.MailingAddress) - 1),
+                                     CHAR(13), ''), CHAR(10), ', ')))
+                            END AS Rest,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(RIGHT(c.MailingAddress, CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) - 1), CHAR(13), '')))
+                            END AS LastLine
+                  FROM EQData.dbo.Customer c
+                  LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.CustomerID
+                  LEFT JOIN EQDataCor.dbo.BillingInstructions b ON b.CustomerID = c.CustomerID
+                  LEFT JOIN ARData.dbo.customer a ON a.customer_number = c.CustomerID
+              ) z
+          ) y
+      ) x
+  key: [CustomerID]
+  where: ContractStatus = 'A' AND CompanyCode IN ('01', '15')
+missing:
+  in_bc: info
+  in_ss4: info
+fields:
+  - {bc: Description, ss4: ProjectName, type: text}
+  - {bc: Sell_to_Customer_No, ss4: SellToNo, type: text}
+  - {bc: Sell_to_Customer_Name, ss4: Name, type: text}
+  - {bc: Bill_to_Customer_No, ss4: BillToNo, type: text}
+  - {bc: Bill_to_Name, ss4: BillToName, type: text}
+  - {bc: Sell_to_Address, ss4: Line1, type: text}
+  - {bc: Sell_to_Address_2, ss4: Rest, type: text}
+  - {bc: Sell_to_City, ss4: City, type: text}
+  - {bc: Sell_to_County, ss4: State, type: text}
+  - {bc: Sell_to_Post_Code, ss4: Zip, type: text}
+  - {bc: Sell_to_Country_Region_Code, ss4: Country, type: text}
+  - {bc: Sell_to_Contact, ss4: MailingContact, type: text}
+  - {bc: SellToPhoneNo, ss4: MailingTelephone, type: text, bc_blank: ignore}
+  - {bc: SellToEmail, ss4: Email, type: text, bc_blank: ignore}
+  - {bc: Search_Description, ss4: SearchDescription, type: text}
+  - {bc: Your_Reference, ss4: YourReference, type: text}
+  - {bc: Payment_Terms_Code, ss4: PaymentTerms, type: text}
+  - {bc: Ship_to_Contact, ss4: ShippingContact, type: text}
+  - {bc: Ship_to_Phone_No, ss4: ShippingTelephone, type: text}
+  - {bc: Starting_Date, ss4: ErectionDate, type: date}
+  - {bc: Ending_Date, ss4: DismantleDate, type: date}
+
+--- result
+BC rows: 683   SS4 rows in scope: 11,748   paired by key: 616
+missing_in_ss4: 67   e.g. 80635, 80650, 80627, 80636, 80617
+missing_in_bc: 11,132   e.g. 01234, 10000, 10002, 10003, 10004
+field agreement on paired rows:
+  Description -> ProjectName: 2 differ of 616 compared (99.68% agree)
+      17418: BC='5470004  BUSTAMANTE WWTP EXPAN'  SS4='5470004 BUSTAMANTE WWTP EXPAN.'
+      17490: BC='7024205  TTUHSC EL PASO CCCSB'  SS4='7024205 TTUHSC EL PASO CCCSB'
+  Sell_to_Customer_No -> SellToNo: 142 differ of 616 compared (76.95% agree)
+      17610: BC=None  SS4='17610'
+      17630: BC=None  SS4='17630'
+      17633: BC=None  SS4='17633'
+  Sell_to_Customer_Name -> Name: 247 differ of 616 compared (59.90% agree)
+      16602: BC='J. T. VAUGHN CONSTRUCTION, LLC'  SS4='J.T. VAUGHN CONSTRUCTION CO., INC.'
+      16620: BC='BERLIN STEEL CONSTRUCTION'  SS4='THE BERLIN STEEL CONSTRUCTION COMPANY'
+      16621: BC='BERLIN STEEL CONSTRUCTION'  SS4='THE BERLIN STEEL CONSTRUCTION COMPANY'
+  Bill_to_Customer_No -> BillToNo: 142 differ of 616 compared (76.95% agree)
+      17610: BC=None  SS4='17610'
+      17630: BC=None  SS4='17630'
+      17633: BC=None  SS4='17633'
+  Bill_to_Name -> BillToName: 247 differ of 616 compared (59.90% agree)
+      16602: BC='J. T. VAUGHN CONSTRUCTION, LLC'  SS4='J.T. VAUGHN CONSTRUCTION CO., INC.'
+      16620: BC='BERLIN STEEL CONSTRUCTION'  SS4='THE BERLIN STEEL CONSTRUCTION COMPANY'
+      16621: BC='BERLIN STEEL CONSTRUCTION'  SS4='THE BERLIN STEEL CONSTRUCTION COMPANY'
+  Sell_to_Address -> Line1: 83 differ of 616 compared (86.53% agree)
+      16987: BC='P. O. BOX 4088'  SS4='605 KAPIOLANI BLVD.'
+      16988: BC='9954 EAST BROADWAY AVE.'  SS4='4181 NW 1ST AVE., STE 1'
+      16989: BC='9954 EAST BROADWAY AVE.'  SS4='4181 NW 1ST AVE., STE 1'
+  Sell_to_Address_2 -> Rest: 69 differ of 616 compared (88.80% agree)
+      16987: BC='HONOLULU, HI  96812-4088'  SS4='HONOLULU, HI  96813'
+      16988: BC='TAMPA, FL  33619'  SS4='BOCA RATON, FL  33619'
+      16989: BC='TAMPA, FL  33619'  SS4='BOCA RATON, FL  33619'
+  Sell_to_City -> City: 41 differ of 616 compared (93.34% agree)
+      16988: BC='TAMPA'  SS4='BOCA RATON'
+      16989: BC='TAMPA'  SS4='BOCA RATON'
+      17129: BC='MINNEAPOLIS'  SS4='KIRKLAND'
+  Sell_to_County -> State: 25 differ of 616 compared (95.94% agree)
+      17129: BC='MN'  SS4='WA'
+      17253: BC='TX'  SS4='FL'
+      17254: BC='TX'  SS4='FL'
+  Sell_to_Post_Code -> Zip: 56 differ of 616 compared (90.91% agree)
+      16987: BC='96812-4088'  SS4='96813'
+      17129: BC='55422'  SS4='98033'
+      17143: BC='75204'  SS4='77054'
+  Sell_to_Country_Region_Code -> Country: 2 differ of 616 compared (99.68% agree)
+      96.4% of compared rows hold 'US'; on the other 22: 2 differ (90.91% agree)
+      17270: BC=None  SS4='US'
+      17360: BC=None  SS4='US'
+  Sell_to_Contact -> MailingContact: 85 differ of 616 compared (86.20% agree)
+      16988: BC='SHAWN LEWIS'  SS4='TOM WOOD'
+      16989: BC='SHAWN LEWIS'  SS4='TOM WOOD'
+      17066: BC='DOUG THOMAS'  SS4=None
+  SellToPhoneNo -> MailingTelephone: 40 differ of 437 compared (90.85% agree)
+      179 paired rows not compared: BC blank
+      17066: BC='(214) 443-5700'  SS4=None
+      17175: BC='(305) 559-4900'  SS4='(561) 659-5819'
+      17176: BC='(305) 559-4900'  SS4='(561) 659-5819'
+  SellToEmail -> Email: 1 differ of 131 compared (99.24% agree)
+      485 paired rows not compared: BC blank
+      17616: BC='it@morrow.com'  SS4=None
+  Search_Description -> SearchDescription: 278 differ of 616 compared (54.87% agree)
+      15578: BC='HAMMERHEAD 550 HC 20 S/N ACCESSORIES'  SS4='HAMMERHEAD 550 HC 20'
+      16498: BC='HAMMERHEAD 550 EC-H 20 LITRONIC S/N 52.199'  SS4='HAMMERHEAD 550 EC-H 20 LITRONIC'
+      16600: BC='HAMMERHEAD 420 EC-H 16 S/N 41.555'  SS4='HAMMERHEAD 420 EC-H 16'
+  Your_Reference -> YourReference: 136 differ of 616 compared (77.92% agree)
+      15578: BC='316 EC-H 12 Litronic S/N 44.273'  SS4='550 HC 20 S/N Accessories'
+      16498: BC='420 EC-H 16 S/N 41.730'  SS4='550 EC-H 20 Litronic S/N 52.199'
+      16600: BC='172 EC-B 8 Litronic S/N 55.269'  SS4='420 EC-H 16 S/N 41.555'
+  Payment_Terms_Code -> PaymentTerms: 94 differ of 616 compared (84.74% agree)
+      95.6% of compared rows hold 'NET30'; on the other 27: 27 differ (0.00% agree)
+      16960: BC='NET30'  SS4='NET60'
+      16976: BC='NET30'  SS4='NET60'
+      16977: BC='NET30'  SS4='NET60'
+  Ship_to_Contact -> ShippingContact: 212 differ of 616 compared (65.58% agree)
+      16620: BC='DAVE HARVIE'  SS4=None
+      16621: BC='DAVE HARVIE'  SS4=None
+      16703: BC='KARA WHETSTONE'  SS4='VICTOR MONZON'
+  Ship_to_Phone_No -> ShippingTelephone: 223 differ of 616 compared (63.80% agree)
+      16498: BC='(205) 870-1000'  SS4='(615) 403-6266'
+      16620: BC='(610) 240-8953'  SS4=None
+      16621: BC='(610) 240-8953'  SS4=None
+  Starting_Date -> ErectionDate: 14 differ of 616 compared (97.73% agree)
+      17006: BC='2026-04-01'  SS4='2027-01-01'
+      17125: BC='2026-04-01'  SS4='2026-06-17'
+      17127: BC='2026-04-20'  SS4='2026-09-21'
+  Ending_Date -> DismantleDate: 186 differ of 616 compared (69.81% agree)
+      16498: BC='2026-06-26'  SS4='2026-08-01'
+      16600: BC='2026-09-30'  SS4='2027-12-31'
+      16602: BC='2026-05-04'  SS4='2026-05-26'
+
+=== submit_spec
+name: projects_card
+description: BC Project Card (Excel page) vs EQData.dbo.Customer (active contracts, SS4 companies 01/15). Each project shares its customer's number. Project fields follow BcCustomerPushJob.BuildProjectFields; sell-to rules are reused from customers_card.
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Project_Card_Excel
+  key: ['No']
+ss4:
+  query: >-
+    SELECT x.CustomerID, x.CustomerID AS SellToNo, x.CustomerID AS BillToNo, x.ContractStatus, x.CompanyCode,
+           x.Name, x.Name AS BillToName, x.ProjectName,
+           x.Line1, x.Rest, x.Country, x.PaymentTerms, x.MailingTelephone, x.MailingContact, x.Email,
+           x.SearchDescription, x.YourReference, x.ShippingContact, x.ShippingTelephone,
+           x.ErectionDate, x.DismantleDate,
+           CASE WHEN x.Ok = 1 THEN LTRIM(RTRIM(LEFT(x.LastLine, CHARINDEX(',', x.LastLine) - 1))) END AS City,
+           CASE WHEN x.Ok = 1 THEN LEFT(x.AfterComma, 2) END AS State,
+           CASE WHEN x.Ok = 1 THEN NULLIF(LTRIM(RTRIM(SUBSTRING(x.AfterComma, 3, 400))), '') END AS Zip
+      FROM (
+        SELECT y.*,
+               CASE WHEN CHARINDEX(',', y.LastLine) > 1
+                     AND (y.AfterComma LIKE '[A-Za-z][A-Za-z]' OR y.AfterComma LIKE '[A-Za-z][A-Za-z] %')
+                    THEN 1 ELSE 0 END AS Ok
+          FROM (
+            SELECT z.*,
+                   LTRIM(SUBSTRING(z.LastLine, CHARINDEX(',', z.LastLine) + 1, 400)) AS AfterComma
+              FROM (
+                SELECT c.CustomerID, c.ContractStatus, c.Name, c.ProjectName,
+                       c.MailingTelephone, c.MailingContact, c.ShippingContact, c.ShippingTelephone,
+                       NULLIF(LTRIM(RTRIM(LEFT(s.ProjectEmail1, CHARINDEX(',', s.ProjectEmail1 + ',') - 1))), '') AS Email,
+                       CAST(ISNULL(c.ErectionDate, '1900-01-01') AS date) AS ErectionDate,
+                       CAST(ISNULL(c.DismantleDate, '2099-12-31') AS date) AS DismantleDate,
+                       NULLIF(UPPER(LTRIM(RTRIM(LTRIM(RTRIM(ISNULL(c.Class, ''))) + ' ' + LTRIM(RTRIM(ISNULL(c.Model, '')))))), '') AS SearchDescription,
+                       CASE WHEN NULLIF(LTRIM(RTRIM(c.Model)), '') IS NULL THEN NULL
+                            WHEN NULLIF(LTRIM(RTRIM(c.SerialNumber)), '') IS NULL THEN LEFT(LTRIM(RTRIM(c.Model)), 35)
+                            ELSE LEFT(LTRIM(RTRIM(c.Model)) + ' S/N ' + LTRIM(RTRIM(c.SerialNumber)), 35) END AS YourReference,
+                       CASE UPPER(LTRIM(RTRIM(ISNULL(c.TaxingCountry, ''))))
+                            WHEN 'CA' THEN 'CA' WHEN 'CAN' THEN 'CA' WHEN 'CANADA' THEN 'CA'
+                            WHEN 'MX' THEN 'MX' WHEN 'MEX' THEN 'MX' WHEN 'MEXICO' THEN 'MX'
+                            ELSE 'US' END AS Country,
+                       NULLIF(UPPER(REPLACE(LTRIM(RTRIM(b.PMTTerms)), ' ', '')), '') AS PaymentTerms,
+                       a.customer_company_code AS CompanyCode,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(LEFT(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) - 1), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(c.MailingAddress)) END AS Line1,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) = 0 THEN NULL
+                            WHEN DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1 = CHARINDEX(CHAR(10), c.MailingAddress)
+                            THEN LTRIM(RTRIM(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1, 4000), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(REPLACE(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1,
+                                     (DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1) - CHARINDEX(CHAR(10), c.MailingAddress) - 1),
+                                     CHAR(13), ''), CHAR(10), ', ')))
+                            END AS Rest,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(RIGHT(c.MailingAddress, CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) - 1), CHAR(13), '')))
+                            END AS LastLine
+                  FROM EQData.dbo.Customer c
+                  LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.CustomerID
+                  LEFT JOIN EQDataCor.dbo.BillingInstructions b ON b.CustomerID = c.CustomerID
+                  LEFT JOIN ARData.dbo.customer a ON a.customer_number = c.CustomerID
+              ) z
+          ) y
+      ) x
+  key: [CustomerID]
+  where: ContractStatus = 'A' AND CompanyCode IN ('01', '15')
+missing:
+  in_bc: info
+  in_ss4: info
+fields:
+  - {bc: Description, ss4: ProjectName, type: text}
+  - {bc: Sell_to_Customer_No, ss4: SellToNo, type: text}
+  - {bc: Sell_to_Customer_Name, ss4: Name, type: text}
+  - {bc: Bill_to_Customer_No, ss4: BillToNo, type: text}
+  - {bc: Bill_to_Name, ss4: BillToName, type: text}
+  - {bc: Sell_to_Address, ss4: Line1, type: text}
+  - {bc: Sell_to_Address_2, ss4: Rest, type: text}
+  - {bc: Sell_to_City, ss4: City, type: text}
+  - {bc: Sell_to_County, ss4: State, type: text}
+  - {bc: Sell_to_Post_Code, ss4: Zip, type: text}
+  - {bc: Sell_to_Country_Region_Code, ss4: Country, type: text}
+  - {bc: Sell_to_Contact, ss4: MailingContact, type: text}
+  - {bc: SellToPhoneNo, ss4: MailingTelephone, type: text, bc_blank: ignore}
+  - {bc: SellToEmail, ss4: Email, type: text, bc_blank: ignore}
+  - {bc: Search_Description, ss4: SearchDescription, type: text}
+  - {bc: Your_Reference, ss4: YourReference, type: text}
+  - {bc: Payment_Terms_Code, ss4: PaymentTerms, type: text}
+  - {bc: Ship_to_Contact, ss4: ShippingContact, type: text}
+  - {bc: Ship_to_Phone_No, ss4: ShippingTelephone, type: text}
+  - {bc: Starting_Date, ss4: ErectionDate, type: date}
+  - {bc: Ending_Date, ss4: DismantleDate, type: date}
+ignored:
+  - {bc: Bill_to_Name_2, reason: "BC copy of the sell-to/customer name 2; SS4 ProjectName is already compared via Description"}
+  - {bc: Sell_to_Customer_Name_2, reason: "BC copies the customer's Name 2 (= SS4 ProjectName) onto the project; sparse (5%). ProjectName is compared via Description"}
+  - {bc: Bill_to_Address, reason: "BC copy of the sell-to address: of 474 filled paired rows, 454 equal BC Sell_to_Address. SS4 BillingAddress line 1 matches only 388. Not pushed"}
+  - {bc: Bill_to_Address_2, reason: "BC copy of the sell-to address (see Bill_to_Address)"}
+  - {bc: Bill_to_City, reason: "BC copy of the sell-to address"}
+  - {bc: Bill_to_County, reason: "BC copy of the sell-to address"}
+  - {bc: Bill_to_Post_Code, reason: "BC copy of the sell-to address"}
+  - {bc: Bill_to_Country_Region_Code, reason: "BC copy of the sell-to address"}
+  - {bc: Bill_to_Contact, reason: "BC copy of Sell_to_Contact (286 of 294 filled paired rows). SS4 BillingContact matches only 39"}
+  - {bc: Bill_to_Contact_No, reason: "BC contact number (CT...), generated by BC"}
+  - {bc: Sell_to_Contact_No, reason: "BC contact number (CT...), generated by BC"}
+  - {bc: ContactPhoneNo, reason: "duplicate of SellToPhoneNo in BC: equal on all 616 paired rows"}
+  - {bc: ContactEmail, reason: "duplicate of SellToEmail in BC: equal on all 683 rows"}
+  - {bc: ContactMobilePhoneNo, reason: "sparse (1 row, '12.01.26'), BC contact data"}
+  - {bc: SellToMobilePhoneNo, reason: "sparse (1 row, '12.01.26'), BC contact data"}
+  - {bc: Ship_to_Name, reason: "BC default copy of the sell-to name: equal to Sell_to_Customer_Name on all 348 filled paired rows. Not pushed"}
+  - {bc: Ship_to_Name_2, reason: "BC default copy of the sell-to data"}
+  - {bc: Ship_to_Address, reason: "BC default copy of the sell-to address (328 of 348 filled rows). SS4 ShippingAddress line 1 matches only 2. Not pushed"}
+  - {bc: Ship_to_Address_2, reason: "BC default copy of the sell-to address"}
+  - {bc: Ship_to_City, reason: "BC default copy of the sell-to address"}
+  - {bc: Ship_to_County, reason: "BC default copy of the sell-to address"}
+  - {bc: Ship_to_Post_Code, reason: "BC default copy of the sell-to address"}
+  - {bc: Ship_to_Country_Region_Code, reason: "BC default copy of the sell-to address"}
+  - {bc: BillToOptions, reason: "BC page option derived from whether the bill-to differs from the customer; no SS4 counterpart"}
+  - {bc: ShippingOptions, reason: "BC page option derived from the ship-to; no SS4 counterpart"}
+  - {bc: External_Document_No, reason: "no counterpart found: SS4 CustomerPO equals it on only 81 of 161 filled paired rows. Not in the push job"}
+  - {bc: Person_Responsible, reason: "BC user IDs (SCHILDS, ASTUDEBAKER...), entered in BC. Not pushed, no SS4 counterpart"}
+  - {bc: Last_Date_Modified, reason: "BC system timestamp"}
+  - {bc: Creation_Date, reason: "BC creation date: equals the date of SS4 LastSyncedAt on 292 rows and SS4 CreateDate on only 28"}
+  - {bc: Task_Billing_Method, reason: "pushed as the constant 'One customer'. 682 of 683 rows hold it; 1 row is 'Multiple customers'. Constant on the SS4 side, so there is nothing to compare"}
+  - {bc: Payment_Method_Code, reason: "BC setup, single value CHECK. Not pushed"}
+  - {bc: Allow_Schedule_Contract_Lines, reason: "BC project setup flag (True on 370 rows). No SS4 counterpart"}
+  - {bc: Apply_Usage_Link, reason: "BC project setup flag (True on 370 rows). No SS4 counterpart"}
+  - {bc: No_of_Archived_Versions, reason: "BC statistic (sparse)"}
+  - {bc: Percent_Completed, reason: "BC-computed statistic (sparse)"}
+  - {bc: Percent_Invoiced, reason: "BC-computed statistic (sparse)"}
+  - {bc: Percent_of_Overdue_Planning_Lines, reason: "BC-computed statistic (sparse)"}
+  - {bc: Status, reason: constant in BC}
+  - {bc: Job_Posting_Group, reason: constant in BC}
+  - {bc: WIP_Posting_Method, reason: constant in BC}
+  - {bc: Exch_Calculation_Cost, reason: constant in BC}
+  - {bc: Exch_Calculation_Price, reason: constant in BC}
+  - {bc: Blocked, reason: empty in BC}
+  - {bc: Project_Manager, reason: empty in BC}
+  - {bc: Location_Code, reason: empty in BC}
+  - {bc: Bin_Code, reason: empty in BC}
+  - {bc: WIP_Method, reason: empty in BC}
+  - {bc: Ship_to_Code, reason: empty in BC}
+  - {bc: Currency_Code, reason: empty in BC}
+  - {bc: Invoice_Currency_Code, reason: empty in BC}
+  - {bc: Price_Calculation_Method, reason: empty in BC}
+  - {bc: Cost_Calculation_Method, reason: empty in BC}
+  - {bc: Language_Code, reason: empty in BC}
+  - {bc: WIP_Posting_Date, reason: empty in BC}
+  - {bc: Total_WIP_Sales_Amount, reason: empty in BC}
+  - {bc: Applied_Sales_G_L_Amount, reason: empty in BC}
+  - {bc: Total_WIP_Cost_Amount, reason: empty in BC}
+  - {bc: Applied_Costs_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Sales_Amount, reason: empty in BC}
+  - {bc: Recog_Costs_Amount, reason: empty in BC}
+  - {bc: Recog_Profit_Amount, reason: empty in BC}
+  - {bc: Recog_Profit_Percent, reason: empty in BC}
+  - {bc: Acc_WIP_Costs_Amount, reason: empty in BC}
+  - {bc: Acc_WIP_Sales_Amount, reason: empty in BC}
+  - {bc: Calc_Recog_Sales_Amount, reason: empty in BC}
+  - {bc: Calc_Recog_Costs_Amount, reason: empty in BC}
+  - {bc: WIP_G_L_Posting_Date, reason: empty in BC}
+  - {bc: Total_WIP_Sales_G_L_Amount, reason: empty in BC}
+  - {bc: Total_WIP_Cost_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Sales_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Costs_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Profit_G_L_Amount, reason: empty in BC}
+  - {bc: Recog_Profit_G_L_Percent, reason: empty in BC}
+  - {bc: Calc_Recog_Sales_G_L_Amount, reason: empty in BC}
+  - {bc: Calc_Recog_Costs_G_L_Amount, reason: empty in BC}
+
+KEY / SCOPE
+- The key is BC No = EQData.dbo.Customer.CustomerID, as the user said (one project per customer). 672 of the 683 BC rows exist in SS4.
+- The where clause is the customers spec's scope: ContractStatus = 'A' AND ARData customer_company_code IN ('01','15'). 616 rows pair.
+- missing_in_ss4 = 67, set to info. Breakdown:
+  - 11 are not in SS4 at all (test/internal numbers such as BT-2026 and TESTPUSH1).
+  - 29 have a blank ContractStatus. These are 80612-80650, apparently new contracts; 25 of them have no Sell_to_Customer_No in BC.
+  - 18 have status 'C'.
+  - 3 are company 90.
+  - 6 have no ARData row (012026, 17927, 17928, ...).
+  If the 806xx contracts belong in scope, a reviewer may want to widen the status filter.
+- missing_in_bc = 11,132, set to info, the same reasoning as customers_card: BC only holds projects for recent contracts.
+
+SOURCE FILES
+The query is the customers_card query, cut down to what projects need, with BuildProjectFields columns added:
+- SearchDescription = UPPER(Class + ' ' + Model)
+- YourReference = Model [+ ' S/N ' + Serial], cut to 35 characters
+- Ship-to contact and phone
+- Erection and Dismantle dates, with the push job's placeholders 1900-01-01 and 2099-12-31 when null
+Country uses the push job's MapCountry (CA/MX, else US), not the customers spec's extended country list. The user asked for the customers spec's country rule, but on projects the push rule agrees on 99.7%: only 2 rows differ, both BC blank. Swap in the extended CASE if you want consistency with customers_card.
+
+KEY PATTERN: OLD vs NEW ROWS
+Measured by CreateDate: 339 paired rows created in 2026 (the push job's CreatedAfter scope) and 277 older rows.
+- On the 2026 rows the push fields agree almost exactly:
+  - Search_Description 337/339
+  - Your_Reference 337/339
+  - Ending_Date 339/339
+  - Ship_to_Contact 327/339
+  - Ship_to_Phone 322/339
+- On older rows they mostly differ:
+  - Search_Description: 232 of 277 equal UPPER(Class Model S/N Serial). The older load evidently included the serial.
+  - Your_Reference: 141 of 277 agree.
+  - Ending_Date: 91 of 277 agree.
+  - Ship-to contact: 77 of 277 agree. Ship-to phone: 71 of 277 agree.
+I inferred that older projects came from a different baseline load and the push does not touch them; I did not verify the load itself. I mapped these fields with the push rule anyway, because they are 99%+ on its scope. Expect roughly 140-280 findings each on older rows.
+
+FIELD EVIDENCE (616 paired rows)
+- Description -> ProjectName: 99.7%. The 2 differences are BC double spaces / a trailing '.'.
+- Sell_to_Customer_No / Bill_to_Customer_No -> CustomerID: 77.0%. All 142 differences are BC blank, almost all on 2026 rows: the project is not linked to its customer in BC. These are real findings.
+- Sell_to_Customer_Name / Bill_to_Name -> Name: 59.9%.
+  - 142 are BC blank (see above).
+  - Of the old rows, 216 equal LEFT(Name,30), i.e. truncated.
+  - The rest are wording differences.
+  Full Name is compared, as in customers_card.
+- Sell-to address and contact: Address 86.5%, Address_2 88.8%, City 93.3%, County 95.9%, Post_Code 90.9%, Country 99.7%, Contact 86.2%. Differences are mostly different addresses or contacts entirely (e.g. 16988 Tampa vs Boca Raton).
+- SellToPhoneNo -> MailingTelephone: 90.85% where BC is filled (397/437). SellToEmail -> first ProjectEmail1: 130/131.
+  BC is blank on 179 rows (phone) and 485 rows (email). The push job says BC fills these from the contact and does not push them, so bc_blank is set to ignore. This is a judgment call; drop the two fields if you prefer not to compare BC-derived contact data.
+- Payment_Terms_Code: 84.7%. BC is NET30 everywhere; SS4 has NET45/60/90 on 27 paired rows, and those all differ. The other differences are SS4 terms blank. Same situation as customers_card.
+- Starting_Date: 97.7%. Ending_Date: 69.8% (see above).
+- Ship_to_Contact / Ship_to_Phone_No: about 65%. The push uses SkipWhenEmpty here, so where SS4 is blank BC keeps its default (the sell-to contact or phone). The spec cannot ignore SS4-side blanks, so those rows show as differences: an expected artefact, not a data error.
+
+NOT MAPPED
+- Bill-to and ship-to address blocks: BC copies of the sell-to. Bill_to_Address equals Sell_to_Address on 454/474. Ship_to_Address equals the sell-to on 328/348 and matches SS4 ShippingAddress on only 2.
+- External_Document_No: CustomerPO agrees on only 81 of 161.
+- Creation_Date: matches the date of LastSyncedAt (292 rows), so it is BC's own creation date.
+- Task_Billing_Method: constant on the SS4 side. 1 BC row holds 'Multiple customers'.
+Details for these and the rest are in the ignored list.
+--- result
+Saved to specs\proposed\projects_card.yaml. Finish with a short summary.
+
+=== Claude
+I've submitted the `projects_card` spec. Rows pair well, but many fields differ, partly from real data gaps and partly because older projects were loaded a different way. It's saved to `specs\proposed\projects_card.yaml` for review.
+
+**Key and scope.** BC `No` matches `EQData.dbo.Customer.CustomerID`. I used the scope you gave, the same as the customers spec: ContractStatus 'A' and SS4 companies 01 and 15.
+- **616 of BC's 683 projects pair** with an SS4 customer.
+- **67 BC projects have no SS4 match in scope:**
+  - 11 aren't in SS4 at all (test and internal numbers such as BT-2026 and TESTPUSH1).
+  - 29 are numbers 80612–80650 with a blank contract status; they look like new contracts.
+  - 18 have status 'C'.
+  - 3 belong to company 90.
+  - 6 have no row in ARData.
+- **11,132 active SS4 customers have no BC project.** As with customers, BC only holds projects for recent contracts, so both kinds of missing row are set to info rather than error.
+
+**Old versus new projects.** On the 339 paired projects created in 2026, which are the ones the push job covers, its project fields agree almost exactly:
+
+| BC field | Created in 2026 (339) | Older (277) |
+|---|---|---|
+| Search_Description | 337 | 0 by the push rule; 232 match class + model + serial number |
+| Your_Reference | 337 | 141 |
+| Ending_Date | 339 | 91 |
+| Ship_to_Contact | 327 | 77 |
+| Ship_to_Phone_No | 322 | 71 |
+
+It looks like an earlier load set up the older projects and the push never updates them, but I haven't confirmed that. I mapped these fields using the push job's rules, so expect a few hundred differences across the older rows.
+
+**What the diff will report:**
+- **Description** agrees on 99.7% of rows; **Starting_Date** on 97.7%.
+- **Sell-to fields:** the address fields agree on 86–96% and country on 99.7%. Sell-to and bill-to customer numbers agree on 77%. All 142 differences are BC blanks, almost all on 2026 projects: those projects aren't linked to their customer in BC.
+- **Customer name** agrees on only about 60%. That's the same 142 blanks, plus BC names cut to 30 characters on older rows, plus wording differences.
+- **Payment_Terms_Code:** BC is NET30 everywhere, while SS4 has NET45/60/90 on 27 projects, so those will differ, as in the customers spec.
+- **Ship-to contact and phone** agree on only about 65%. Many of those differences are expected rather than errors: where SS4 is blank, the push leaves BC's default (the sell-to contact or phone), and the spec has no way to skip blanks on the SS4 side.
+
+**Decisions for you to check:**
+- **Country:** I used the push job's rule (Canada and Mexico, otherwise US), not the customers spec's longer country list you pointed me to. On projects it agrees on 99.7%, with only 2 rows differing. Switch it if you want the two specs consistent.
+- **Sell-to phone and email:** compared only where BC has a value. The push job says BC fills them from the contact record and they aren't pushed. Where BC is filled they agree well (phone 397 of 437, email 130 of 131).
+- **Not mapped:**
+  - The bill-to and ship-to address blocks, because BC copies them from the sell-to address.
+  - External_Document_No: SS4's customer PO agrees on only 81 of 161 filled rows.
+  - Creation_Date: BC's own creation date.
+  - Person_Responsible: BC user IDs, with no SS4 counterpart.
+  - Other BC-only setup fields, for the same reason.
+
+Done: success, 11 turns, $1.04

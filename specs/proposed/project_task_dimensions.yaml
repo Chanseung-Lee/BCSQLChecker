@@ -1,0 +1,51 @@
+# Hand-written (not by the mapping agent), alongside project_tasks.yaml.
+#
+# One row per task and dimension, for the same 20,641 tasks project_tasks.yaml creates
+# (9500 on every project, plus 2100/2200 by latest rent invoice type):
+#   DISTRICT = the project's district (EQData.dbo.Customer.District)
+#   PROJECT  = the project's own number
+# A task whose project has no district gets only its PROJECT row (4 projects).
+#
+# Only used to fill the template: Job Task Dimensions is not published over OData in UAT,
+# so this spec cannot be run through check.py as it stands.
+
+name: project_task_dimensions
+description: Project task dimensions (table 1002) -- DISTRICT and PROJECT on every task
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Job_Task_Dimensions
+  key: [Job_No, Job_Task_No, Dimension_Code]
+ss4:
+  query: >-
+    SELECT p.CustomerID AS ProjectNo, t.TaskNo, d.DimensionCode, d.DimensionValue,
+           p.ContractStatus, p.CompanyCode, p.Inactive, p.Name
+      FROM (
+        SELECT c.CustomerID, c.ContractStatus, c.Name, a.customer_company_code AS CompanyCode,
+               ISNULL(c.Inactive, 0) AS Inactive, NULLIF(LTRIM(RTRIM(c.District)), '') AS District,
+               lr.RentType
+          FROM EQData.dbo.Customer c
+          LEFT JOIN ARData.dbo.customer a ON a.customer_number = c.CustomerID
+          LEFT JOIN (
+            SELECT LTRIM(RTRIM(i.CustomerID)) AS CustomerID, i.[Type] AS RentType,
+                   ROW_NUMBER() OVER (PARTITION BY LTRIM(RTRIM(i.CustomerID))
+                                      ORDER BY i.InvoiceDate DESC, i.InvoiceID DESC) AS rn
+              FROM ARData.dbo.ARInvoice i
+             WHERE i.Company IN ('01', '15') AND i.[Type] IN ('R', 'A') AND i.ProcessStatus = 'FINISHED'
+               AND EXISTS (SELECT 1 FROM ARData.dbo.ARInvoiceDetail x
+                            WHERE x.InvoiceID = i.InvoiceID AND x.Item = 1
+                              AND x.Quantity <> 0 AND x.Code = 'RNT')
+          ) lr ON lr.CustomerID = LTRIM(RTRIM(c.CustomerID)) AND lr.rn = 1
+      ) p
+      JOIN (VALUES ('9500', NULL), ('2100', 'R'), ('2200', 'A')) AS t(TaskNo, RentType)
+        ON t.RentType IS NULL OR t.RentType = p.RentType
+      CROSS APPLY (VALUES ('DISTRICT', p.District), ('PROJECT', p.CustomerID)) AS d(DimensionCode, DimensionValue)
+     WHERE d.DimensionValue IS NOT NULL
+  key: [ProjectNo, TaskNo, DimensionCode]
+  where: ContractStatus = 'A' AND CompanyCode IN ('01', '15') AND Inactive = 0 AND NULLIF(LTRIM(RTRIM(Name)), '') IS NOT NULL
+missing:
+  in_bc: error
+  in_ss4: info
+fields:
+  - {bc: Dimension_Value_Code, ss4: DimensionValue, type: text}

@@ -1,0 +1,298 @@
+# PROPOSED by the mapping agent -- review before use.
+#
+# KEY / SCOPE
+# - In YAML, a bare No reads as boolean false, so the key is written as 'No' in quotes. BC No = EQData.dbo.Customer.CustomerID. CustomerID is unique in SS4, and No is unique in BC. 3,182 of 3,223 BC rows exist in SS4.
+# - where ContractStatus = 'A', as the user instructed. This pairs 2,921 rows.
+# - missing_in_ss4 = 302 (set to info). It has two parts:
+#   (a) 41 BC numbers that are not in SS4 at all: district/internal codes (ACW, AME, CAN, DAL… named "Morrow Equipment Company, L.L.C."), TEMPLATE-CRANE, TESTPUSH1, INVALID, RENTMO, C000xx, PR000xx, 012026, and 1000-1003/1224.
+#   (b) 261 BC customers whose SS4 row has ContractStatus 'C', blank or NULL. These fall outside the scope the user gave. A reviewer may want to confirm they should stay in BC.
+# - missing_in_bc = 10,478 (set to info). These are active SS4 rows not in BC. All were created before 2026 (10,260 active, 158 Inactive=1, 60 from 2024-25). Every active row created on or after 2026-01-01, the push job's CreatedAfter scope, is in BC. If BC is expected to hold all active contracts, raise this to error.
+# - source_of_truth: ss4. The push job writes SS4 values into BC. Customer.BcId and LastSyncedAt are filled on 297 of the 343 rows created in 2026.
+#
+# QUERY
+# The query follows the push job's ReadCandidatesAsync: Customer LEFT JOIN CustSupp LEFT JOIN BillingInstructions. Each side table is unique on CustomerID, so the joins do not multiply rows. I removed the job's Inactive, CreateDate and watermark filters and used the scope the user gave instead. I did not add a filter for blank Name.
+# The C# helpers are rewritten in SQL:
+# - SplitAddress: Line1 is the text before the first line break. Rest is the remaining lines joined with ", ".
+# - ParseCityStateZip: works on the last line. City is the text before the first comma, State is the next 2 letters (followed by a space or the end of the line), Zip is the rest. If the line does not have that shape, all three are NULL, as in the job's regex. This matches the regex closely but not exactly.
+# - MapCountry: CA and MX variants are recognised; anything else becomes US.
+# - Email: the first comma-separated address in ProjectEmail1.
+# - Salesperson: SalesmanOne, trimmed and uppercased. EXCECUTIVE and EXEUTIVE become EXECUTIVE; POBANZ and 'POBANZ, J.' become POBANZ-J. The 'POBANZ, J.' mapping is the user's addition. Uppercasing is my own inference: BC codes are uppercase and SS4 has 'Morrow' and 'Mader'.
+#
+# FIELD EVIDENCE (paired rows, 2,921)
+# - Address -> Line1: 98.1% agree. The 56 differences are mostly SS4 MailingAddress blank where BC has an address (15 rows), plus old 1xxx records.
+# - Address_2 -> Rest: 84.8% agree. About 200 rows are blank in BC where SS4 has a second line, mostly numbers 14468-14999 (178). In that same range BC City, County and Post_Code are also blank, which looks like an import gap.
+# - City: 90.7%. Post_Code: 88.6%. County vs parsed State: 79.9%.
+#   CONTRADICTION: BC County matches TaxingState better (87.7%). For example, 15013 has a St. Louis, MO mailing address but County IL. The user's rule and the push job both say to use the mailing address, so County differences from the tax state will show up as findings.
+# - Phone_No -> MailingTelephone: 88.8% agree. The alternative, BillingTelephone, matches only 1,433 rows.
+# - Country: 89.1% agree. 276 rows are blank in BC. BC also holds codes that MapCountry cannot produce (BR, BS, BZ, DE, KY…; about 20 rows), and 21 BC 'CA' rows map to US in SS4.
+# - Name: 68.1% overall, but 343/343 on rows created in 2026 (the push scope). On older rows, about 356 are BC truncated to 30 characters (they equal LEFT(Name,30)). The rest are wording changes on either side. Old 1xxx numbers (11 rows) hold entirely different companies in SS4, apparently reused numbers. I compared the full name, as the push does; truncation is not masked.
+# - Name_2 -> ProjectName: 84.8%. Most differences are BC blank (349 rows).
+# - E_Mail -> first ProjectEmail1: 31.4% overall, but 343/343 on 2026 rows. Older rows were evidently loaded from another source: BC holds ';'-separated lists and different addresses. I checked billingemail, ProjectEmail2 and ShippingEmail in vwCustomerInquiry and none fit better (102 / 2 / 278 matches). Mapped because the push job defines it and agreement is exact within its scope. Expect about 2,000 findings on older rows.
+# - ContactName -> MailingContact: 76.3% overall. Where both sides are filled, 1,869 of 1,870 agree. Most differences are BC blank where SS4 has a contact (311 of the 2026 rows and 324 older rows). The push job does not send a contact to the customer, so the BC blanks on 2026 rows are probably by design. I left them compared rather than setting bc_blank: ignore. Also, 43 BC rows hold the literal text 'NULL'.
+# - Salesperson_Code: 85.1%. Nearly all differences are BC blank where SS4 has a salesman (Morrow 73, Toner 50, Mairn 38…). About 15 are real disagreements. 'R.Benck', 'Regal', 'McGregor', 'Maurer' and 'Clayson' have no fix-up, so they will differ if BC lacks those codes.
+#
+# NOT MAPPED
+# Fax_No: no column agrees well. Search_Name: BC derives it from Name. Balances and statistics: computed by BC. Details for each are in the ignored list.
+#
+# ADDED AFTER REVIEW
+# Scope also excludes customers flagged Inactive in SS4 and customers with no name (the push job
+# skips both), at the user's decision.
+#
+# Global_Dimension_1_Code (DISTRICT) <- EQData.dbo.Customer.District, the 3-letter district code
+# (filled on all but 6 in-scope customers; agrees with ARCustSupp.District 99% where both are set).
+# Customer_Card_Excel does not expose this field, so check.py will show it as blank in BC; the
+# template fill is what it is for. Global Dimension 2 (PROJECT) is set on projects, not customers.
+#
+# Country_Region_Code: the push job's rule recognises only Canada and Mexico and turns every other
+# country into US, which put about 114 foreign customers of the US company (Brazil, Dominican Republic,
+# Bahamas...) under US. Each SS4 country, misspellings included, now maps to its two-letter code; blank
+# or US variants stay US. Netherlands Antilles and West Indies (2 customers each) have no clean code
+# and are left blank rather than given a wrong one.
+#
+# Scope: active customers of SS4 companies 01 (US) and 15 (Canada) only, via ARData.dbo.customer's
+# customer_company_code. Canada is a posting group in this BC company, not a separate company.
+# Australia (70), Mexico (90) and New Zealand (60) customers belong to other BC companies.
+#
+# Customer_Posting_Group, by company and currency:
+#   15 + EUR -> CAN-EURO, 15 -> CANADA, 01 + EUR -> EURO, 01 -> DOMESTIC.
+# By company, not by address: company 01 bills some Canadian-located customers in USD, and those
+# stay DOMESTIC.
+#
+# Currency_Code: blank for USD (the company's own currency), otherwise CustSupp.CurrencyType (CAD, EUR).
+#
+# Address_2 (the query's Rest column): a two-line address keeps line 2, as before. A three-or-more-line
+# address now takes only the MIDDLE lines, leaving out the last city/state/ZIP line, which City, County
+# and Post_Code already hold. Joining every line after the first (the push job's rule) overflowed BC's
+# 50-character Address 2 on 333 customers; UAT itself holds only the middle line for those addresses.
+#
+# Payment_Terms_Code <- BillingInstructions.PMTTerms, spaces removed and uppercased ('NET 30' -> 'NET30'), the
+# push job's MapPaymentTerms rule. Claude had left it unmapped because UAT holds NET30 on 94% of customers, but
+# SS4 also has NET 45/60/90 terms, and those should carry into prod. Expect differences against UAT's NET30 values.
+# ARData.dbo.BC_Customers looks like a replica pulled from BC. It was not used as the SS4 side.
+
+name: customers_card
+description: BC Customer Card (Excel page) vs EQData.dbo.Customer (active contracts), with email from CustSupp and salesperson from BillingInstructions, per BcCustomerPushJob
+source_of_truth: ss4
+bc:
+  target: BC
+  api: odata
+  entity: Customer_Card_Excel
+  key: ['No']
+ss4:
+  query: >-
+    SELECT x.CustomerID, x.ContractStatus, x.CreateDate, x.Name, x.ProjectName,
+           x.Line1, x.Rest, x.MailingTelephone, x.MailingContact,
+           x.Email, x.Salesperson, x.Country, x.PaymentTerms,
+           x.CompanyCode, x.CustomerPostingGroup, x.CurrencyCode,
+           x.Inactive, x.District,
+           CASE WHEN x.Ok = 1 THEN LTRIM(RTRIM(LEFT(x.LastLine, CHARINDEX(',', x.LastLine) - 1))) END AS City,
+           CASE WHEN x.Ok = 1 THEN LEFT(x.AfterComma, 2) END AS State,
+           CASE WHEN x.Ok = 1 THEN NULLIF(LTRIM(RTRIM(SUBSTRING(x.AfterComma, 3, 400))), '') END AS Zip
+      FROM (
+        SELECT y.*,
+               CASE WHEN CHARINDEX(',', y.LastLine) > 1
+                     AND (y.AfterComma LIKE '[A-Za-z][A-Za-z]' OR y.AfterComma LIKE '[A-Za-z][A-Za-z] %')
+                    THEN 1 ELSE 0 END AS Ok
+          FROM (
+            SELECT z.*,
+                   LTRIM(SUBSTRING(z.LastLine, CHARINDEX(',', z.LastLine) + 1, 400)) AS AfterComma
+              FROM (
+                SELECT c.CustomerID, c.ContractStatus, c.CreateDate, c.Name, c.ProjectName,
+                       ISNULL(c.Inactive, 0) AS Inactive, NULLIF(LTRIM(RTRIM(c.District)), '') AS District,
+                       c.MailingTelephone, c.MailingContact,
+                       NULLIF(LTRIM(RTRIM(LEFT(s.ProjectEmail1, CHARINDEX(',', s.ProjectEmail1 + ',') - 1))), '') AS Email,
+                       CASE UPPER(LTRIM(RTRIM(ISNULL(c.TaxingCountry, ''))))
+                            WHEN '' THEN 'US' WHEN 'US' THEN 'US' WHEN 'USA' THEN 'US' WHEN 'UNITED STATES' THEN 'US'
+                            WHEN 'CA' THEN 'CA' WHEN 'CAN' THEN 'CA' WHEN 'CANADA' THEN 'CA'
+                            WHEN 'MX' THEN 'MX' WHEN 'MEX' THEN 'MX' WHEN 'MEXICO' THEN 'MX'
+                            WHEN 'BRAZIL' THEN 'BR' WHEN 'DOMINICAN REPUBLIC' THEN 'DO'
+                            WHEN 'VENEZUELA' THEN 'VE' WHEN 'VENUZUELA' THEN 'VE'
+                            WHEN 'BAHAMAS' THEN 'BS' WHEN 'GRAND BAHAMA' THEN 'BS'
+                            WHEN 'PERU' THEN 'PE' WHEN 'CHILE' THEN 'CL' WHEN 'COSTA RICA' THEN 'CR' WHEN 'ECUADOR' THEN 'EC'
+                            WHEN 'CAYMEN ISLANDS' THEN 'KY' WHEN 'CAYMAN ISLANDS' THEN 'KY' WHEN 'GRAND CAYMAN' THEN 'KY'
+                            WHEN 'THE NETHERLANDS' THEN 'NL' WHEN 'NETHERLANDS' THEN 'NL' WHEN 'THE NEATHERLANDS' THEN 'NL'
+                            WHEN 'PANAMA' THEN 'PA' WHEN 'GUAM' THEN 'GU' WHEN 'HONDURAS' THEN 'HN' WHEN 'BERMUDA' THEN 'BM'
+                            WHEN 'GUATEMALA' THEN 'GT' WHEN 'NEW ZEALAND' THEN 'NZ' WHEN 'PUERTO RICO' THEN 'PR'
+                            WHEN 'SOUTH KOREA' THEN 'KR' WHEN 'GERMANY' THEN 'DE' WHEN 'PHILIPPINES' THEN 'PH'
+                            WHEN 'BRITISH VIRGIN ISLANDS' THEN 'VG' WHEN 'NIGERIA' THEN 'NG' WHEN 'BELIZE' THEN 'BZ'
+                            ELSE NULL END AS Country,
+                       UPPER(CASE UPPER(LTRIM(RTRIM(b.SalesmanOne))) WHEN 'EXCECUTIVE' THEN 'EXECUTIVE' WHEN 'EXEUTIVE' THEN 'EXECUTIVE'
+                            WHEN 'POBANZ' THEN 'POBANZ-J' WHEN 'POBANZ, J.' THEN 'POBANZ-J' ELSE LTRIM(RTRIM(b.SalesmanOne)) END) AS Salesperson,
+                       NULLIF(UPPER(REPLACE(LTRIM(RTRIM(b.PMTTerms)), ' ', '')), '') AS PaymentTerms,
+                       a.customer_company_code AS CompanyCode,
+                       CASE WHEN a.customer_company_code = '15' AND UPPER(LTRIM(RTRIM(s.CurrencyType))) = 'EUR' THEN 'CAN-EURO'
+                            WHEN a.customer_company_code = '15' THEN 'CANADA'
+                            WHEN UPPER(LTRIM(RTRIM(s.CurrencyType))) = 'EUR' THEN 'EURO'
+                            ELSE 'DOMESTIC' END AS CustomerPostingGroup,
+                       CASE WHEN UPPER(LTRIM(RTRIM(ISNULL(s.CurrencyType, '')))) IN ('', 'USD') THEN NULL
+                            ELSE UPPER(LTRIM(RTRIM(s.CurrencyType))) END AS CurrencyCode,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(LEFT(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) - 1), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(c.MailingAddress)) END AS Line1,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) = 0 THEN NULL
+                            WHEN DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1 = CHARINDEX(CHAR(10), c.MailingAddress)
+                            THEN LTRIM(RTRIM(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1, 4000), CHAR(13), '')))
+                            ELSE LTRIM(RTRIM(REPLACE(REPLACE(SUBSTRING(c.MailingAddress, CHARINDEX(CHAR(10), c.MailingAddress) + 1,
+                                     (DATALENGTH(c.MailingAddress) / 2 - CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) + 1) - CHARINDEX(CHAR(10), c.MailingAddress) - 1),
+                                     CHAR(13), ''), CHAR(10), ', ')))
+                            END AS Rest,
+                       CASE WHEN CHARINDEX(CHAR(10), c.MailingAddress) > 0
+                            THEN LTRIM(RTRIM(REPLACE(RIGHT(c.MailingAddress, CHARINDEX(CHAR(10), REVERSE(c.MailingAddress)) - 1), CHAR(13), '')))
+                            END AS LastLine
+                  FROM EQData.dbo.Customer c
+                  LEFT JOIN EQData.dbo.CustSupp s ON s.CustomerID = c.CustomerID
+                  LEFT JOIN EQDataCor.dbo.BillingInstructions b ON b.CustomerID = c.CustomerID
+                  LEFT JOIN ARData.dbo.customer a ON a.customer_number = c.CustomerID
+              ) z
+          ) y
+      ) x
+  key: [CustomerID]
+  where: ContractStatus = 'A' AND CompanyCode IN ('01', '15') AND Inactive = 0 AND NULLIF(LTRIM(RTRIM(Name)), '') IS NOT NULL
+missing:
+  in_bc: info
+  in_ss4: info
+fields:
+  - {bc: Name, ss4: Name, type: text}
+  - {bc: Name_2, ss4: ProjectName, type: text}
+  - {bc: Address, ss4: Line1, type: text}
+  - {bc: Address_2, ss4: Rest, type: text}
+  - {bc: City, ss4: City, type: text}
+  - {bc: County, ss4: State, type: text}
+  - {bc: Post_Code, ss4: Zip, type: text}
+  - {bc: Country_Region_Code, ss4: Country, type: text}
+  - {bc: Phone_No, ss4: MailingTelephone, type: text}
+  - {bc: ContactName, ss4: MailingContact, type: text}
+  - {bc: E_Mail, ss4: Email, type: text}
+  - {bc: Salesperson_Code, ss4: Salesperson, type: text}
+  - {bc: Payment_Terms_Code, ss4: PaymentTerms, type: text}
+  - {bc: Customer_Posting_Group, ss4: CustomerPostingGroup, type: text}
+  - {bc: Currency_Code, ss4: CurrencyCode, type: text}
+  - {bc: Global_Dimension_1_Code, ss4: District, type: text}
+ignored:
+  - {bc: Search_Name, reason: "BC-derived from Name (2,706/2,921 equal a prefix of BC's own Name); SS4 Namekey agrees on only 17.7%"}
+  - {bc: Fax_No, reason: "no counterpart found: MailingFax agrees on 83 of 224 rows where both sides are filled, BillingFax 66, ShippingFax 5. BC also holds the literal text 'NULL' on 214 paired rows"}
+  - {bc: Primary_Contact_No, reason: "BC contact numbers (CT...), generated by BC"}
+  - {bc: Invoice_Disc_Code, reason: "BC default, equal to the customer number"}
+  - {bc: Balance_LCY, reason: "computed from BC ledger entries; not comparable to Customer.CustomerBalance"}
+  - {bc: Balance_LCY_2, reason: "computed from BC ledger entries"}
+  - {bc: Balance_Due_LCY, reason: "computed from BC ledger entries"}
+  - {bc: TotalSales2, reason: "BC FlowField statistic"}
+  - {bc: AdjCustProfit, reason: "BC FlowField statistic"}
+  - {bc: AdjProfitPct, reason: "BC FlowField statistic"}
+  - {bc: CustSalesLCY_CustProfit_AdjmtCostLCY, reason: "BC FlowField statistic"}
+  - {bc: Payments_LCY, reason: "BC FlowField statistic"}
+  - {bc: CustomerSince, reason: "BC statistic computed from posted entries"}
+  - {bc: Last_Statement_No, reason: "BC statement counter"}
+  - {bc: Last_Date_Modified, reason: "BC system timestamp"}
+  - {bc: Ava_Company_Code, reason: "Avalara setup in BC, single value"}
+  - {bc: Tax_Liable, reason: "BC tax setup, no SS4 counterpart, single value"}
+  - {bc: Tax_Area_Code, reason: "BC tax setup (AVATAX), single value"}
+  - {bc: Gen_Bus_Posting_Group, reason: "BC posting setup"}
+  - {bc: Payment_Method_Code, reason: "BC setup, single value CHECK"}
+  - {bc: Shipment_Method_Code, reason: "BC setup, single value GROUND"}
+  - {bc: Shipping_Agent_Code, reason: "BC setup, single value UPS"}
+  - {bc: CFDI_Customer_Name, reason: "sparse (6 rows), Mexican localization field, entered in BC"}
+  - {bc: IC_Partner_Code, reason: "sparse (2 rows), BC intercompany setup"}
+  - {bc: Blocked, reason: "sparse (11 rows 'All'); none of the 7 paired rows is Inactive or ARSrvRestrict in SS4, so no counterpart found"}
+  - {bc: Responsibility_Center, reason: "sparse (1 row), BC setup"}
+  - {bc: AVA_Address_is_validated, reason: "sparse, Avalara flag in BC"}
+  - {bc: MobilePhoneNo, reason: "sparse (1 row, '12.01.26')"}
+  - {bc: Tax_Exemption_No, reason: "sparse (1 row)"}
+  - {bc: Allow_Multiple_Posting_Groups, reason: "sparse (1 row), BC setup"}
+  - {bc: Customer_Disc_Group, reason: "sparse (7 rows), BC setup"}
+  - {bc: Prepayment_Percent, reason: "sparse (1 row)"}
+  - {bc: Fin_Charge_Terms_Code, reason: "sparse (1 row)"}
+  - {bc: Ship_to_Code, reason: "sparse (2 test rows)"}
+  - {bc: CFDI_Period, reason: constant in BC}
+  - {bc: ShowMap, reason: constant in BC}
+  - {bc: Copy_Sell_to_Addr_to_Qte_From, reason: constant in BC}
+  - {bc: Tax_Identification_Type, reason: constant in BC}
+  - {bc: Allow_Line_Disc, reason: constant in BC}
+  - {bc: Application_Method, reason: constant in BC}
+  - {bc: Bank_Communication, reason: constant in BC}
+  - {bc: Reserve, reason: constant in BC}
+  - {bc: Shipping_Advice, reason: constant in BC}
+  - {bc: Customized_Calendar, reason: constant in BC}
+  - {bc: Date_Filter, reason: constant in BC}
+  - {bc: BalanceAsVendor, reason: empty in BC}
+  - {bc: Credit_Limit_LCY, reason: empty in BC}
+  - {bc: Privacy_Blocked, reason: empty in BC}
+  - {bc: Service_Zone_Code, reason: empty in BC}
+  - {bc: Document_Sending_Profile, reason: empty in BC}
+  - {bc: CFDI_Purpose, reason: empty in BC}
+  - {bc: CFDI_Relation, reason: empty in BC}
+  - {bc: CFDI_Export_Code, reason: empty in BC}
+  - {bc: SAT_Tax_Regime_Classification, reason: empty in BC}
+  - {bc: CFDI_General_Public, reason: empty in BC}
+  - {bc: Disable_Search_by_Name, reason: empty in BC}
+  - {bc: Priority, reason: empty in BC}
+  - {bc: Statistics_Group, reason: empty in BC}
+  - {bc: AVA_AFC_Customer_Type, reason: empty in BC}
+  - {bc: AVA_AFC_Lifeline, reason: empty in BC}
+  - {bc: AVA_Latitude, reason: empty in BC}
+  - {bc: AVA_longitude, reason: empty in BC}
+  - {bc: AVA_AFC_PCode, reason: empty in BC}
+  - {bc: AVA_AFC_FIPS_Code, reason: empty in BC}
+  - {bc: Home_Page, reason: empty in BC}
+  - {bc: Language_Code, reason: empty in BC}
+  - {bc: Format_Region, reason: empty in BC}
+  - {bc: Bill_to_Customer_No, reason: empty in BC}
+  - {bc: VAT_Registration_No, reason: empty in BC}
+  - {bc: EORI_Number, reason: empty in BC}
+  - {bc: GLN, reason: empty in BC}
+  - {bc: Use_GLN_in_Electronic_Document, reason: empty in BC}
+  - {bc: RFC_No, reason: empty in BC}
+  - {bc: CURP_No, reason: empty in BC}
+  - {bc: State_Inscription, reason: empty in BC}
+  - {bc: Registration_Number, reason: empty in BC}
+  - {bc: VAT_Bus_Posting_Group, reason: empty in BC}
+  - {bc: Price_Calculation_Method, reason: empty in BC}
+  - {bc: Customer_Price_Group, reason: empty in BC}
+  - {bc: Prices_Including_VAT, reason: empty in BC}
+  - {bc: E_Document_Service_Participation_Ids, reason: empty in BC}
+  - {bc: Partner_Type, reason: empty in BC}
+  - {bc: Intrastat_Partner_Type, reason: empty in BC}
+  - {bc: Reminder_Terms_Code, reason: empty in BC}
+  - {bc: Cash_Flow_Payment_Terms_Code, reason: empty in BC}
+  - {bc: Print_Statements, reason: empty in BC}
+  - {bc: Block_Payment_Tolerance, reason: empty in BC}
+  - {bc: Preferred_Bank_Account_Code, reason: empty in BC}
+  - {bc: Check_Date_Format, reason: empty in BC}
+  - {bc: Check_Date_Separator, reason: empty in BC}
+  - {bc: Exclude_from_Pmt_Practices, reason: empty in BC}
+  - {bc: Location_Code, reason: empty in BC}
+  - {bc: Combine_Shipments, reason: empty in BC}
+  - {bc: Combine_Service_Shipments, reason: empty in BC}
+  - {bc: Shipping_Agent_Service_Code, reason: empty in BC}
+  - {bc: Shipping_Time, reason: empty in BC}
+  - {bc: Base_Calendar_Code, reason: empty in BC}
+  - {bc: DaysSinceLastSale, reason: empty in BC}
+  - {bc: DistinctItemsSold, reason: empty in BC}
+  - {bc: ExpectedCustMoneyOwed, reason: empty in BC}
+  - {bc: TotalMoneyOwed, reason: empty in BC}
+  - {bc: CreditLimit, reason: empty in BC}
+  - {bc: CalcCreditLimitLCYExpendedPct, reason: empty in BC}
+  - {bc: Balance_Due, reason: empty in BC}
+  - {bc: CustomerMgt_AvgDaysToPay_No, reason: empty in BC}
+  - {bc: DaysPaidPastDueDate, reason: empty in BC}
+  - {bc: PaidLateCount, reason: empty in BC}
+  - {bc: PaidOnTimeCount, reason: empty in BC}
+  - {bc: PercentPaidLate, reason: empty in BC}
+  - {bc: OverdueCount, reason: empty in BC}
+  - {bc: LastPaymentDate, reason: empty in BC}
+  - {bc: LastPaymentAmount, reason: empty in BC}
+  - {bc: LastPaymentOnTime, reason: empty in BC}
+  - {bc: AmountOnPostedInvoices, reason: empty in BC}
+  - {bc: AmountOnCrMemo, reason: empty in BC}
+  - {bc: AmountOnOutstandingInvoices, reason: empty in BC}
+  - {bc: AmountOnOutstandingCrMemos, reason: empty in BC}
+  - {bc: Totals, reason: empty in BC}
+  - {bc: CustInvDiscAmountLCY, reason: empty in BC}
+  - {bc: InteractionCount, reason: empty in BC}
+  - {bc: LastInteractionDate, reason: empty in BC}
+  - {bc: LastInteractionType, reason: empty in BC}
+  - {bc: MostFrequentInteractionType, reason: empty in BC}
+  - {bc: Global_Dimension_1_Filter, reason: empty in BC}
+  - {bc: Global_Dimension_2_Filter, reason: empty in BC}
+  - {bc: Currency_Filter, reason: empty in BC}
+  - {ss4: TaxingState, reason: "BC County equals TaxingState on 2,563/2,921 paired rows (87.7%), better than the parsed mailing state (79.9%). Per the push job and the user's instruction, County is compared to the state parsed from MailingAddress instead"}
